@@ -12,7 +12,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import NKLogoIcon from "../lib/icons/NKLogoIcon.tsx";
+import NKLogoIcon from "../../lib/icons/NKLogoIcon.tsx";
 
 const drawerWidth = 240;
 
