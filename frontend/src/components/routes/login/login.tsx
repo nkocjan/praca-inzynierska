@@ -1,5 +1,5 @@
-import { NKTextInput } from "../lib/Input/TextInput.tsx";
-import { NKButton } from "../lib/button/Button.tsx";
+import { NKTextInput } from "../../../lib/Input/TextInput.tsx";
+import { NKButton } from "../../../lib/button/Button.tsx";
 import Grid from "@mui/material/Grid2";
 
 const Login = () => (

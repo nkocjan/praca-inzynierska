@@ -13,12 +13,35 @@ import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import NKLogoIcon from "../../lib/icons/NKLogoIcon.tsx";
+import NKExpansesIcon from "../../lib/icons/menu/NKExpansesIcon.tsx";
+import NKBudgetIcon from "../../lib/icons/menu/NKBudgetIcon.tsx";
+import NKCategoryIcon from "../../lib/icons/menu/NKCategoryIcon.tsx";
+import NKInfoIcon from "../../lib/icons/menu/NKInfoIcon.tsx";
+import NKSettingsIcon from "../../lib/icons/menu/NKSettingsIcon.tsx";
+import NKLogoutIcon from "../../lib/icons/menu/NKLogoutIcon.tsx";
+import NKMainIcon from "../../lib/icons/menu/NKMainIcon.tsx";
+import {NavLink} from "react-router-dom";
+import NKDarkLightSwitch from "./dark-light-switch/NKDarkLightSwitch.tsx";
+import NKLanguageSelect from "./language-select/NKLanguageSelect.tsx";
 
 const drawerWidth = 240;
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
+
+    const menuItems = [
+        { text: "Strona główna", path: "/" },
+        { text: "Wydatki", path: "/expenses" },
+        { text: "Budżet", path: "/budget" },
+        { text: "Kategorie", path: "/categories" },
+    ];
+
+    const secondaryItems = [
+        { text: "Informacje", path: "/information" },
+        { text: "Ustawienia", path: "/settings" },
+        { text: "Wyloguj się", path: "/logout" },
+    ];
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -35,20 +58,56 @@ export default function Navbar() {
     }
   };
 
+  const getMainIcon = (id: number) => {
+      switch (id) {
+          case 0:
+              return <NKMainIcon />
+          case 1:
+              return <NKExpansesIcon />
+          case 2:
+              return <NKBudgetIcon />
+          case 3:
+              return <NKCategoryIcon />
+      }
+  }
+
+  const getSecondaryIcon = (id: number) => {
+      switch (id) {
+          case 0:
+              return <NKInfoIcon />
+          case 1:
+              return <NKSettingsIcon />
+          case 2:
+              return <NKLogoutIcon />
+      }
+  }
+
   const drawer = (
     <div>
       <Toolbar />
       <Box sx={{ display: "flex", flexDirection: "column", height: "90vh" }}>
         <Divider />
         <List>
-          {["Strona główna", "Wydatki", "Budżet", "Kategorie"].map(
-            (text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <NKLogoIcon /> : <NKLogoIcon />}
+          {menuItems.map((item, index) => (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton component={NavLink}
+                                to={item.path}
+                                sx={{
+                                    "&.active": {
+                                        backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                        fontWeight: "bold",
+                                    },
+                                    "& .MuiSvgIcon-root": {
+                                        transition: "transform 0.3s ease-in-out",
+                                    },
+                                    "&:hover .MuiSvgIcon-root": {
+                                        transform: "scale(1.1)",
+                                    },
+                                }}>
+                  <ListItemIcon >
+                    {getMainIcon(index)}
                   </ListItemIcon>
-                  <ListItemText primary={text} />
+                  <ListItemText primary={item.text} />
                 </ListItemButton>
               </ListItem>
             ),
@@ -57,13 +116,25 @@ export default function Navbar() {
         <Divider />
         <Divider />
         <List>
-          {["Informacje", "Ustawienia", "Wyloguj się"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
+          {secondaryItems.map((item, index) => (
+            <ListItem key={item.text} disablePadding>
+              <ListItemButton component={NavLink}
+                              to={item.path}
+                              sx={{
+                                  "&.active": {
+                                      backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                      fontWeight: "bold",
+                                  },"& .MuiSvgIcon-root": {
+                                      transition: "transform 0.3s ease-in-out",
+                                  },
+                                  "&:hover .MuiSvgIcon-root": {
+                                      transform: "scale(1.1)",
+                                  },
+                              }}>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <NKLogoIcon /> : <NKLogoIcon />}
+                  {getSecondaryIcon(index)}
                 </ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemText primary={item.text} />
               </ListItemButton>
             </ListItem>
           ))}
@@ -98,6 +169,31 @@ export default function Navbar() {
           <Typography variant="h6" noWrap component="div">
             Strona główna
           </Typography>
+            <Box
+                sx={{
+                    marginLeft: "auto",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    height: "100%"
+                }}
+            >
+                <Box
+                    sx={{
+                        width: { xs: "80px", sm: "100px", md: "120px" }, // Static width
+                        minWidth: "80px",
+                        display: "flex",
+                        alignItems: "center",
+                        '& .MuiSelect-root': { // Target MUI Select to modify its size
+                            height: "40px", // Reduce height
+                        }
+                    }}
+                >
+                    <NKLanguageSelect />
+                </Box>
+                <NKDarkLightSwitch />
+            </Box>
+
         </Toolbar>
       </AppBar>
       <Box

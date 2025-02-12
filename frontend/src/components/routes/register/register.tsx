@@ -1,9 +1,9 @@
-import { NKTextInput } from "../lib/Input/TextInput.tsx";
+import { NKTextInput } from "../../../lib/Input/TextInput.tsx";
 import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { NKButton } from "../lib/button/Button.tsx";
+import { NKButton } from "../../../lib/button/Button.tsx";
 
 // Create a dark theme
 const darkTheme = createTheme({
