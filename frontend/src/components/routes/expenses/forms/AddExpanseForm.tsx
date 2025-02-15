@@ -1,10 +1,14 @@
 import {
   Button,
+  Checkbox,
   FormControl,
   FormControlLabel,
   FormHelperText,
+  FormLabel,
   InputLabel,
+  ListItemText,
   MenuItem,
+  OutlinedInput,
   Radio,
   RadioGroup,
   Select,
@@ -56,12 +60,12 @@ const AddExpenseForm = () => {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "50px",
+        gap: "8px",
         maxWidth: "450px",
       }}
     >
-      {/* Nazwa */}
       <TextField
+        sx={{ marginTop: "8px" }}
         label="Nazwa"
         variant="outlined"
         fullWidth
@@ -71,11 +75,15 @@ const AddExpenseForm = () => {
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
         error={formik.touched.name && Boolean(formik.errors.name)}
-        helperText={formik.touched.name && formik.errors.name}
+        helperText={
+          <span style={{ minHeight: "20px", display: "block" }}>
+            {formik.touched.name && formik.errors.name}
+          </span>
+        }
       />
 
       <FormControl
-        fullWidth
+        sx={{ width: "100%" }}
         size="small"
         error={formik.touched.category && Boolean(formik.errors.category)}
       >
@@ -85,16 +93,17 @@ const AddExpenseForm = () => {
           value={formik.values.category}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
+          input={<OutlinedInput label="Kategoria" />}
         >
-          {categories.map((cat) => (
-            <MenuItem key={cat} value={cat}>
-              {cat}
+          {categories.map((category) => (
+            <MenuItem key={category} value={category}>
+              {category}
             </MenuItem>
           ))}
         </Select>
-        {formik.touched.category && formik.errors.category && (
-          <FormHelperText>{formik.errors.category}</FormHelperText>
-        )}
+        <FormHelperText sx={{ minHeight: "20px" }}>
+          {formik.touched.category && formik.errors.category}
+        </FormHelperText>
       </FormControl>
 
       <TextField
@@ -108,7 +117,11 @@ const AddExpenseForm = () => {
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
         error={formik.touched.amount && Boolean(formik.errors.amount)}
-        helperText={formik.touched.amount && formik.errors.amount}
+        helperText={
+          <span style={{ minHeight: "20px", display: "block" }}>
+            {formik.touched.amount && formik.errors.amount}
+          </span>
+        }
       />
 
       <DatePicker
@@ -129,9 +142,11 @@ const AddExpenseForm = () => {
       />
 
       <FormControl
+        sx={{ marginTop: "8px" }}
         component="fieldset"
         error={formik.touched.planned && Boolean(formik.errors.planned)}
       >
+        <FormLabel component="legend">Czy planowany?</FormLabel>
         <RadioGroup
           row
           name="planned"
@@ -143,7 +158,9 @@ const AddExpenseForm = () => {
           <FormControlLabel value="false" control={<Radio />} label="Nie" />
         </RadioGroup>
         {formik.touched.planned && formik.errors.planned && (
-          <FormHelperText>{formik.errors.planned}</FormHelperText>
+          <FormHelperText sx={{ minHeight: "20px" }}>
+            {formik.errors.planned}
+          </FormHelperText>
         )}
       </FormControl>
     </form>

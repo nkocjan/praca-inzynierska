@@ -17,20 +17,12 @@ interface properties {
 const NKDialog = (props: properties) => {
   return (
     <Dialog
+      disableEscapeKeyDown
       open={props.open}
-      onClose={props.onClose}
-      slotProps={{
-        paper: {
-          component: "form",
-          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries(formData.entries());
-            const email = formJson.email;
-            console.log(email);
-            props.onClose();
-          },
-        },
+      onClose={(_event, reason) => {
+        if (reason !== "backdropClick") {
+          props.onClose();
+        }
       }}
     >
       <DialogTitle>{props.title}</DialogTitle>
