@@ -57,7 +57,7 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
     setDateTo(null);
     setAmountFrom("");
     setAmountTo("");
-    setIsPlanned(false);
+    setIsPlanned(null);
   }
 
   return (

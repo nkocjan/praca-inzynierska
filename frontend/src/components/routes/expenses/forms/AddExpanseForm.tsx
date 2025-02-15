@@ -1,12 +1,9 @@
 import {
-  Button,
-  Checkbox,
   FormControl,
   FormControlLabel,
   FormHelperText,
   FormLabel,
   InputLabel,
-  ListItemText,
   MenuItem,
   OutlinedInput,
   Radio,
@@ -18,16 +15,9 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import dayjs, { Dayjs } from "dayjs";
+import { PredefinedCategoriesEnum } from "../../../../types/enums/PredefinedCategoriesEnum.tsx";
 
-const categories = [
-  "Food",
-  "Transport",
-  "Rent",
-  "Entertainment",
-  "Health",
-  "Education",
-  "Other",
-];
+const categories = Object.values(PredefinedCategoriesEnum);
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Nazwa jest wymagana"),
