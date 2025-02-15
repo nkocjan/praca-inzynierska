@@ -12,31 +12,44 @@ import NKExpenses from "./components/routes/expenses/NKExpenses.tsx";
 import NKBudget from "./components/routes/budget/NKBudget.tsx";
 import NKCategories from "./components/routes/categories/NKCategories.tsx";
 import NKInformation from "./components/routes/information/NKInformation.tsx";
+import { SnackbarProvider } from "notistack";
+import { DialogProvider } from "./lib/dialog/NKDialogContext.tsx";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const darkTheme = createTheme({
-    palette: {
-        mode: "dark",
-    },
+  palette: {
+    mode: "dark",
+  },
 });
 
 createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-        <ThemeProvider theme={darkTheme}>
-            <CssBaseline />
+  <StrictMode>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <SnackbarProvider
+          maxSnack={3}
+          anchorOrigin={{ horizontal: "right", vertical: "top" }}
+        >
+          <DialogProvider>
             <Router>
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<NKRegister />} />
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<NKRegister />} />
 
-                    <Route path="/" element={<NKLayout />}>
-                        <Route path="settings" element={<NKSettings />} ></Route>
-                        <Route path="expenses" element={<NKExpenses />} ></Route>
-                        <Route path="budget" element={<NKBudget />} ></Route>
-                        <Route path="categories" element={<NKCategories />} ></Route>
-                        <Route path="information" element={<NKInformation />} ></Route>
-                    </Route>
-                </Routes>
+                <Route path="/" element={<NKLayout />}>
+                  <Route path="settings" element={<NKSettings />}></Route>
+                  <Route path="expenses" element={<NKExpenses />}></Route>
+                  <Route path="budget" element={<NKBudget />}></Route>
+                  <Route path="categories" element={<NKCategories />}></Route>
+                  <Route path="information" element={<NKInformation />}></Route>
+                </Route>
+              </Routes>
             </Router>
-        </ThemeProvider>
-    </StrictMode>
+          </DialogProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>
+    </ThemeProvider>
+  </StrictMode>,
 );

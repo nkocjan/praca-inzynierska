@@ -1,79 +1,44 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import { Paper, SxProps, Theme } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
-  Paper,
-  TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-  Checkbox,
-  ListItemText,
-  Switch,
-  FormControlLabel,
-  SxProps,
-  Theme,
-} from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { DatePicker } from "@mui/x-date-pickers";
-import dayjs from "dayjs";
+  DataGrid,
+  GridColDef,
+  GridRowSelectionModel,
+  GridSortModel,
+} from "@mui/x-data-grid";
 import { IExpanse } from "../../types/interfaces/IExpanse.tsx";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
 
 interface Properties {
   columns: GridColDef[];
   rows: Array<IExpanse>;
+  sort?: GridSortModel;
   sx?: SxProps<Theme>;
+  filters?: ReactNode;
+  onDelete?: (selectedIds: string[]) => void;
 }
 
 const paginationModel = { page: 0, pageSize: 5 };
 
 const NKGrid = (props: Properties) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
-  // 🔹 Aktualizacja szerokości okna w stanie
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
-
     window.addEventListener("resize", handleResize);
-
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const [nameFilter, setNameFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
-  const [dateFrom, setDateFrom] = useState<Date | null>(null);
-  const [dateTo, setDateTo] = useState<Date | null>(null);
-  const [amountFrom, setAmountFrom] = useState<number | "">("");
-  const [amountTo, setAmountTo] = useState<number | "">("");
-  const [isPlanned, setIsPlanned] = useState<boolean | null>(null);
-
-  const categories = [
-    "Food",
-    "Transport",
-    "Entertainment",
-    "Health",
-    "Education",
-    "Utilities",
-    "Rent",
-    "Shopping",
-    "Savings",
-    "Other",
-  ];
-
-  const filteredRows = props.rows.filter((row) => {
-    const rowDate = dayjs(row.date);
-
-    return (
-      (nameFilter === "" ||
-        row.name.toLowerCase().includes(nameFilter.toLowerCase())) &&
-      (categoryFilter.length === 0 || categoryFilter.includes(row.category)) &&
-      (!dateFrom || rowDate.isAfter(dayjs(dateFrom).subtract(1, "day"))) &&
-      (!dateTo || rowDate.isBefore(dayjs(dateTo).add(1, "day"))) &&
-      (amountFrom === "" || row.amount >= amountFrom) &&
-      (amountTo === "" || row.amount <= amountTo) &&
-      (isPlanned === null || row.planned === (isPlanned ? "P" : "N"))
-    );
-  });
+  const handleDeleteSelected = () => {
+    if (props.onDelete) {
+      props.onDelete(selectedRows as string[]);
+    }
+    setSelectedRows([]);
+  };
 
   return (
     <Paper
@@ -88,117 +53,48 @@ const NKGrid = (props: Properties) => {
         ...props.sx,
       }}
     >
-      {/* 🔹 Filtry */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-          gridTemplateRows: "repeat(2, auto)",
-          gap: "8px",
-          marginBottom: "10px",
-        }}
-      >
-        <TextField
-          label="Szukaj"
-          variant="outlined"
-          size="small"
-          sx={{ width: "100%" }}
-          value={nameFilter}
-          onChange={(e) => setNameFilter(e.target.value)}
-        />
-
-        <FormControl sx={{ width: "100%" }} size="small">
-          <InputLabel>Kategoria</InputLabel>
-          <Select
-            multiple
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value as string[])}
-            input={<OutlinedInput label="Kategoria" />}
-            renderValue={(selected) => selected.join(", ")}
-          >
-            {categories.map((category) => (
-              <MenuItem key={category} value={category}>
-                <Checkbox checked={categoryFilter.includes(category)} />
-                <ListItemText primary={category} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <DatePicker
-          label="Data od"
-          value={dateFrom}
-          onChange={(newDate) => setDateFrom(newDate)}
-          slotProps={{
-            textField: {
-              variant: "outlined",
-              size: "small",
-              sx: { height: 36 },
-            },
+      {selectedRows.length > 0 && (
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            bgcolor: "rgba(255,255,255,0.1)",
+            borderRadius: 1,
+            marginBottom: 1,
+            padding: "4px 10px",
           }}
-          sx={{ width: "100%" }}
-        />
+        >
+          <Typography variant="subtitle1">
+            Zaznaczono {selectedRows.length} wierszy
+          </Typography>
+          <IconButton onClick={handleDeleteSelected} color="error">
+            <DeleteIcon />
+          </IconButton>
+        </Toolbar>
+      )}
+      {selectedRows.length == 0 && props.filters}
 
-        <DatePicker
-          label="Data do"
-          value={dateTo}
-          onChange={(newDate) => setDateTo(newDate)}
-          slotProps={{
-            textField: {
-              variant: "outlined",
-              size: "small",
-              sx: { height: 36 },
-            },
-          }}
-          sx={{ width: "100%" }}
-        />
-
-        <TextField
-          size="small"
-          label="Kwota od"
-          type="number"
-          variant="outlined"
-          sx={{ width: "100%" }}
-          value={amountFrom}
-          onChange={(e) =>
-            setAmountFrom(e.target.value === "" ? "" : Number(e.target.value))
-          }
-        />
-
-        <TextField
-          size="small"
-          label="Kwota do"
-          type="number"
-          variant="outlined"
-          sx={{ width: "100%" }}
-          value={amountTo}
-          onChange={(e) =>
-            setAmountTo(e.target.value === "" ? "" : Number(e.target.value))
-          }
-        />
-
-        <FormControlLabel
-          control={
-            <Switch
-              checked={isPlanned === true}
-              onChange={(e) => setIsPlanned(e.target.checked ? true : null)}
-            />
-          }
-          label="Planowany"
-          sx={{ width: "100%" }}
-        />
-      </div>
-
-      {/* 🔹 Tabela z kontrolowaną wysokością */}
       <div style={{ flexGrow: 1, overflow: "hidden" }}>
         <DataGrid
           key={windowWidth}
           columns={props.columns}
-          rows={filteredRows}
-          initialState={{ pagination: { paginationModel } }}
+          rows={props.rows}
+          initialState={{
+            pagination: { paginationModel },
+            sorting: {
+              sortModel: props.sort
+                ? props.sort
+                : [{ field: "name", sort: "desc" }],
+            },
+          }}
+          onRowSelectionModelChange={(newSelection) =>
+            setSelectedRows(newSelection)
+          }
           pageSizeOptions={[5, 10]}
           checkboxSelection
-          sx={{ border: 0, height: "100%" }} // ✅ Zapewnia dopasowanie wysokości
+          disableRowSelectionOnClick
+          sx={{ border: 0, height: "100%" }}
+          disableColumnMenu
         />
       </div>
     </Paper>

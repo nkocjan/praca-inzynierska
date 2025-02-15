@@ -5,10 +5,15 @@ import { Button } from "@mui/material";
 interface props {
   title: string;
   required?: boolean;
+  onClick?: () => void;
 }
 
 function NKButton(properties: props): JSX.Element {
-  return <Button variant="contained">{properties.title}</Button>;
+  return (
+    <Button variant="contained" onClick={properties.onClick}>
+      {properties.title}
+    </Button>
+  );
 }
 
 export { NKButton };
