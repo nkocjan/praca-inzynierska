@@ -10,6 +10,8 @@ import * as React from "react";
 interface properties {
   open: boolean;
   title: string;
+  saveButtonTitle: string;
+  cancelButtonTitle: string;
   onClose: () => void;
   children: React.ReactNode;
 }
@@ -28,8 +30,8 @@ const NKDialog = (props: properties) => {
       <DialogTitle>{props.title}</DialogTitle>
       <DialogContent>{props.children}</DialogContent>
       <DialogActions>
-        <Button onClick={props.onClose}>Cancel</Button>
-        <Button type="submit">Subscribe</Button>
+        <Button onClick={props.onClose}>{props.cancelButtonTitle}</Button>
+        <Button type="submit">{props.saveButtonTitle}</Button>
       </DialogActions>
     </Dialog>
   );

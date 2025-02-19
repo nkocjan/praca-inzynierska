@@ -3,6 +3,13 @@ import { Chip, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useState } from "react";
 import { ExpanseStatusEnum } from "../../../types/enums/ExpanseStatusEnum.tsx";
+import { useDialog } from "../../../lib/dialog/NKDialogContext.tsx";
+import AddExpanseForm from "./forms/AddEditExpanseForm.tsx";
+import { IExpanse } from "../../../types/interfaces/IExpanse.tsx";
+import * as React from "react";
+import dayjs from "dayjs";
+import ApproveStatusChange from "./forms/ApproveStatusChange.tsx";
+import ConfirmDelete from "./forms/ConfirmDelete.tsx";
 
 const getStatusLabel = (status: ExpanseStatusEnum) => {
   switch (status) {
@@ -19,7 +26,12 @@ const getStatusLabel = (status: ExpanseStatusEnum) => {
 
 const expansesColumns: GridColDef[] = [
   { field: "name", headerName: "Nazwa", flex: 3 },
-  { field: "category", headerName: "Kategoria", flex: 2 },
+  {
+    field: "category",
+    renderCell: (params) => `${params.value.value}`,
+    headerName: "Kategoria",
+    flex: 2,
+  },
   {
     field: "amount",
     headerName: "Kwota",
@@ -35,7 +47,7 @@ const expansesColumns: GridColDef[] = [
       const { label, color } = getStatusLabel(
         params.value as ExpanseStatusEnum,
       );
-      return <Chip label={label} color={color as any} variant="outlined" />;
+      return <Chip label={label} color={color as never} variant="outlined" />;
     },
   },
   {
@@ -49,9 +61,10 @@ const expansesColumns: GridColDef[] = [
   },
 ];
 
-const ActionMenu = ({ row }: { row: any }) => {
+const ActionMenu = ({ row }: { row: IExpanse }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const { openDialog } = useDialog();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -62,25 +75,65 @@ const ActionMenu = ({ row }: { row: any }) => {
   };
 
   const handleEdit = () => {
-    console.log("Edytowanie:", row);
-    handleClose();
+    openDialog(
+      {
+        title: "Edytuj wydatek",
+        saveButtonTitle: "Zatwierdź",
+        cancelButtonTitle: "Anuluj",
+      },
+      <AddExpanseForm
+        isEdit={true}
+        amount={row.amount}
+        planned={row.planned}
+        name={row.name}
+        category={row.category}
+        date={dayjs(row.date)}
+      ></AddExpanseForm>,
+    );
   };
 
   const handleDelete = () => {
-    console.log("Usuwanie:", row);
-    handleClose();
+    openDialog(
+      {
+        title: "Czy na pewno chcesz usunąć wydatek?",
+        saveButtonTitle: "Usuń",
+        cancelButtonTitle: "Anuluj",
+      },
+      <ConfirmDelete />,
+    );
   };
 
   const handleApprove = () => {
-    handleApprove();
+    openDialog(
+      {
+        title: "Zatwierdź wydatek",
+        saveButtonTitle: "Zatwierdź",
+        cancelButtonTitle: "Anuluj",
+      },
+      <ApproveStatusChange newOperation={row.planned} />,
+    );
   };
 
   const handleWithdrawApprove = () => {
-    handleWithdrawApprove();
+    openDialog(
+      {
+        title: "Wycofaj zatwierdzanie wydatku",
+        saveButtonTitle: "Potwierdź wycofanie",
+        cancelButtonTitle: "Anuluj",
+      },
+      <ApproveStatusChange newOperation={row.planned} />,
+    );
   };
 
   const handleSetAsPlanned = () => {
-    handleSetAsPlanned();
+    openDialog(
+      {
+        title: "Ustaw jako zaplanowany",
+        saveButtonTitle: "Zatwierdź",
+        cancelButtonTitle: "Anuluj",
+      },
+      <ApproveStatusChange newOperation={row.planned} />,
+    );
   };
 
   return (

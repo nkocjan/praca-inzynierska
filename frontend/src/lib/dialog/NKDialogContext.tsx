@@ -2,8 +2,15 @@ import * as React from "react";
 import { ReactNode, useContext, useState } from "react";
 import NKDialog from "./NKDialog.tsx";
 
+interface DialogTitles {
+  title: string;
+  saveButtonTitle: string;
+  cancelButtonTitle: string;
+}
+
 interface DialogContextType {
-  openDialog: (title: string, content: ReactNode) => void;
+  dialogTitles: DialogTitles;
+  openDialog: (dialogTitle: DialogTitles, content: ReactNode) => void;
   closeDialog: () => void;
 }
 
@@ -13,26 +20,34 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState<string>("");
+  const [dialogTitles, setDialogTitles] = useState<DialogTitles>({
+    cancelButtonTitle: "",
+    saveButtonTitle: "",
+    title: "",
+  });
   const [content, setContent] = useState<ReactNode>(null);
 
-  const openDialog = (dialogTitle: string, dialogContent: ReactNode) => {
+  const openDialog = (dialogTitle: DialogTitles, dialogContent: ReactNode) => {
     setContent(dialogContent);
-    setTitle(dialogTitle);
+    setDialogTitles(dialogTitle);
     setOpen(true);
   };
 
   const closeDialog = () => {
     setOpen(false);
-    setContent(null);
+    setTimeout(() => {
+      setContent(null);
+    }, 400);
   };
 
   return (
-    <DialogContext.Provider value={{ openDialog, closeDialog }}>
+    <DialogContext.Provider value={{ openDialog, closeDialog, dialogTitles }}>
       {children}
       <NKDialog
+        saveButtonTitle={dialogTitles.saveButtonTitle}
         children={content}
-        title={title}
+        cancelButtonTitle={dialogTitles.cancelButtonTitle}
+        title={dialogTitles.title}
         open={open}
         onClose={closeDialog}
       />

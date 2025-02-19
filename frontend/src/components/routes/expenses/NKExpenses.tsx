@@ -5,48 +5,69 @@ import expansesColumns from "./expansesColumns.tsx";
 import { EXPANSES_MOCK } from "../../../assets/mocks/ExpansesMock.ts";
 import { useState } from "react";
 import ExpensesFilters from "./expenseFilters.tsx";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useSnackbar } from "notistack";
 import { useDialog } from "../../../lib/dialog/NKDialogContext.tsx";
-import AddExpanseForm from "./forms/AddExpanseForm.tsx";
+import AddExpanseForm from "./forms/AddEditExpanseForm.tsx";
+import ConfirmDelete from "./forms/ConfirmDelete.tsx";
 
 const NKExpenses = () => {
   const [nameFilter, setNameFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
-  const [dateFrom, setDateFrom] = useState<Date | null>(null);
-  const [dateTo, setDateTo] = useState<Date | null>(null);
+  const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
+  const [dateTo, setDateTo] = useState<Dayjs | null>(null);
   const [amountFrom, setAmountFrom] = useState<number | "">("");
   const [amountTo, setAmountTo] = useState<number | "">("");
   const [isPlanned, setIsPlanned] = useState<boolean | null>(null);
 
   const filteredRows = EXPANSES_MOCK.filter((row) => {
     const rowDate = dayjs(row.date);
+    const categoryFilter = row.category.id;
 
     return (
       (nameFilter === "" ||
         row.name.toLowerCase().includes(nameFilter.toLowerCase())) &&
-      (categoryFilter.length === 0 || categoryFilter.includes(row.category)) &&
+      (categoryFilter.length === 0 ||
+        categoryFilter.includes(row.category.id)) &&
       (!dateFrom || rowDate.isAfter(dayjs(dateFrom).subtract(1, "day"))) &&
       (!dateTo || rowDate.isBefore(dayjs(dateTo).add(1, "day"))) &&
       (amountFrom === "" || row.amount >= amountFrom) &&
       (amountTo === "" || row.amount <= amountTo) &&
-      (isPlanned === null || row.planned === (isPlanned ? "P" : "N"))
+      (isPlanned === null ||
+        row.planned === (isPlanned ? "Zaplanowany" : "Dynamiczny"))
     );
   });
+  const { openDialog } = useDialog();
 
   const handleDelete = (selectedIds: string[]) => {
-    console.log("handleDelete", selectedIds);
+    console.log(selectedIds);
+    openDialog(
+      {
+        title: "Usuń wiele wydatków",
+        saveButtonTitle: "Potwierdź usunięcie",
+        cancelButtonTitle: "Anuluj",
+      },
+      <ConfirmDelete multi={true}></ConfirmDelete>,
+    );
   };
 
   const { enqueueSnackbar } = useSnackbar();
-  const { openDialog } = useDialog();
 
   return (
     <Grid container spacing={3} sx={{ padding: 3, marginTop: 5 }}>
       <Grid>
         <NKButton
           title="Dodaj wydatek"
-          onClick={() => openDialog("Dodaj wydatek", <AddExpanseForm />)}
+          onClick={() =>
+            openDialog(
+              {
+                title: "Dodaj nowy wydatek",
+                saveButtonTitle: "Dodaj",
+                cancelButtonTitle: "Anuluj",
+              },
+              <AddExpanseForm />,
+            )
+          }
         ></NKButton>
       </Grid>
       <Grid>

@@ -1,5 +1,5 @@
 export enum ExpanseStatusEnum {
-  PLANNED = "P",
-  APPROVED = "A",
-  NORMAL = "N",
+  PLANNED = "Zaplanowany",
+  APPROVED = "Zatwierdzony",
+  NORMAL = "Dynamiczny",
 }

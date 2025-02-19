@@ -12,18 +12,19 @@ import {
   TextField,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { PredefinedCategoriesEnum } from "../../../types/enums/PredefinedCategoriesEnum.tsx";
 import { FC } from "react";
+import { Dayjs } from "dayjs";
+import { CategoriesMock } from "../../../assets/mocks/CategoriesMock.ts";
 
 interface ExpensesFiltersProps {
   nameFilter: string;
   setNameFilter: (value: string) => void;
   categoryFilter: string[];
   setCategoryFilter: (value: string[]) => void;
-  dateFrom: Date | null;
-  setDateFrom: (value: Date | null) => void;
-  dateTo: Date | null;
-  setDateTo: (value: Date | null) => void;
+  dateFrom: Dayjs | null;
+  setDateFrom: (value: Dayjs | null) => void;
+  dateTo: Dayjs | null;
+  setDateTo: (value: Dayjs | null) => void;
   amountFrom: number | "";
   setAmountFrom: (value: number | "") => void;
   amountTo: number | "";
@@ -48,8 +49,6 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
   isPlanned,
   setIsPlanned,
 }) => {
-  const categories = Object.values(PredefinedCategoriesEnum);
-
   function resetFilters() {
     setNameFilter("");
     setCategoryFilter([]);
@@ -88,10 +87,10 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
           input={<OutlinedInput label="Kategoria" />}
           renderValue={(selected) => selected.join(", ")}
         >
-          {categories.map((category) => (
-            <MenuItem key={category} value={category}>
-              <Checkbox checked={categoryFilter.includes(category)} />
-              <ListItemText primary={category} />
+          {CategoriesMock.map((category) => (
+            <MenuItem key={category.id} value={category.value}>
+              <Checkbox checked={categoryFilter.includes(category.id)} />
+              <ListItemText primary={category.value} />
             </MenuItem>
           ))}
         </Select>

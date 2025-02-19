@@ -1,11 +1,12 @@
 import { IExpanse } from "../../types/interfaces/IExpanse.tsx";
 import { ExpanseStatusEnum } from "../../types/enums/ExpanseStatusEnum.tsx";
+import { CategoriesMock } from "./CategoriesMock.ts";
 
 export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "4c74c271-bdb5-4e8a-b8a3-e99ce1bd1177",
     name: "Expense 1",
-    category: "Health",
+    category: CategoriesMock[0],
     amount: 57.35,
     date: "2024-06-05",
     planned: ExpanseStatusEnum.NORMAL,
@@ -14,7 +15,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "ea27eb8e-eabf-4fed-b5ed-4b7d064f3447",
     name: "Expense 2",
-    category: "Education",
+    category: CategoriesMock[0],
     amount: 425.83,
     date: "2024-09-07",
     planned: ExpanseStatusEnum.NORMAL,
@@ -23,7 +24,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "c6c40da1-c800-466b-ba6f-b2ee10ac39f9",
     name: "Expense 3",
-    category: "Rent",
+    category: CategoriesMock[1],
     amount: 62.2,
     date: "2024-08-14",
     planned: ExpanseStatusEnum.NORMAL,
@@ -32,7 +33,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "88595970-855a-479d-89e5-63d5dfcd7f1a",
     name: "Expense 4",
-    category: "Entertainment",
+    category: CategoriesMock[2],
     amount: 135.04,
     date: "2024-04-15",
     planned: ExpanseStatusEnum.APPROVED,
@@ -41,7 +42,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "fe19de78-63b8-4530-a9fb-90816b765aee",
     name: "Expense 5",
-    category: "Other",
+    category: CategoriesMock[2],
     amount: 96.78,
     date: "2024-11-18",
     planned: ExpanseStatusEnum.APPROVED,
@@ -50,7 +51,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "ba22a2dc-833b-4d46-92ea-9a3e6f3c434e",
     name: "Expense 6",
-    category: "Food",
+    category: CategoriesMock[3],
     amount: 35.75,
     date: "2024-01-10",
     planned: ExpanseStatusEnum.PLANNED,
@@ -59,7 +60,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "234c1f8e-0f3a-42b2-a46e-49f56df5d019",
     name: "Expense 7",
-    category: "Transport",
+    category: CategoriesMock[4],
     amount: 152.99,
     date: "2024-05-23",
     planned: ExpanseStatusEnum.NORMAL,
@@ -68,7 +69,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "1e0d3bfa-84f2-4c60-a502-b4fcf4d58e1f",
     name: "Expense 8",
-    category: "Utilities",
+    category: CategoriesMock[5],
     amount: 78.65,
     date: "2024-03-29",
     planned: ExpanseStatusEnum.APPROVED,
@@ -77,7 +78,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "6c46bfa5-909c-4963-8d22-cf0d5e61e49f",
     name: "Expense 9",
-    category: "Shopping",
+    category: CategoriesMock[5],
     amount: 219.49,
     date: "2024-02-17",
     planned: ExpanseStatusEnum.NORMAL,
@@ -86,7 +87,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "7bbd0714-b8ea-4e62-bb3f-25e2c4a7883d",
     name: "Expense 10",
-    category: "Savings",
+    category: CategoriesMock[5],
     amount: 305.25,
     date: "2024-07-12",
     planned: ExpanseStatusEnum.PLANNED,
@@ -95,7 +96,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "48a1ff34-8bd8-4cb4-bae8-4f6e38f21669",
     name: "Expense 11",
-    category: "Health",
+    category: CategoriesMock[6],
     amount: 47.85,
     date: "2024-06-22",
     planned: ExpanseStatusEnum.APPROVED,
@@ -104,7 +105,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "fbb2322a-5504-4ed6-9c38-3487e38e71d5",
     name: "Expense 12",
-    category: "Education",
+    category: CategoriesMock[6],
     amount: 168.0,
     date: "2024-10-01",
     planned: ExpanseStatusEnum.NORMAL,
@@ -113,7 +114,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "a846d730-4b94-4fc6-872e-07f77d8322f8",
     name: "Expense 13",
-    category: "Rent",
+    category: CategoriesMock[6],
     amount: 950.0,
     date: "2024-08-28",
     planned: ExpanseStatusEnum.PLANNED,
@@ -122,7 +123,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "bded60b4-1a4a-404f-8445-4f3e94b3f1c3",
     name: "Expense 14",
-    category: "Entertainment",
+    category: CategoriesMock[7],
     amount: 87.6,
     date: "2024-03-05",
     planned: ExpanseStatusEnum.APPROVED,
@@ -131,7 +132,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "8a412385-72b6-41e4-84ea-450d9770d529",
     name: "Expense 15",
-    category: "Other",
+    category: CategoriesMock[4],
     amount: 20.0,
     date: "2024-12-14",
     planned: ExpanseStatusEnum.NORMAL,
@@ -140,7 +141,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "b7f1d61e-93dc-4e9d-b7d4-b46f698d2bd2",
     name: "Expense 16",
-    category: "Food",
+    category: CategoriesMock[4],
     amount: 54.32,
     date: "2024-01-25",
     planned: ExpanseStatusEnum.NORMAL,
@@ -149,7 +150,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "64cf0325-3f15-4df5-9845-d9fbd7a69ac8",
     name: "Expense 17",
-    category: "Transport",
+    category: CategoriesMock[5],
     amount: 100.0,
     date: "2024-04-09",
     planned: ExpanseStatusEnum.PLANNED,
@@ -158,7 +159,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "fc1c4c88-4b3d-4c64-9215-c09379f20b95",
     name: "Expense 18",
-    category: "Utilities",
+    category: CategoriesMock[1],
     amount: 89.75,
     date: "2024-11-30",
     planned: ExpanseStatusEnum.APPROVED,
@@ -167,7 +168,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "db2a4499-45ad-4688-903b-88df27425299",
     name: "Expense 19",
-    category: "Shopping",
+    category: CategoriesMock[0],
     amount: 200.99,
     date: "2024-02-03",
     planned: ExpanseStatusEnum.NORMAL,
@@ -176,7 +177,7 @@ export const EXPANSES_MOCK: IExpanse[] = [
   {
     id: "cf5f9b14-768e-4aa8-8d2b-543b10c3cd5b",
     name: "Expense 20",
-    category: "Savings",
+    category: CategoriesMock[0],
     amount: 150.5,
     date: "2024-07-27",
     planned: ExpanseStatusEnum.PLANNED,

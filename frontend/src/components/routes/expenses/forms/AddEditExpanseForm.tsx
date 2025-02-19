@@ -15,9 +15,9 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import dayjs, { Dayjs } from "dayjs";
-import { PredefinedCategoriesEnum } from "../../../../types/enums/PredefinedCategoriesEnum.tsx";
-
-const categories = Object.values(PredefinedCategoriesEnum);
+import { ExpanseStatusEnum } from "../../../../types/enums/ExpanseStatusEnum.tsx";
+import { CategoriesMock } from "../../../../assets/mocks/CategoriesMock.ts";
+import { IDictionaryItem } from "../../../../types/interfaces/IDictionaryItem.ts";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Nazwa jest wymagana"),
@@ -29,14 +29,24 @@ const validationSchema = Yup.object({
   planned: Yup.boolean().required("Wybierz opcję"),
 });
 
-const AddExpenseForm = () => {
+interface properties {
+  isEdit?: boolean;
+  id?: string;
+  name?: string;
+  category?: IDictionaryItem;
+  amount?: number;
+  date?: Dayjs;
+  planned?: ExpanseStatusEnum;
+}
+
+const AddExpenseForm = (props: properties) => {
   const formik = useFormik({
     initialValues: {
-      name: "",
-      category: "",
-      amount: "",
-      date: dayjs(),
-      planned: "false",
+      name: props.name ?? "",
+      category: props.category?.value ?? "",
+      amount: props.amount ?? "",
+      date: props.date ? dayjs(props.date) : dayjs(),
+      planned: props.planned != ExpanseStatusEnum.NORMAL,
     },
     validationSchema,
     onSubmit: (values) => {
@@ -85,9 +95,9 @@ const AddExpenseForm = () => {
           onBlur={formik.handleBlur}
           input={<OutlinedInput label="Kategoria" />}
         >
-          {categories.map((category) => (
-            <MenuItem key={category} value={category}>
-              {category}
+          {CategoriesMock.map((category) => (
+            <MenuItem key={category.id} value={category.id}>
+              {category.value}
             </MenuItem>
           ))}
         </Select>
@@ -117,7 +127,9 @@ const AddExpenseForm = () => {
       <DatePicker
         label="Data"
         value={formik.values.date}
-        onChange={(date: Dayjs | null) => formik.setFieldValue("date", date)}
+        onChange={(date: Dayjs | null) =>
+          formik.setFieldValue("date", date ? dayjs(date) : null)
+        }
         slotProps={{
           textField: {
             variant: "outlined",
