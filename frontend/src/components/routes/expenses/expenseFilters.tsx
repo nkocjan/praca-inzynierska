@@ -14,7 +14,7 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import { FC } from "react";
 import { Dayjs } from "dayjs";
-import { CategoriesMock } from "../../../assets/mocks/CategoriesMock.ts";
+import { mockCategories } from "../../../assets/mocks/CategoriesMock";
 
 interface ExpensesFiltersProps {
   nameFilter: string;
@@ -87,10 +87,10 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
           input={<OutlinedInput label="Kategoria" />}
           renderValue={(selected) => selected.join(", ")}
         >
-          {CategoriesMock.map((category) => (
-            <MenuItem key={category.id} value={category.value}>
+          {mockCategories.map((category) => (
+            <MenuItem key={category.id} value={category.name}>
               <Checkbox checked={categoryFilter.includes(category.id)} />
-              <ListItemText primary={category.value} />
+              <ListItemText primary={category.name} />
             </MenuItem>
           ))}
         </Select>

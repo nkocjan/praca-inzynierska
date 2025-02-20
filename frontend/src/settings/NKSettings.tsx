@@ -1,7 +1,7 @@
 import { Button, Paper, Typography} from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {useState} from "react";
-import {ChangeOptionEnum} from "./changeOptionsEnum.tsx";
+import {ChangeOptionEnum} from "../types/enums/ChangeOptionsEnum.tsx";
 import NKChangeData from "./changeData/NKChangeData.tsx";
 import Divider from "@mui/material/Divider";
 import NKResetData from "./resetData/NKResetData.tsx";

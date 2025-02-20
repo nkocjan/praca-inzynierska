@@ -16,8 +16,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import dayjs, { Dayjs } from "dayjs";
 import { ExpanseStatusEnum } from "../../../../types/enums/ExpanseStatusEnum.tsx";
-import { CategoriesMock } from "../../../../assets/mocks/CategoriesMock.ts";
-import { IDictionaryItem } from "../../../../types/interfaces/IDictionaryItem.ts";
+import { mockCategories } from "../../../../assets/mocks/CategoriesMock.ts";
+import { ICategory } from "../../../../types/interfaces/ICategory.tsx";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Nazwa jest wymagana"),
@@ -33,7 +33,7 @@ interface properties {
   isEdit?: boolean;
   id?: string;
   name?: string;
-  category?: IDictionaryItem;
+  category?: ICategory;
   amount?: number;
   date?: Dayjs;
   planned?: ExpanseStatusEnum;
@@ -43,7 +43,7 @@ const AddExpenseForm = (props: properties) => {
   const formik = useFormik({
     initialValues: {
       name: props.name ?? "",
-      category: props.category?.value ?? "",
+      category: props.category?.name ?? "",
       amount: props.amount ?? "",
       date: props.date ? dayjs(props.date) : dayjs(),
       planned: props.planned != ExpanseStatusEnum.NORMAL,
@@ -95,9 +95,9 @@ const AddExpenseForm = (props: properties) => {
           onBlur={formik.handleBlur}
           input={<OutlinedInput label="Kategoria" />}
         >
-          {CategoriesMock.map((category) => (
+          {mockCategories.map((category) => (
             <MenuItem key={category.id} value={category.id}>
-              {category.value}
+              {category.name}
             </MenuItem>
           ))}
         </Select>

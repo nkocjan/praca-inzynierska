@@ -1,12 +1,7 @@
 import * as React from "react";
 import { ReactNode, useContext, useState } from "react";
 import NKDialog from "./NKDialog.tsx";
-
-interface DialogTitles {
-  title: string;
-  saveButtonTitle: string;
-  cancelButtonTitle: string;
-}
+import { DialogTitles } from "../../types/interfaces/others/IDialogTitle.tsx";
 
 interface DialogContextType {
   dialogTitles: DialogTitles;

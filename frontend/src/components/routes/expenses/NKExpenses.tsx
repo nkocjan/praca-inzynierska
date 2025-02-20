@@ -2,7 +2,6 @@ import { NKButton } from "../../../lib/button/Button.tsx";
 import Grid from "@mui/material/Grid2";
 import NKGrid from "../../../lib/grid/NKGrid.tsx";
 import expansesColumns from "./expansesColumns.tsx";
-import { EXPANSES_MOCK } from "../../../assets/mocks/ExpansesMock.ts";
 import { useState } from "react";
 import ExpensesFilters from "./expenseFilters.tsx";
 import dayjs, { Dayjs } from "dayjs";
@@ -10,6 +9,8 @@ import { useSnackbar } from "notistack";
 import { useDialog } from "../../../lib/dialog/NKDialogContext.tsx";
 import AddExpanseForm from "./forms/AddEditExpanseForm.tsx";
 import ConfirmDelete from "./forms/ConfirmDelete.tsx";
+import { IExpanse } from "../../../types/interfaces/IExpanse.tsx";
+import { mockExpenses } from "../../../assets/mocks/ExpansesMock.ts";
 
 const NKExpenses = () => {
   const [nameFilter, setNameFilter] = useState("");
@@ -20,7 +21,7 @@ const NKExpenses = () => {
   const [amountTo, setAmountTo] = useState<number | "">("");
   const [isPlanned, setIsPlanned] = useState<boolean | null>(null);
 
-  const filteredRows = EXPANSES_MOCK.filter((row) => {
+  const filteredRows = mockExpenses.filter((row: IExpanse) => {
     const rowDate = dayjs(row.date);
     const categoryFilter = row.category.id;
 
@@ -47,7 +48,7 @@ const NKExpenses = () => {
         saveButtonTitle: "Potwierdź usunięcie",
         cancelButtonTitle: "Anuluj",
       },
-      <ConfirmDelete multi={true}></ConfirmDelete>,
+      <ConfirmDelete multi={true}></ConfirmDelete>
     );
   };
 
@@ -65,7 +66,7 @@ const NKExpenses = () => {
                 saveButtonTitle: "Dodaj",
                 cancelButtonTitle: "Anuluj",
               },
-              <AddExpanseForm />,
+              <AddExpanseForm />
             )
           }
         ></NKButton>

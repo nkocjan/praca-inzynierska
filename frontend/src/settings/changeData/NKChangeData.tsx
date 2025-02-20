@@ -1,4 +1,4 @@
-import {ChangeOptionEnum} from "../changeOptionsEnum.tsx";
+import {ChangeOptionEnum} from "../../types/enums/ChangeOptionsEnum.tsx";
 import {Box, Paper, Typography} from "@mui/material";
 import {NKTextInput} from "../../lib/Input/TextInput.tsx";
 import Grid from "@mui/material/Grid2";
