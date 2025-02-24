@@ -1,9 +1,9 @@
 import { NKButton } from "../../../lib/button/Button.tsx";
 import Grid from "@mui/material/Grid2";
 import NKGrid from "../../../lib/grid/NKGrid.tsx";
-import expansesColumns from "./expansesColumns.tsx";
+import expansesColumns from "./grid/expansesColumns.tsx";
 import { useState } from "react";
-import ExpensesFilters from "./expenseFilters.tsx";
+import ExpensesFilters from "./grid/expenseFilters.tsx";
 import dayjs, { Dayjs } from "dayjs";
 import { useSnackbar } from "notistack";
 import { useDialog } from "../../../lib/dialog/NKDialogContext.tsx";

@@ -36,7 +36,7 @@ const NKDeleteResetDataForm = () => {
         variant="outlined"
         fullWidth
         size="small"
-        name="name"
+        name="email"
         value={formik.values.email}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
@@ -51,9 +51,10 @@ const NKDeleteResetDataForm = () => {
         sx={{ marginTop: "8px" }}
         label="Hasło"
         variant="outlined"
+        type="password"
         fullWidth
         size="small"
-        name="name"
+        name="password"
         value={formik.values.password}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}

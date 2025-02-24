@@ -2,14 +2,14 @@ import { GridColDef } from "@mui/x-data-grid";
 import { Chip, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useState } from "react";
-import { ExpanseStatusEnum } from "../../../types/enums/ExpanseStatusEnum.tsx";
-import { useDialog } from "../../../lib/dialog/NKDialogContext.tsx";
-import AddExpanseForm from "./forms/AddEditExpanseForm.tsx";
-import { IExpanse } from "../../../types/interfaces/IExpanse.tsx";
+import { ExpanseStatusEnum } from "../../../../types/enums/ExpanseStatusEnum.tsx";
+import { useDialog } from "../../../../lib/dialog/NKDialogContext.tsx";
+import AddExpanseForm from "../forms/AddEditExpanseForm.tsx";
+import { IExpanse } from "../../../../types/interfaces/IExpanse.tsx";
 import * as React from "react";
 import dayjs from "dayjs";
-import ApproveStatusChange from "./forms/ApproveStatusChange.tsx";
-import ConfirmDelete from "./forms/ConfirmDelete.tsx";
+import ApproveStatusChange from "../forms/ApproveStatusChange.tsx";
+import ConfirmDelete from "../forms/ConfirmDelete.tsx";
 
 const getStatusLabel = (status: ExpanseStatusEnum) => {
   switch (status) {

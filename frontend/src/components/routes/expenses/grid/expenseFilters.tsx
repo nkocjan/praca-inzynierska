@@ -14,7 +14,7 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import { FC } from "react";
 import { Dayjs } from "dayjs";
-import { mockCategories } from "../../../assets/mocks/CategoriesMock";
+import { mockCategories } from "../../../../assets/mocks/CategoriesMock.ts";
 
 interface ExpensesFiltersProps {
   nameFilter: string;
