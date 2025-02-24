@@ -43,7 +43,7 @@ const AddExpenseForm = (props: properties) => {
   const formik = useFormik({
     initialValues: {
       name: props.name ?? "",
-      category: props.category?.name ?? "",
+      category: props.category?.id ?? "",
       amount: props.amount ?? "",
       date: props.date ? dayjs(props.date) : dayjs(),
       planned: props.planned != ExpanseStatusEnum.NORMAL,

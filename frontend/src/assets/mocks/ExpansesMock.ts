@@ -3,7 +3,6 @@ import { IExpanse } from "../../types/interfaces/IExpanse";
 import { mockCategories } from "./CategoriesMock";
 
 export const mockExpenses: IExpanse[] = [
-  // 🔹 5 wydatków w zakresie 27.01 - 02.02
   {
     id: "e1",
     name: "McDonald's",

@@ -85,10 +85,15 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value as string[])}
           input={<OutlinedInput label="Kategoria" />}
-          renderValue={(selected) => selected.join(", ")}
+          renderValue={(selected: string[]) =>
+            selected.length == 1
+              ? mockCategories.find((category) => category.id === selected[0])
+                  ?.name
+              : `Wybrano: ${selected.length}/${mockCategories.length}`
+          }
         >
           {mockCategories.map((category) => (
-            <MenuItem key={category.id} value={category.name}>
+            <MenuItem key={category.id} value={category.id}>
               <Checkbox checked={categoryFilter.includes(category.id)} />
               <ListItemText primary={category.name} />
             </MenuItem>

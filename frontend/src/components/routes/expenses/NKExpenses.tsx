@@ -23,7 +23,6 @@ const NKExpenses = () => {
 
   const filteredRows = mockExpenses.filter((row: IExpanse) => {
     const rowDate = dayjs(row.date);
-    const categoryFilter = row.category.id;
 
     return (
       (nameFilter === "" ||
@@ -48,7 +47,7 @@ const NKExpenses = () => {
         saveButtonTitle: "Potwierdź usunięcie",
         cancelButtonTitle: "Anuluj",
       },
-      <ConfirmDelete multi={true}></ConfirmDelete>
+      <ConfirmDelete multi={true}></ConfirmDelete>,
     );
   };
 
@@ -66,7 +65,7 @@ const NKExpenses = () => {
                 saveButtonTitle: "Dodaj",
                 cancelButtonTitle: "Anuluj",
               },
-              <AddExpanseForm />
+              <AddExpanseForm />,
             )
           }
         ></NKButton>

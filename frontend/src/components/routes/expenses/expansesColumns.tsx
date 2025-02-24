@@ -28,7 +28,7 @@ const expansesColumns: GridColDef[] = [
   { field: "name", headerName: "Nazwa", flex: 3 },
   {
     field: "category",
-    renderCell: (params) => `${params.value.value}`,
+    renderCell: (params) => `${params.value.name}`,
     headerName: "Kategoria",
     flex: 2,
   },

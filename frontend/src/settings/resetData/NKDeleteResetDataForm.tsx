@@ -46,7 +46,7 @@ const NKDeleteResetDataForm = () => {
             {formik.touched.email && formik.errors.email}
           </span>
         }
-      />{" "}
+      />
       <TextField
         sx={{ marginTop: "8px" }}
         label="Hasło"
