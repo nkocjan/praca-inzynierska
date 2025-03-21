@@ -8,7 +8,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { useSnackbar } from "notistack";
 import { useDialog } from "../../../lib/dialog/NKDialogContext.tsx";
 import AddExpanseForm from "./forms/AddEditExpanseForm.tsx";
-import ConfirmDelete from "./forms/ConfirmDelete.tsx";
+import ConfirmDelete from "../../../lib/dialog/templates/ConfirmDelete.tsx";
 import { IExpanse } from "../../../types/interfaces/IExpanse.tsx";
 import { mockExpenses } from "../../../assets/mocks/ExpansesMock.ts";
 
@@ -47,14 +47,17 @@ const NKExpenses = () => {
         saveButtonTitle: "Potwierdź usunięcie",
         cancelButtonTitle: "Anuluj",
       },
-      <ConfirmDelete multi={true}></ConfirmDelete>,
+      <ConfirmDelete translation="wydatków"></ConfirmDelete>
     );
   };
 
   const { enqueueSnackbar } = useSnackbar();
 
   return (
-    <Grid container spacing={3} sx={{ padding: 3, marginTop: 5 }}>
+    <Grid
+      container
+      spacing={3}
+      sx={{ padding: 3, marginTop: 5 }}>
       <Grid>
         <NKButton
           title="Dodaj wydatek"
@@ -65,21 +68,18 @@ const NKExpenses = () => {
                 saveButtonTitle: "Dodaj",
                 cancelButtonTitle: "Anuluj",
               },
-              <AddExpanseForm />,
+              <AddExpanseForm />
             )
-          }
-        ></NKButton>
+          }></NKButton>
       </Grid>
       <Grid>
         <NKButton
           title="Wczytaj wydatek z pliku"
-          onClick={() => enqueueSnackbar("2", { variant: "error" })}
-        ></NKButton>
+          onClick={() => enqueueSnackbar("2", { variant: "error" })}></NKButton>
       </Grid>
       <Grid
         size={12}
-        sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
-      >
+        sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <NKGrid
           sx={{
             minHeight: 300,
@@ -91,6 +91,7 @@ const NKExpenses = () => {
           columns={expansesColumns.columns}
           rows={filteredRows}
           onDelete={handleDelete}
+          isCheckboxOn={true}
           filters={
             <ExpensesFilters
               nameFilter={nameFilter}

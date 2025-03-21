@@ -7,9 +7,24 @@ export interface ICategory {
 export interface ICategoryBudgetSummary {
   id: string;
   name: string;
-  weekBudget?: { name: string; dateTo: string };
-  monthBudget?: { name: string; dateTo: string };
-  yearBudget?: { name: string; dateTo: string };
+  weekBudget?: {
+    name: string;
+    dateTo: string;
+    amount: number;
+    spentAmount: number;
+  };
+  monthBudget?: {
+    name: string;
+    dateTo: string;
+    amount: number;
+    spentAmount: number;
+  };
+  yearBudget?: {
+    name: string;
+    dateTo: string;
+    amount: number;
+    spentAmount: number;
+  };
   hasCustomBudgets: boolean;
 }
 

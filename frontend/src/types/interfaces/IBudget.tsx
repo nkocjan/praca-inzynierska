@@ -1,3 +1,4 @@
+import { BudgetTypeEnum } from "../enums/BudgetTypeEnum";
 import { ICategory } from "./ICategory";
 
 export interface IBudget {
@@ -5,12 +6,12 @@ export interface IBudget {
   name: string;
   category: ICategory;
   amount: number;
-  remainingAmount: number;
+  spentAmount: number;
   dateFrom: string;
   dateTo: string;
   isPeriodic: boolean;
   durationDays: number;
-  type: "week" | "month" | "year" | "custom";
+  type: BudgetTypeEnum;
 }
 
 export interface IBudgetCreateRequest {

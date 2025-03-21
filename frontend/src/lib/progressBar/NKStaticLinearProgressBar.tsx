@@ -1,0 +1,48 @@
+import { Box, LinearProgress, Typography } from "@mui/material";
+
+const NKStaticLinearProgressBar = ({
+  value,
+  maxValue,
+}: {
+  value: number;
+  maxValue: number;
+}) => {
+  const percent = (value * 100) / maxValue;
+  return (
+    <Box sx={{ position: "relative", width: "80%", textAlign: "center" }}>
+      <LinearProgress
+        variant="determinate"
+        value={percent}
+        sx={{
+          marginTop: "10%",
+          height: 10,
+          borderRadius: 5,
+          backgroundColor: "rgba(255, 255, 255, 0.15)",
+          "& .MuiLinearProgress-bar": {
+            borderRadius: 5,
+            backgroundColor:
+              percent > 100
+                ? "#ff4c4c"
+                : `rgba(77, 166, 255, ${0.3 + (percent / 100) * 0.7})`,
+          },
+        }}
+      />
+      <Typography
+        variant="caption"
+        sx={{
+          position: "absolute",
+          width: "100%",
+          left: "50%",
+          transform: "translate(-50%, -0%)",
+          fontWeight: "bold",
+          fontSize: "smaller",
+          color: "rgba(255,255,255,1.0)",
+          textShadow: "0px 0px 5px rgba(0,0,0,0.7)",
+        }}>
+        {value} zł / {maxValue} zł
+      </Typography>
+    </Box>
+  );
+};
+
+export default NKStaticLinearProgressBar;

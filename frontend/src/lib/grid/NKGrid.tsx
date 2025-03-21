@@ -6,32 +6,37 @@ import {
   GridColDef,
   GridRowSelectionModel,
   GridSortModel,
+  GridValidRowModel,
 } from "@mui/x-data-grid";
-import { IExpanse } from "../../types/interfaces/IExpanse.tsx";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 
 interface Properties {
   columns: GridColDef[];
-  rows: Array<IExpanse>;
+  rows: Array<GridValidRowModel>;
   sort?: GridSortModel;
   sx?: SxProps<Theme>;
   filters?: ReactNode;
   onDelete?: (selectedIds: string[]) => void;
+  isCheckboxOn?: boolean;
 }
-
-const paginationModel = { page: 0, pageSize: 5 };
 
 const NKGrid = (props: Properties) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 5,
+  });
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const isCheckboxOn = props.isCheckboxOn ? true : false;
 
   const handleDeleteSelected = () => {
     if (props.onDelete) {
@@ -51,8 +56,7 @@ const NKGrid = (props: Properties) => {
         minHeight: 400,
         overflow: "hidden",
         ...props.sx,
-      }}
-    >
+      }}>
       {selectedRows.length > 0 && (
         <Toolbar
           sx={{
@@ -62,12 +66,13 @@ const NKGrid = (props: Properties) => {
             borderRadius: 1,
             marginBottom: 1,
             padding: "4px 10px",
-          }}
-        >
+          }}>
           <Typography variant="subtitle1">
             Zaznaczono {selectedRows.length} wierszy
           </Typography>
-          <IconButton onClick={handleDeleteSelected} color="error">
+          <IconButton
+            onClick={handleDeleteSelected}
+            color="error">
             <DeleteIcon />
           </IconButton>
         </Toolbar>
@@ -79,19 +84,21 @@ const NKGrid = (props: Properties) => {
           key={windowWidth}
           columns={props.columns}
           rows={props.rows}
+          paginationModel={paginationModel}
+          onPaginationModelChange={model => setPaginationModel(model)}
           initialState={{
-            pagination: { paginationModel },
             sorting: {
               sortModel: props.sort
                 ? props.sort
                 : [{ field: "name", sort: "desc" }],
             },
           }}
-          onRowSelectionModelChange={(newSelection) =>
+          onRowSelectionModelChange={newSelection =>
             setSelectedRows(newSelection)
           }
+          pagination
           pageSizeOptions={[5, 10]}
-          checkboxSelection
+          checkboxSelection={isCheckboxOn}
           disableRowSelectionOnClick
           sx={{ border: 0, height: "100%" }}
           disableColumnMenu

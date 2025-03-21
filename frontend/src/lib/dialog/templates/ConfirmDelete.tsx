@@ -1,13 +1,11 @@
 import { Box } from "@mui/material";
 
 interface properties {
-  multi?: boolean;
+  translation: string;
 }
 
 const ConfirmDelete = (props: properties) => {
-  return (
-    <Box>Czy potwierdzasz usunięcie {props.multi ? "wydatków" : "wydatku"}</Box>
-  );
+  return <Box>Czy potwierdzasz usunięcie {props.translation}?</Box>;
 };
 
 export default ConfirmDelete;
