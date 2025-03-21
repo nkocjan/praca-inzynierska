@@ -22,15 +22,12 @@ const ExpenseList = (props: ExpenseListProperties) => {
     <Paper
       sx={{
         padding: 1,
-        borderRadius: 3,
-        border: "2px solid rgba(255,255,255,0.3)",
         color: "white",
         maxWidth: 350,
         maxHeight: 300,
         overflow: "hidden",
         height: props.height,
-      }}
-    >
+      }}>
       <Typography
         variant="subtitle1"
         sx={{
@@ -39,12 +36,14 @@ const ExpenseList = (props: ExpenseListProperties) => {
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-        }}
-      >
-        <EllipsisTooltip text="Ostatnie wydatki" fontSize="1rem" />
+        }}>
+        <EllipsisTooltip
+          text="Ostatnie wydatki"
+          fontSize="1rem"
+        />
       </Typography>
       <List sx={{ maxHeight: 250, overflowY: "auto" }}>
-        {expenses.map((expense) => (
+        {expenses.map(expense => (
           <ListItem
             key={expense.id}
             sx={{
@@ -52,16 +51,14 @@ const ExpenseList = (props: ExpenseListProperties) => {
               justifyContent: "space-between",
               alignItems: "center",
               gap: 1,
-            }}
-          >
+            }}>
             <Typography
               sx={{
                 flexGrow: 1,
                 whiteSpace: "normal",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
-              }}
-            >
+              }}>
               <EllipsisTooltip text={expense.category} />
             </Typography>
 
@@ -73,8 +70,7 @@ const ExpenseList = (props: ExpenseListProperties) => {
                 whiteSpace: "nowrap",
                 fontSize: "0.8rem",
                 fontWeight: "bold",
-              }}
-            >
+              }}>
               {expense.amount}
             </Typography>
           </ListItem>

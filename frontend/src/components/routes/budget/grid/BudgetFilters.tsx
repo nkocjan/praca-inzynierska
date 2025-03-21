@@ -78,7 +78,7 @@ const BudgetFilters: FC<BudgetFiltersProps> = ({
         variant="outlined"
         size="small"
         sx={{ width: "100%" }}
-        value={nameFilter}
+        value={nameFilter ?? ""}
         onChange={e => setNameFilter(e.target.value)}
       />
 
@@ -110,7 +110,7 @@ const BudgetFilters: FC<BudgetFiltersProps> = ({
 
       <DatePicker
         label="Data od"
-        value={dateFrom}
+        value={dateFrom ?? undefined}
         onChange={newDate => setDateFrom(newDate)}
         slotProps={{
           textField: { variant: "outlined", size: "small", sx: { height: 36 } },
@@ -120,7 +120,7 @@ const BudgetFilters: FC<BudgetFiltersProps> = ({
 
       <DatePicker
         label="Data do"
-        value={dateTo}
+        value={dateTo ?? undefined}
         onChange={newDate => setDateTo(newDate)}
         slotProps={{
           textField: { variant: "outlined", size: "small", sx: { height: 36 } },
@@ -134,7 +134,7 @@ const BudgetFilters: FC<BudgetFiltersProps> = ({
         type="number"
         variant="outlined"
         sx={{ width: "100%" }}
-        value={amountFrom}
+        value={amountFrom ?? ""}
         onChange={e =>
           setAmountFrom(e.target.value ? null : Number(e.target.value))
         }
@@ -146,7 +146,7 @@ const BudgetFilters: FC<BudgetFiltersProps> = ({
         type="number"
         variant="outlined"
         sx={{ width: "100%" }}
-        value={amountTo}
+        value={amountTo ?? ""}
         onChange={e =>
           setAmountTo(e.target.value ? null : Number(e.target.value))
         }

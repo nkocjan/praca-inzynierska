@@ -22,8 +22,12 @@ const EllipsisTooltip: React.FC<EllipsisTooltipProps> = ({
   }, [text]);
 
   return (
-    <Tooltip title={isOverflowing ? text : ""} arrow disableInteractive>
+    <Tooltip
+      title={isOverflowing ? text : ""}
+      arrow
+      disableInteractive>
       <Typography
+        component="span"
         ref={textRef}
         sx={{
           fontSize,
@@ -31,8 +35,7 @@ const EllipsisTooltip: React.FC<EllipsisTooltipProps> = ({
           overflow: "hidden",
           textOverflow: "ellipsis",
           display: "block",
-        }}
-      >
+        }}>
         {text}
       </Typography>
     </Tooltip>
