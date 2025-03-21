@@ -1,15 +1,15 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { Chip, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useState } from "react";
 import { ExpanseStatusEnum } from "../../../../types/enums/ExpanseStatusEnum.tsx";
 import { useDialog } from "../../../../lib/dialog/NKDialogContext.tsx";
 import AddExpanseForm from "../forms/AddEditExpanseForm.tsx";
+import { Chip, IconButton, Menu, MenuItem } from "@mui/material";
 import { IExpanse } from "../../../../types/interfaces/IExpanse.tsx";
 import * as React from "react";
 import dayjs from "dayjs";
 import ApproveStatusChange from "../forms/ApproveStatusChange.tsx";
-import ConfirmDelete from "../forms/ConfirmDelete.tsx";
+import ConfirmDelete from "../../../../lib/dialog/templates/ConfirmDelete.tsx";
 
 const getStatusLabel = (status: ExpanseStatusEnum) => {
   switch (status) {
@@ -28,7 +28,7 @@ const expansesColumns: GridColDef[] = [
   { field: "name", headerName: "Nazwa", flex: 3 },
   {
     field: "category",
-    renderCell: (params) => `${params.value.name}`,
+    renderCell: params => `${params.value.name}`,
     headerName: "Kategoria",
     flex: 2,
   },
@@ -36,18 +36,24 @@ const expansesColumns: GridColDef[] = [
     field: "amount",
     headerName: "Kwota",
     flex: 1,
-    renderCell: (params) => `${params.value} zł`,
+    renderCell: params => `${params.value} zł`,
   },
   { field: "date", headerName: "Data", flex: 1.5 },
   {
     field: "planned",
     headerName: "Status",
     flex: 1.2,
-    renderCell: (params) => {
+    renderCell: params => {
       const { label, color } = getStatusLabel(
-        params.value as ExpanseStatusEnum,
+        params.value as ExpanseStatusEnum
       );
-      return <Chip label={label} color={color as never} variant="outlined" />;
+      return (
+        <Chip
+          label={label}
+          color={color as never}
+          variant="outlined"
+        />
+      );
     },
   },
   {
@@ -57,10 +63,11 @@ const expansesColumns: GridColDef[] = [
     sortable: false,
     filterable: false,
     align: "center",
-    renderCell: (params) => <ActionMenu row={params.row} />,
+    renderCell: params => <ActionMenu row={params.row} />,
   },
 ];
 
+// eslint-disable-next-line react-refresh/only-export-components
 const ActionMenu = ({ row }: { row: IExpanse }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -87,8 +94,7 @@ const ActionMenu = ({ row }: { row: IExpanse }) => {
         planned={row.planned}
         name={row.name}
         category={row.category}
-        date={dayjs(row.date)}
-      ></AddExpanseForm>,
+        date={dayjs(row.date)}></AddExpanseForm>
     );
   };
 
@@ -99,7 +105,7 @@ const ActionMenu = ({ row }: { row: IExpanse }) => {
         saveButtonTitle: "Usuń",
         cancelButtonTitle: "Anuluj",
       },
-      <ConfirmDelete />,
+      <ConfirmDelete translation="wydatku" />
     );
   };
 
@@ -110,7 +116,7 @@ const ActionMenu = ({ row }: { row: IExpanse }) => {
         saveButtonTitle: "Zatwierdź",
         cancelButtonTitle: "Anuluj",
       },
-      <ApproveStatusChange newOperation={row.planned} />,
+      <ApproveStatusChange newOperation={row.planned} />
     );
   };
 
@@ -121,7 +127,7 @@ const ActionMenu = ({ row }: { row: IExpanse }) => {
         saveButtonTitle: "Potwierdź wycofanie",
         cancelButtonTitle: "Anuluj",
       },
-      <ApproveStatusChange newOperation={row.planned} />,
+      <ApproveStatusChange newOperation={row.planned} />
     );
   };
 
@@ -132,7 +138,7 @@ const ActionMenu = ({ row }: { row: IExpanse }) => {
         saveButtonTitle: "Zatwierdź",
         cancelButtonTitle: "Anuluj",
       },
-      <ApproveStatusChange newOperation={row.planned} />,
+      <ApproveStatusChange newOperation={row.planned} />
     );
   };
 
@@ -141,7 +147,10 @@ const ActionMenu = ({ row }: { row: IExpanse }) => {
       <IconButton onClick={handleClick}>
         <MoreVertIcon />
       </IconButton>
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}>
         <MenuItem onClick={handleEdit}>Edytuj</MenuItem>
 
         {row.planned === ExpanseStatusEnum.PLANNED && (
@@ -160,7 +169,9 @@ const ActionMenu = ({ row }: { row: IExpanse }) => {
           </MenuItem>
         )}
 
-        <MenuItem onClick={handleDelete} style={{ color: "red" }}>
+        <MenuItem
+          onClick={handleDelete}
+          style={{ color: "red" }}>
           Usuń
         </MenuItem>
       </Menu>
