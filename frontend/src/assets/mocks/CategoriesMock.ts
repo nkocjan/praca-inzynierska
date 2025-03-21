@@ -16,7 +16,7 @@ export const mockCategoryBudgetSummaries: ICategoryBudgetSummary[] = [
     weekBudget: { name: "Tygodniowy Jedzenie", dateTo: "2025-02-23" },
     monthBudget: { name: "Miesięczny Jedzenie", dateTo: "2025-02-28" },
     yearBudget: { name: "Roczny Jedzenie", dateTo: "2025-12-31" },
-    hasCustomBudgets: false, // Brak customowych budżetów
+    hasCustomBudgets: false,
   },
   {
     id: "cat-2",
@@ -24,7 +24,7 @@ export const mockCategoryBudgetSummaries: ICategoryBudgetSummary[] = [
     weekBudget: { name: "Tygodniowy Wynajem", dateTo: "2025-02-23" },
     monthBudget: { name: "Miesięczny Wynajem", dateTo: "2025-02-28" },
     yearBudget: { name: "Roczny Wynajem", dateTo: "2025-12-31" },
-    hasCustomBudgets: false, // Brak customowych budżetów
+    hasCustomBudgets: false,
   },
   {
     id: "cat-3",
@@ -32,6 +32,6 @@ export const mockCategoryBudgetSummaries: ICategoryBudgetSummary[] = [
     weekBudget: { name: "Tygodniowy Zakupy", dateTo: "2025-02-23" },
     monthBudget: { name: "Miesięczny Zakupy", dateTo: "2025-02-28" },
     yearBudget: { name: "Roczny Zakupy", dateTo: "2025-12-31" },
-    hasCustomBudgets: true, // Ma customowy budżet ("Budowa")
+    hasCustomBudgets: true,
   },
 ];

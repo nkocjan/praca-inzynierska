@@ -2,7 +2,6 @@ import { IBudget } from "../../types/interfaces/IBudget";
 import { mockCategories } from "./CategoriesMock";
 
 export const mockBudgets: IBudget[] = [
-  // 🔹 Budżety dla "Jedzenie"
   {
     id: "b1",
     name: "Tygodniowy Jedzenie",
@@ -39,7 +38,6 @@ export const mockBudgets: IBudget[] = [
     durationDays: 365,
     type: "year",
   },
-  // 🔹 Wygasłe budżety dla "Jedzenie"
   {
     id: "b4",
     name: "Tygodniowy Jedzenie (27.01 - 2.02)",
@@ -88,8 +86,6 @@ export const mockBudgets: IBudget[] = [
     durationDays: 31,
     type: "month",
   },
-
-  // 🔹 Budżety dla "Wynajem"
   {
     id: "b8",
     name: "Tygodniowy Wynajem",
@@ -126,8 +122,6 @@ export const mockBudgets: IBudget[] = [
     durationDays: 365,
     type: "year",
   },
-
-  // 🔹 Budżety dla "Zakupy"
   {
     id: "b11",
     name: "Tygodniowy Zakupy",
@@ -164,7 +158,6 @@ export const mockBudgets: IBudget[] = [
     durationDays: 365,
     type: "year",
   },
-  // 🔹 Customowy budżet dla "Zakupy"
   {
     id: "b14",
     name: "Budowa",
