@@ -5,7 +5,6 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { NKButton } from "../../../lib/button/Button.tsx";
 
-// Create a dark theme
 const darkTheme = createTheme({
   palette: {
     mode: "dark",

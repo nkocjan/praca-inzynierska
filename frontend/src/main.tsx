@@ -16,6 +16,7 @@ import { SnackbarProvider } from "notistack";
 import { DialogProvider } from "./lib/dialog/NKDialogContext.tsx";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import NKDashboard from "./components/routes/dashboard/NKDashboard.tsx";
 
 const darkTheme = createTheme({
   palette: {
@@ -39,6 +40,7 @@ createRoot(document.getElementById("root")!).render(
                 <Route path="/register" element={<NKRegister />} />
 
                 <Route path="/" element={<NKLayout />}>
+                  <Route path="" element={<NKDashboard />}></Route>
                   <Route path="settings" element={<NKSettings />}></Route>
                   <Route path="expenses" element={<NKExpenses />}></Route>
                   <Route path="budget" element={<NKBudget />}></Route>
@@ -51,5 +53,5 @@ createRoot(document.getElementById("root")!).render(
         </SnackbarProvider>
       </LocalizationProvider>
     </ThemeProvider>
-  </StrictMode>,
+  </StrictMode>
 );

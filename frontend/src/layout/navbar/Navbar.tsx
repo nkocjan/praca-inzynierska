@@ -180,12 +180,12 @@ export default function Navbar() {
             >
                 <Box
                     sx={{
-                        width: { xs: "80px", sm: "100px", md: "120px" }, // Static width
+                        width: { xs: "80px", sm: "100px", md: "120px" },
                         minWidth: "80px",
                         display: "flex",
                         alignItems: "center",
-                        '& .MuiSelect-root': { // Target MUI Select to modify its size
-                            height: "40px", // Reduce height
+                        '& .MuiSelect-root': { 
+                            height: "40px",
                         }
                     }}
                 >

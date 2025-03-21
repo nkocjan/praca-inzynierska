@@ -49,7 +49,6 @@ export const mockExpenses: IExpanse[] = [
     description: "Pizza Capricciosa",
   },
 
-  // 🔹 3 wydatki w zakresie 3.02 - 9.02
   {
     id: "e6",
     name: "Lidl",
@@ -78,7 +77,6 @@ export const mockExpenses: IExpanse[] = [
     description: "Szybka przekąska",
   },
 
-  // 🔹 4 wydatki w zakresie 10.02 - 17.02
   {
     id: "e9",
     name: "Carrefour",
@@ -116,7 +114,6 @@ export const mockExpenses: IExpanse[] = [
     description: "Owoce i warzywa",
   },
 
-  // 🔹 2 wydatki 19.02
   {
     id: "e13",
     name: "Stokrotka",
@@ -136,7 +133,6 @@ export const mockExpenses: IExpanse[] = [
     description: "Sushi dla dwojga",
   },
 
-  // 🔹 3 losowe wydatki między 27.01 a 19.02
   {
     id: "e15",
     name: "Burgery u Wojtka",
@@ -174,7 +170,6 @@ export const mockExpenses: IExpanse[] = [
     description: "Opłata za mieszkanie",
   },
 
-  // 🔹 2 wydatki między 17.02 a 20.02
   {
     id: "e19",
     name: "Zakup szafy",
@@ -239,7 +234,6 @@ export const mockExpenses: IExpanse[] = [
     description: "Catan",
   },
 
-  // 🔹 2 wydatki 18.02 związane z budową
   {
     id: "e26",
     name: "Panele podłogowe",

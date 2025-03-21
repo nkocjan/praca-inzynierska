@@ -77,6 +77,6 @@ export const mockCategoryBudgetSummaries: ICategoryBudgetSummary[] = [
       amount: 14400,
       spentAmount: 12000,
     },
-    hasCustomBudgets: true, // Ma customowy budżet ("Budowa")
+    hasCustomBudgets: true,
   },
 ];
