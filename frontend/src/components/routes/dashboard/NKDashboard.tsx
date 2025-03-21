@@ -9,25 +9,42 @@ const height2 = "42vh";
 
 const NKDashboard = () => {
   return (
-    <Grid container spacing={2} sx={{ padding: 3, marginTop: 5 }}>
-      <Grid container spacing={2} size={12}>
+    <Grid
+      container
+      spacing={2}
+      sx={{ padding: 3, marginTop: 5 }}>
+      <Grid
+        container
+        spacing={2}
+        size={12}>
         <Grid size={3}>
           <ExpanseList height={height}></ExpanseList>
         </Grid>
-        <Grid size={9} container>
+        <Grid
+          size={9}
+          container>
           <Grid size={4}>
-            <PieChart height={height}></PieChart>
+            <PieChart
+              height={height}
+              type="week"></PieChart>
           </Grid>
           <Grid size={4}>
-            <PieChart height={height}></PieChart>
+            <PieChart
+              height={height}
+              type="month"></PieChart>
           </Grid>
           <Grid size={4}>
-            <PieChart height={height}></PieChart>
+            <PieChart
+              height={height}
+              type="year"></PieChart>
           </Grid>
         </Grid>
       </Grid>
 
-      <Grid container spacing={2} size={12}>
+      <Grid
+        container
+        spacing={2}
+        size={12}>
         <Grid size={7}>
           <DashBarChart height={height2}></DashBarChart>
         </Grid>

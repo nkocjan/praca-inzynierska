@@ -7,8 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
+  "homepage": "https://nkocjan.github.io/praca-inzynierska",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -18,7 +21,9 @@
     "@mui/x-date-pickers": "^7.26.0",
     "@vitejs/plugin-react": "^4.3.4",
     "chart.js": "^4.4.8",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "dayjs": "^1.11.13",
+    "faker": "^6.6.6",
     "formik": "^2.4.6",
     "notistack": "^3.0.2",
     "react": "^19.0.0",
@@ -35,6 +40,7 @@
     "eslint": "^9.19.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.18",
+    "gh-pages": "^6.3.0",
     "globals": "^15.14.0",
     "prettier": "^3.5.0",
     "typescript": "~5.7.2",

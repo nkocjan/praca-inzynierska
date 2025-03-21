@@ -1,11 +1,20 @@
 import { Paper } from "@mui/material";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+ChartJS.register(ChartDataLabels);
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export const data = {
-  labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+const data = {
+  labels: [
+    "Wynajwddwddddddddddem",
+    "Jedzenie",
+    "Inne",
+    "Zakupy",
+    "Mieszkanie",
+    "Rozrywka",
+  ],
   datasets: [
     {
       label: "# of Votes",
@@ -32,10 +41,93 @@ export const data = {
 };
 
 interface PieChartProperties {
+  type: "week" | "month" | "year";
   height?: number | string;
 }
 
 const PieChart = (props: PieChartProperties) => {
+  let shouldHideLegend = true;
+  let rows = 1;
+  let len = 0;
+
+  for (let i = 0; i < data.labels.length; i++) {
+    if (len + data.labels[i].length > 18) {
+      rows++;
+      len = 0;
+    }
+
+    len += data.labels[i].length;
+  }
+
+  if (rows < 4) {
+    shouldHideLegend = false;
+  }
+
+  const options = {
+    responsive: true,
+    plugins: {
+      datalabels: {
+        display: !(data.labels.length <= 8 && !shouldHideLegend),
+        color: "white",
+        font: {
+          size: 11,
+          weight: "bold",
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        formatter: (value: any, ctx: any) => {
+          const total = ctx.chart.data.datasets[0].data.reduce(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (a: any, b: any) => a + b,
+            0
+          );
+          let percentage = ((value / total) * 100).toFixed(1) + "%";
+          if (parseFloat(((value / total) * 100).toFixed(1)) < 5) {
+            percentage = "";
+          }
+          return percentage as string;
+        },
+        anchor: "center",
+        align: "end",
+        offset: 5,
+      },
+      legend: {
+        display: data.labels.length <= 8 && !shouldHideLegend,
+        position: "top" as const,
+        labels: {
+          pointStyle: "circle",
+          usePointStyle: true,
+          boxHeight: 8,
+          font: {
+            size: 13,
+          },
+          color: "white",
+        },
+      },
+      title: {
+        display: true,
+        text: `Ten ${
+          props.type == "week"
+            ? "tydzień"
+            : props.type == "month"
+              ? "miesiąc"
+              : "rok"
+        }`,
+      },
+      tooltip: {
+        callbacks: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          label: (tooltipItem: any) => {
+            const dataset = tooltipItem.dataset;
+            const index = tooltipItem.dataIndex;
+            const label = dataset.labels ? dataset.labels[index] : "";
+            const value = dataset.data[index];
+            return `${label}: ${value} zł`;
+          },
+        },
+      },
+    },
+  };
+
   return (
     <Paper
       sx={{
@@ -44,11 +136,14 @@ const PieChart = (props: PieChartProperties) => {
         justifyContent: "center",
         alignItems: "center",
         width: "100%",
-        backgroundColor: "#121212",
+        backgroundColor: "transparent",
         boxShadow: "none",
-      }}
-    >
-      <Pie data={data} />
+        paddingBottom: 1,
+      }}>
+      <Pie
+        data={data}
+        options={options}
+      />
     </Paper>
   );
 };

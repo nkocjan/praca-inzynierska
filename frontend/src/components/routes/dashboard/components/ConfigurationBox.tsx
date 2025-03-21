@@ -5,7 +5,7 @@ interface ConfigurationBoxProperties {
 }
 
 const ConfigurationBox = (props: ConfigurationBoxProperties) => {
-  return <Paper sx={{ height: props.height }}></Paper>;
+  return <Paper sx={{ height: props.height }}>FORMULARZ DO KONGIFURACJI</Paper>;
 };
 
 export default ConfigurationBox;
