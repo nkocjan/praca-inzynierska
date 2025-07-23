@@ -1,0 +1,194 @@
+openapi: 3.0.3
+info:
+  title: User API
+  version: 1.0.0
+
+tags:
+  - name: UserCommand
+    description: Operations that modify user state
+  - name: UserQuery
+    description: Operations that read user data
+
+paths:
+  /api/v1/users/search:
+    get:
+      operationId: searchUsers
+      tags:
+        - UserQuery
+      summary: Search users
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/users:
+    post:
+      operationId: createUser
+      tags:
+        - UserCommand
+      summary: Create user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './models/user/user-create-request.yaml'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: './models/user/user.yaml'
+  /api/v1/users/{id}:
+    get:
+      operationId: getUserById
+      tags:
+        - UserQuery
+      summary: Get user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: './models/user/user.yaml'
+    put:
+      operationId: updateUser
+      tags:
+        - UserCommand
+      summary: Update user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './models/user/user-update-request.yaml'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: './models/user/user.yaml'
+    delete:
+      operationId: deleteUser
+      tags:
+        - UserCommand
+      summary: Delete user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+  /api/v1/users/{id}/activate:
+    put:
+      operationId: activateUserAccount
+      tags:
+        - UserCommand
+      summary: Activate user account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './models/user/activate-account-request.yaml'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: './models/user/user.yaml'
+  /api/v1/users/{id}/premium:
+    put:
+      operationId: setUserPremium
+      tags:
+        - UserCommand
+      summary: Set user premium
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './models/user/set-premium-request.yaml'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: './models/user/user.yaml'
+  /api/v1/users/{id}/password:
+    put:
+      operationId: changeUserPassword
+      tags:
+        - UserCommand
+      summary: Change user password
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './models/user/change-password-request.yaml'
+      responses:
+        '204':
+          description: No Content
+
+components:
+  schemas:
+    User:
+      $ref: './models/user/user.yaml'
+    UserCreateRequest:
+      $ref: './models/user/user-create-request.yaml'
+    UserUpdateRequest:
+      $ref: './models/user/user-update-request.yaml'
+    ActivateAccountRequest:
+      $ref: './models/user/activate-account-request.yaml'
+    SetPremiumRequest:
+      $ref: './models/user/set-premium-request.yaml'
+    ChangePasswordRequest:
+      $ref: './models/user/change-password-request.yaml'

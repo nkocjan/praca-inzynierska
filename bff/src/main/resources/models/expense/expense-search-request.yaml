@@ -1,0 +1,28 @@
+type: object
+properties:
+  name:
+    type: string
+  amountFrom:
+    type: number
+    format: decimal
+  amountTo:
+    type: number
+    format: decimal
+  description:
+    type: string
+  isPlanned:
+    type: boolean
+  dateFrom:
+    type: string
+    format: date-time
+  dateTo:
+    type: string
+    format: date-time
+  userId:
+    type: string
+    format: uuid
+  categoryIds:
+    type: array
+    items:
+      type: string
+      format: uuid

@@ -1,1 +1,75 @@
+# Maven wrapper files
+mvnw
+mvnw.cmd
+.mvn/
+
+# IDEs and OS-specific
+*.iml
+.idea/
+.DS_Store
+*.swp
+*.swo
+Thumbs.db
+
+# Maven target folders
+target/
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Compiled class files
+*.class
+
+# Ignore system files
+ehthumbs.db
+desktop.ini
+
+# Common .gitignore per module
+bff/.gitattributes
+bff/.gitignore
+bff/mvnw
+bff/mvnw.cmd
+
+budget-service/.gitattributes
+budget-service/.gitignore
+budget-service/mvnw
+budget-service/mvnw.cmd
+
+expense-service/.gitattributes
+expense-service/.gitignore
+expense-service/mvnw
+expense-service/mvnw.cmd
+
+user-service/.gitattributes
+user-service/.gitignore
+user-service/.mvn/
+user-service/mvnw
+user-service/mvnw.cmd
+
+# OpenAPI build and temporary files
+openapi/openapi.yaml
+openapi/paths/
+openapi/target/
+openapi/pom.xml
+openapi/components/user-service/
+
 .idea
+
+# Maven wrapper and build directories
+**/target/
+**/.mvn/
+**/mvnw
+**/mvnw.cmd
+
+# IDE and system files
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+*.log
+
+# OpenAPI generated stuff
+openapi/target/
+openapi/paths/
+openapi/components/user-service/

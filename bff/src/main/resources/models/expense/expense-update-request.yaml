@@ -1,0 +1,12 @@
+type: object
+properties:
+  name:
+    type: string
+  description:
+    type: string
+  amount:
+    type: number
+    format: decimal
+  date:
+    type: string
+    format: date-time

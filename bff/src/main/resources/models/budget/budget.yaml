@@ -1,0 +1,31 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+  description:
+    type: string
+  isActive:
+    type: boolean
+  period:
+    $ref: './budget-period.yaml#/BudgetType'
+  amount:
+    type: number
+    format: decimal
+  currentSpent:
+    type: number
+    format: decimal
+  periodStart:
+    type: string
+    format: date-time
+  periodEnd:
+    type: string
+    format: date-time
+  categoryId:
+    type: string
+    format: uuid
+  userId:
+    type: string
+    format: uuid

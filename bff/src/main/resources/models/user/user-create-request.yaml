@@ -1,0 +1,14 @@
+type: object
+properties:
+  name:
+    type: string
+  surname:
+    type: string
+  password:
+    type: string
+  username:
+    type: string
+  email:
+    type: string
+  phoneNumber:
+    type: string
