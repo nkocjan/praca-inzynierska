@@ -8,11 +8,13 @@ const NKStaticLinearProgressBar = ({
   maxValue: number;
 }) => {
   const percent = (value * 100) / maxValue;
+  const progressValue = Math.min(percent, 100);
+
   return (
     <Box sx={{ position: "relative", width: "80%", textAlign: "center" }}>
       <LinearProgress
         variant="determinate"
-        value={percent}
+        value={progressValue}
         sx={{
           marginTop: "10%",
           height: 10,
@@ -38,7 +40,8 @@ const NKStaticLinearProgressBar = ({
           fontSize: "smaller",
           color: "rgba(255,255,255,1.0)",
           textShadow: "0px 0px 5px rgba(0,0,0,0.7)",
-        }}>
+        }}
+      >
         {value} zł / {maxValue} zł
       </Typography>
     </Box>

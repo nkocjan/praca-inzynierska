@@ -1,6 +1,0 @@
-BudgetType:
-  type: string
-  enum:
-    - WEEK
-    - MONTH
-    - YEAR

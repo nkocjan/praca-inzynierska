@@ -38,4 +38,5 @@ public class CategoryEntity {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
 }

@@ -14,6 +14,7 @@ interface properties {
   cancelButtonTitle: string;
   onClose: () => void;
   children: React.ReactNode;
+  formId?: string;
 }
 
 const NKDialog = (props: properties) => {
@@ -25,13 +26,21 @@ const NKDialog = (props: properties) => {
         if (reason !== "backdropClick") {
           props.onClose();
         }
-      }}
-    >
+      }}>
       <DialogTitle>{props.title}</DialogTitle>
       <DialogContent>{props.children}</DialogContent>
       <DialogActions>
         <Button onClick={props.onClose}>{props.cancelButtonTitle}</Button>
-        <Button type="submit">{props.saveButtonTitle}</Button>
+        {/*
+          --- POPRAWKA TUTAJ ---
+          Dodaj atrybut 'form={props.formId}', aby połączyć
+          ten przycisk z formularzem o ID przekazanym w propsach.
+        */}
+        <Button
+          type="submit"
+          form={props.formId}>
+          {props.saveButtonTitle}
+        </Button>
       </DialogActions>
     </Dialog>
   );

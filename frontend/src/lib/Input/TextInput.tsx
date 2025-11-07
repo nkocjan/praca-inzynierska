@@ -1,45 +1,44 @@
 import { TextField, FormHelperText, Box, Tooltip } from "@mui/material";
-import { useState } from "react";
 
 interface Properties {
   label: string;
   required?: boolean;
   type?: string;
-  errorTitle?: string;
+  name?: string;
+  value?: string;
   tooltip?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  error?: boolean;
+  helperText?: React.ReactNode;
 }
 
 const NKTextInput = (props: Properties) => {
-  const [value, setValue] = useState("");
-  const [error, setError] = useState(false);
-
-  const isRequired = props.required === undefined ? true : props.required;
-
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
       <Tooltip title={props.tooltip || ""} placement="right">
         <TextField
-          required={isRequired}
-          error={isRequired && error}
+          required={props.required}
           color="primary"
-          type={props.type ? props.type : "text"}
-          label={props.label}
           variant="filled"
           fullWidth
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-            if (isRequired) setError(e.target.value.trim() === "");
-          }}
+          // 3. Przekazanie propsów z Formika bezpośrednio do TextField
+          name={props.name}
+          type={props.type ? props.type : "text"}
+          label={props.label}
+          value={props.value}
+          onChange={props.onChange}
+          onBlur={props.onBlur}
+          error={props.error} // Użyj błędu z Formika
           sx={{
             borderRadius: "8px 8px 0 0",
           }}
         />
       </Tooltip>
-      {/* Reserve space for the error message */}
+      {/* 4. Wyświetlanie tekstu błędu (helperText) z Formika */}
       <FormHelperText
         sx={{
-          visibility: isRequired && error ? "visible" : "hidden",
+          visibility: props.error ? "visible" : "hidden",
           height: "20px",
           margin: 0,
           padding: "4px 0 0 12px",
@@ -49,7 +48,7 @@ const NKTextInput = (props: Properties) => {
           left: 0,
         }}
       >
-        {isRequired && error ? "To pole jest wymagane" : ""}
+        {props.helperText}
       </FormHelperText>
     </Box>
   );

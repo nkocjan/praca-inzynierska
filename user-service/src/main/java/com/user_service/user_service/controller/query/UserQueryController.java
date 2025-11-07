@@ -19,6 +19,9 @@ public class UserQueryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {
-        return ResponseEntity.ok(userQueryService.getUserById(id));
+        System.out.println("Fetching user with ID: " + id);
+        var user = userQueryService.getUserById(id);
+        System.out.println("Fetched user: " + user);
+        return ResponseEntity.ok(user);
     }
 }

@@ -2,6 +2,7 @@ package com.budget_service.budget_service.controller;
 
 import com.budget_service.budget_service.dto.BudgetCreateRequestDTO;
 import com.budget_service.budget_service.dto.BudgetDTO;
+import com.budget_service.budget_service.dto.SetDefaultBudgetsRequestDTO;
 import com.budget_service.budget_service.service.BudgetCommandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,12 @@ public class BudgetCommandController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable UUID id, @RequestParam UUID userId) {
-        budgetCommandService.delete(id, userId);
+    public void delete(@PathVariable UUID id) {
+        budgetCommandService.delete(id);
+    }
+
+    @PostMapping("/set-default")
+    public void setDefaultBudgets(@RequestBody SetDefaultBudgetsRequestDTO requestDTO, @RequestHeader("X-User-Id") UUID userId) {
+        budgetCommandService.setDefaultBudgets(requestDTO, userId);
     }
 }

@@ -1,6 +1,6 @@
 export enum BudgetTypeEnum {
-  WEEK = "tygodniowy",
-  MONTH = "miesięczny",
-  YEAR = "roczny",
+  WEEK = "WEEK",
+  MONTH = "MONTH",
+  YEAR = "YEAR",
   CUSTOM = "własny",
 }

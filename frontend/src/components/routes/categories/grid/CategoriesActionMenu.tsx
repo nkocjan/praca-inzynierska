@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { useDialog } from "../../../../lib/dialog/NKDialogContext";
 import { IconButton, Menu, MenuItem } from "@mui/material";
@@ -6,11 +5,20 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { ICategoryBudgetSummary } from "../../../../types/interfaces/ICategory";
 import ConfirmDelete from "../../../../lib/dialog/templates/ConfirmDelete";
 import GenerateReportForSingleCategory from "../forms/GenerateReportForSingleCategoryForm";
+import AddCategoryForm from "../forms/AddCategoryForm.tsx";
 
-const CategoriesActionMenu = ({ row }: { row: ICategoryBudgetSummary }) => {
+interface CategoriesActionMenuProps {
+  row: ICategoryBudgetSummary;
+  onRefresh: () => void;
+}
+
+const CategoriesActionMenu = ({
+  row,
+  onRefresh,
+}: CategoriesActionMenuProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const { openDialog } = useDialog();
+  const { openDialog, closeDialog } = useDialog();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -21,7 +29,32 @@ const CategoriesActionMenu = ({ row }: { row: ICategoryBudgetSummary }) => {
   };
 
   const handleEdit = () => {
-    // TODO handle edit
+    handleClose();
+    const formId = "edit-budget-form";
+
+    const onSuccess = () => {
+      closeDialog();
+      onRefresh();
+    };
+
+    openDialog(
+      {
+        title: "Edytuj budżet kategorii",
+        saveButtonTitle: "Zapisz",
+        cancelButtonTitle: "Anuluj",
+        formId: formId,
+      },
+      <AddCategoryForm
+        formId={formId}
+        isEdit={true}
+        id={row.id}
+        name={row.name}
+        weeklyBudget={row.weeklyBudget?.amount}
+        monthlyBudget={row.monthlyBudget?.amount}
+        yearlyBudget={row.yearlyBudget?.amount}
+        onSuccess={onSuccess}
+      ></AddCategoryForm>,
+    );
   };
 
   const handleDelete = () => {
@@ -31,7 +64,7 @@ const CategoriesActionMenu = ({ row }: { row: ICategoryBudgetSummary }) => {
         saveButtonTitle: "Usuń",
         cancelButtonTitle: "Anuluj",
       },
-      <ConfirmDelete translation="kategorii" />
+      <ConfirmDelete translation="kategorii" />,
     );
   };
 
@@ -50,7 +83,7 @@ const CategoriesActionMenu = ({ row }: { row: ICategoryBudgetSummary }) => {
         saveButtonTitle: "Generuj",
         cancelButtonTitle: "Anuluj",
       },
-      <GenerateReportForSingleCategory />
+      <GenerateReportForSingleCategory />,
     );
   };
 
@@ -60,10 +93,7 @@ const CategoriesActionMenu = ({ row }: { row: ICategoryBudgetSummary }) => {
       <IconButton onClick={handleClick}>
         <MoreVertIcon />
       </IconButton>
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         <MenuItem onClick={handleEdit}>Edytuj</MenuItem>
         <MenuItem onClick={handleDelete}>Usuń</MenuItem>
         <MenuItem onClick={handleGenerateReport}>Generuj raport</MenuItem>

@@ -16,5 +16,5 @@ public class ExpenseDTO {
     private String description;
     private Boolean isPlanned;
     private LocalDateTime date;
-    private String categoryName;
+    private CategoryRepDTO category;
 }

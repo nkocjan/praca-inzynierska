@@ -3,7 +3,6 @@ package com.user_service.user_service.controller.command;
 import com.user_service.user_service.dto.*;
 import com.user_service.user_service.service.UserCommandService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -15,47 +14,54 @@ public class UserCommandController {
     private final UserCommandService service;
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserCreateRequestDTO request) {
-        return ResponseEntity
-                .status(201)
-                .body(service.createUser(request));
+    public UserDTO createUser(@RequestBody UserCreateRequestDTO request) {
+        System.out.println("Creating user with data: " + request);
+        var createdUser = service.createUser(request);
+        System.out.println("Created user: " + createdUser);
+        return createdUser;
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(
+    public UserDTO updateUser(
             @PathVariable UUID id,
             @RequestBody UserUpdateRequestDTO request) {
-        return ResponseEntity
-                .ok(service.updateUser(id, request));
+        System.out.println("Updating user with ID: " + id + " with data: " + request);
+        var updatedUser = service.updateUser(id, request);
+        System.out.println("Updated user: " + updatedUser);
+        return updatedUser;
     }
 
     @PutMapping("/{id}/activate")
-    public ResponseEntity<UserDTO> activateAccount(
+    public UserDTO activateAccount(
             @PathVariable UUID id,
             @RequestBody ActivateAccountRequestDTO request) {
-        return ResponseEntity
-                .ok(service.activateAccount(id, request));
+        System.out.println("Activating account for user with ID: " + id + " with data: " + request);
+        var result = service.activateAccount(id, request);
+        System.out.println("Activated account: " + result);
+        return result;
     }
 
     @PutMapping("/{id}/premium")
-    public ResponseEntity<UserDTO> setPremium(
+    public UserDTO setPremium(
             @PathVariable UUID id,
             @RequestBody SetPremiumRequestDTO request) {
-        return ResponseEntity
-                .ok(service.setPremium(id, request));
+        System.out.println("Setting premium status for user with ID: " + id + " to: " + request.getIsPremium());
+        var result = service.setPremium(id, request);
+        System.out.println("Updated premium status: " + result);
+        return result;
     }
 
     @PutMapping("/{id}/password")
-    public ResponseEntity<Void> changePassword(
+    public void changePassword(
             @PathVariable UUID id,
             @RequestBody ChangePasswordRequestDTO request) {
+        System.out.println("Changing password for user with ID: " + id);
         service.changePassword(id, request);
-        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+    public void deleteUser(@PathVariable UUID id) {
+        System.out.println("Deleting user with ID: " + id);
         service.deleteUser(id);
-        return ResponseEntity.noContent().build();
     }
 }

@@ -15,6 +15,5 @@ public class BudgetCreateRequestDTO {
     private String name;
     private String description;
     private Boolean isActive;
-    private UUID userId;
     private UUID categoryId;
 }

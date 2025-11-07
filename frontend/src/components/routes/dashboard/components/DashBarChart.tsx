@@ -12,6 +12,9 @@ import { Bar } from "react-chartjs-2";
 
 interface DashBarChartProperties {
   height?: number | string;
+  labels: string[];
+  expensesData: number[];
+  budgetData: number[];
 }
 
 const options = {
@@ -20,25 +23,16 @@ const options = {
     legend: {
       position: "top" as const,
     },
+    tooltip: {
+      callbacks: {
+        label: (tooltipItem: any) => {
+          const label = tooltipItem.dataset.label || "";
+          const value = tooltipItem.raw || 0;
+          return `${label}: ${value} zł`;
+        },
+      },
+    },
   },
-};
-
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
-
-const data = {
-  labels,
-  datasets: [
-    {
-      label: "Dataset 1",
-      data: [10, 3, 3, 2, 5, 8, 3],
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-    {
-      label: "Dataset 2",
-      data: [6, 13, 7, 4, 5, 8, 13],
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
-    },
-  ],
 };
 
 ChartJS.register(
@@ -47,16 +41,58 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
+const polishMonthMap: { [key: string]: string } = {
+  "01": "sty",
+  "02": "lut",
+  "03": "mar",
+  "04": "kwi",
+  "05": "maj",
+  "06": "cze",
+  "07": "lip",
+  "08": "sie",
+  "09": "wrz",
+  "10": "paź",
+  "11": "lis",
+  "12": "gru",
+};
+
+const formatLabels = (labels: string[]): string[] => {
+  return labels.map((label) => {
+    const parts = label.split("-");
+    if (parts.length === 2) {
+      const monthNumber = parts[1];
+      const shortYear = parts[0].substring(2);
+      const monthName = polishMonthMap[monthNumber];
+
+      return `${monthName} '${shortYear}`;
+    }
+    return label;
+  });
+};
+
 const DashBarChart = (props: DashBarChartProperties) => {
+  const data = {
+    labels: formatLabels(props.labels),
+    datasets: [
+      {
+        label: "Wydatki",
+        data: props.expensesData,
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+      {
+        label: "Budżet",
+        data: props.budgetData,
+        backgroundColor: "rgba(53, 162, 235, 0.5)",
+      },
+    ],
+  };
+
   return (
-    <Paper sx={{ height: props.height }}>
-      <Bar
-        options={options}
-        data={data}
-      />
+    <Paper sx={{ height: props.height, padding: 2 }}>
+      <Bar options={options} data={data} />
     </Paper>
   );
 };

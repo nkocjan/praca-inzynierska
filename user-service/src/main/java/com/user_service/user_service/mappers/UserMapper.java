@@ -12,6 +12,8 @@ import org.mapstruct.MappingTarget;
 public interface UserMapper {
     UserDTO toUserDTO(UserEntity userEntity);
 
+    @Mapping(target="isActive", constant = "true")
+    @Mapping(target="isPremium", constant = "false")
     UserEntity createUserEntityFromDTO(UserCreateRequestDTO userDTO);
 
     void updateEntityFromDto(UserUpdateRequestDTO userDTO, @MappingTarget UserEntity entity);

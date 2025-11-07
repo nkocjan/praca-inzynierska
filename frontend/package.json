@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "generate:api": "openapi-generator-cli generate -i http://localhost:8080/v3/api-docs -g typescript-axios -o src/api/generated --additional-properties=usePromises=true"
   },
   "homepage": "https://nkocjan.github.io/praca-inzynierska",
   "dependencies": {
@@ -20,6 +21,7 @@
     "@mui/x-data-grid": "^7.26.0",
     "@mui/x-date-pickers": "^7.26.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "axios": "^1.12.2",
     "chart.js": "^4.4.8",
     "chartjs-plugin-datalabels": "^2.2.0",
     "dayjs": "^1.11.13",
@@ -34,6 +36,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
+    "@openapitools/openapi-generator-cli": "^2.25.0",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react-swc": "^3.5.0",

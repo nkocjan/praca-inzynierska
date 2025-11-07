@@ -1,18 +1,16 @@
 package com.user_service.user_service.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
+@Builder
 public class UserRepDTO {
     private UUID id;
     private Boolean isActive;
     private Boolean isPremium;
+    private String eventType;
 }

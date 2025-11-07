@@ -18,24 +18,24 @@ public class ExpenseCommandController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ExpenseDTO createExpense(@RequestBody CreateExpenseRequestDTO request) {
-        return expenseCommandService.createExpense(request);
+    public ExpenseDTO createExpense(@RequestBody CreateExpenseRequestDTO request, @RequestHeader("X-User-Id") UUID userId) {
+        return expenseCommandService.createExpense(request, userId);
     }
 
     @PutMapping("/{expenseId}/planned")
     @ResponseStatus(HttpStatus.OK)
-    public ExpenseDTO setAsPlanned(@PathVariable UUID expenseId, @RequestParam boolean isPlanned) {
-        return expenseCommandService.setAsPlanned(expenseId, isPlanned);
+    public ExpenseDTO setAsPlanned(@PathVariable UUID expenseId, @RequestParam boolean isPlanned, @RequestHeader("X-User-Id") UUID userId) {
+        return expenseCommandService.setAsPlanned(expenseId, isPlanned, userId);
     }
 
     @PutMapping("/{expenseId}")
-    public ExpenseDTO updateExpense(@PathVariable UUID expenseId, @RequestBody UpdateExpenseRequestDTO request) {
-        return expenseCommandService.updateExpense(expenseId, request);
+    public ExpenseDTO updateExpense(@PathVariable UUID expenseId, @RequestBody UpdateExpenseRequestDTO request,  @RequestHeader("X-User-Id") UUID userId) {
+        return expenseCommandService.updateExpense(expenseId, request, userId);
     }
 
     @DeleteMapping("/{expenseId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteExpense(@PathVariable UUID expenseId) {
-        expenseCommandService.deleteExpense(expenseId);
+    public void deleteExpense(@PathVariable UUID expenseId,  @RequestHeader("X-User-Id") UUID userId) {
+        expenseCommandService.deleteExpense(expenseId, userId);
     }
 }

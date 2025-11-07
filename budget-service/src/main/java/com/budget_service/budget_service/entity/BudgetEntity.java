@@ -27,7 +27,6 @@ public class BudgetEntity {
     @Enumerated(EnumType.STRING)
     private BudgetType period;
     private BigDecimal amount;
-    private BigDecimal currentSpent;
 
     private LocalDateTime periodStart;
     private LocalDateTime periodEnd;

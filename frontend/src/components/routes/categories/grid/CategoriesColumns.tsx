@@ -1,71 +1,57 @@
-import { Chip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import CategoriesActionMenu from "./CategoriesActionMenu";
 import NKStaticLinearProgressBar from "../../../../lib/progressBar/NKStaticLinearProgressBar";
 
-const CategoriesColumns: GridColDef[] = [
+interface CategoriesColumnsProps {
+  onRefresh: () => void;
+}
+
+const getCategoriesColumns = (props: CategoriesColumnsProps): GridColDef[] => [
   { field: "name", headerName: "Nazwa", flex: 2 },
   {
-    field: "weekBudget",
+    field: "weeklyBudget",
     headerName: "Budżet tygodniowy",
     flex: 3,
-    renderCell: params => (
+    renderCell: (params) => (
       <NKStaticLinearProgressBar
-        value={params.value.spentAmount}
-        maxValue={params.value.amount}
+        value={params?.value?.spentAmount}
+        maxValue={params.value?.amount}
       />
     ),
   },
   {
-    field: "monthBudget",
+    field: "monthlyBudget",
     headerName: "Budżet miesięczny",
     flex: 3,
-    renderCell: params => (
+    renderCell: (params) => (
       <NKStaticLinearProgressBar
-        value={params.value.spentAmount}
-        maxValue={params.value.amount}
+        value={params.value?.spentAmount}
+        maxValue={params.value?.amount}
       />
     ),
   },
   {
-    field: "yearBudget",
+    field: "yearlyBudget",
     headerName: "Budżet roczny",
     flex: 3,
-    renderCell: params => (
+    renderCell: (params) => (
       <NKStaticLinearProgressBar
-        value={params.value.spentAmount}
-        maxValue={params.value.amount}
+        value={params.value?.spentAmount}
+        maxValue={params.value?.amount}
       />
     ),
-  },
-  {
-    field: "hasCustomBudgets",
-    headerName: "Dodatkowe budżety?",
-    flex: 2,
-    renderCell: params =>
-      params.value ? (
-        <Chip
-          label={"Tak"}
-          color={"success"}
-          variant="outlined"
-        />
-      ) : (
-        <Chip
-          label={"Nie"}
-          color={"warning"}
-          variant="outlined"
-        />
-      ),
   },
   {
     field: "actions",
     headerName: "Akcje",
-    flex: 0.3,
+    flex: 1,
     sortable: false,
     filterable: false,
     align: "center",
-    renderCell: params => <CategoriesActionMenu row={params.row} />,
+    renderCell: (params) => (
+      <CategoriesActionMenu row={params.row} onRefresh={props.onRefresh} />
+    ),
   },
 ];
 
-export default { columns: CategoriesColumns };
+export default getCategoriesColumns;

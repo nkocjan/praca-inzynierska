@@ -1,58 +1,110 @@
-version: '3.8'
 services:
-  user-postgres:
+  userdb:
     image: postgres:16
     container_name: userdb
     environment:
-      POSTGRES_DB: userdb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: userdb
+    volumes:
+      - userdb_data:/var/lib/postgresql/data
     ports:
       - "15432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
 
-  expense-postgres:
-    image: postgres:16
-    container_name: expensedb
-    environment:
-      POSTGRES_DB: expensedb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "25432:5432"
-    volumes:
-      - expensedata:/var/lib/postgresql/data
-
-  budget-postgres:
+  budgetdb:
     image: postgres:16
     container_name: budgetdb
     environment:
-      POSTGRES_DB: budgetdb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - "35432:5432"
+      POSTGRES_DB: budgetdb
     volumes:
-      - budgetdata:/var/lib/postgresql/data
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.1
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
-  kafka:
-    image: confluentinc/cp-kafka:7.6.1
-    depends_on:
-      - zookeeper
+      - budgetdb_data:/var/lib/postgresql/data
     ports:
-      - "9092:9092"
+      - "5433:5432"
+    restart: unless-stopped
+
+  expense-A1:
+    image: postgres:16
+    container_name: expense-A1
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: expenseA
+      PGDATA: /var/lib/postgresql/data/pgdata
+    command: postgres -c wal_level=replica -c max_wal_senders=5 -c listen_addresses='*'
+    volumes:
+      - expenseA1_data:/var/lib/postgresql/data/pgdata
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  expense-A2:
+    image: postgres:16
+    container_name: expense-A2
+    depends_on:
+      expense-A1:
+        condition: service_healthy
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - expenseA2_data:/var/lib/postgresql/data/pgdata
+      - ./replica-scripts:/docker-entrypoint-initdb.d
+    entrypoint: ["/docker-entrypoint-initdb.d/replica-entrypoint.sh"]
+    ports:
+      - "5435:5432"
+    restart: unless-stopped
+
+  expense-B1:
+    image: postgres:16
+    container_name: expense-B1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: expenseB
+    command: postgres -c wal_level=replica -c max_wal_senders=5 -c listen_addresses='*'
+    volumes:
+      - expenseB1_data:/var/lib/postgresql/data
+      - ./init-scripts-b:/docker-entrypoint-initdb.d
+    ports:
+      - "5436:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  expense-B2:
+    image: postgres:16
+    container_name: expense-B2
+    depends_on:
+      expense-B1:
+        condition: service_healthy
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - expenseB2_data:/var/lib/postgresql/data
+      - ./replica-scripts-b:/docker-entrypoint-initdb.d
+    entrypoint: ["/docker-entrypoint-initdb.d/replica-entrypoint-b.sh"]
+    ports:
+      - "5437:5432"
+    restart: unless-stopped
 
 volumes:
-  pgdata:
+  userdb_data:
+  budgetdb_data:
+  expenseA1_data:
+  expenseA2_data:
+  expenseB1_data:
+  expenseB2_data:

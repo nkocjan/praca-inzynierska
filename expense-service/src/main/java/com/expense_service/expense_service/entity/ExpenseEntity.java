@@ -28,7 +28,7 @@ public class ExpenseEntity {
     private LocalDateTime date;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private UserRepEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -8,8 +8,10 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {CategoryMapper.class})
 public interface BudgetMapper {
+
+    @Mapping(target = "category", source = "entity.category")
     BudgetDTO toDto(BudgetEntity entity);
 
     BudgetEntity toEntity(BudgetCreateRequestDTO dto);

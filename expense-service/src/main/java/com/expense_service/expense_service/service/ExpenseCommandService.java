@@ -3,11 +3,16 @@ package com.expense_service.expense_service.service;
 import com.expense_service.expense_service.dto.CreateExpenseRequestDTO;
 import com.expense_service.expense_service.dto.ExpenseDTO;
 import com.expense_service.expense_service.dto.UpdateExpenseRequestDTO;
+import com.expense_service.expense_service.entity.CategoryRepEntity;
 import com.expense_service.expense_service.entity.ExpenseEntity;
+import com.expense_service.expense_service.entity.UserRepEntity;
 import com.expense_service.expense_service.mappers.ExpenseMapper;
+import com.expense_service.expense_service.repository.CategoryRepRepository;
 import com.expense_service.expense_service.repository.ExpenseRepository;
+import com.expense_service.expense_service.repository.UserRepRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -15,23 +20,37 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ExpenseCommandService {
     private final ExpenseRepository expenseRepository;
+    private final UserRepRepository userRepRepository;
+    private final CategoryRepRepository categoryRepRepository;
     private final ExpenseMapper expenseMapper;
 
-    public ExpenseDTO createExpense(CreateExpenseRequestDTO request) {
-        ExpenseEntity expense = expenseRepository.save(expenseMapper.fromCreateRequest(request));
-        return expenseMapper.toDto(expense);
+    @Transactional
+    public ExpenseDTO createExpense(CreateExpenseRequestDTO request, UUID userId) {
+        ExpenseEntity expense = expenseMapper.fromCreateRequest(request);
+
+        UserRepEntity userReference = userRepRepository.getReferenceById(userId);
+        CategoryRepEntity categoryReference = categoryRepRepository.getReferenceById(request.getCategoryId()); 
+
+        expense.setUser(userReference);
+        expense.setCategory(categoryReference);
+
+        ExpenseEntity savedExpense = expenseRepository.save(expense);
+
+        return expenseMapper.toDto(savedExpense);
     }
 
-    public ExpenseDTO setAsPlanned(UUID expenseId, boolean isPlanned) {
-        ExpenseEntity expense = expenseRepository.findById(expenseId)
+    @Transactional
+    public ExpenseDTO setAsPlanned(UUID expenseId, boolean isPlanned, UUID userId) {
+        ExpenseEntity expense = expenseRepository.findByIdAndUserId(expenseId, userId)
                 .orElseThrow(() -> new RuntimeException("Expense not found: " + expenseId));
         expense.setIsPlanned(isPlanned);
         expenseRepository.save(expense);
         return expenseMapper.toDto(expense);
     }
 
-    public ExpenseDTO updateExpense(UUID expenseId, UpdateExpenseRequestDTO request) {
-        ExpenseEntity expense = expenseRepository.findById(expenseId)
+    @Transactional
+    public ExpenseDTO updateExpense(UUID expenseId, UpdateExpenseRequestDTO request, UUID userId) {
+        ExpenseEntity expense = expenseRepository.findByIdAndUserId(expenseId, userId)
                 .orElseThrow(() -> new RuntimeException("Expense not found: " + expenseId));
         expense.setName(request.getName());
         expense.setDescription(request.getDescription());
@@ -41,8 +60,9 @@ public class ExpenseCommandService {
         return expenseMapper.toDto(updatedExpense);
     }
 
-    public void deleteExpense(UUID expenseId) {
-        if (!expenseRepository.existsById(expenseId)) {
+    @Transactional
+    public void deleteExpense(UUID expenseId, UUID userId) {
+        if (!expenseRepository.existsByIdAndUserId(expenseId, userId)) {
             throw new RuntimeException("Expense not found: " + expenseId);
         }
         expenseRepository.deleteById(expenseId);

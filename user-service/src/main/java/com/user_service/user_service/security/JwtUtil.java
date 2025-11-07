@@ -6,15 +6,17 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-    private final String SECRET_KEY = "jwt_secret_key"; // TODO: Replace with your actual secret key
+    private final String SECRET_KEY = "jwt_secret_key";
 
-    public String generateToken(String username) {
+    public String generateToken(String username, UUID userId) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("userId", userId.toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
@@ -25,13 +27,22 @@ public class JwtUtil {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public UUID extractUserId(String token) {
+        Claims claims = extractAllClaims(token);
+        return UUID.fromString((String) claims.get("userId"));
+    }
+
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
     public boolean isTokenValid(String token, String username) {

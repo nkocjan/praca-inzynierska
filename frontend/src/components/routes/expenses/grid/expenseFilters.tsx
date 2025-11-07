@@ -14,7 +14,7 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import { FC } from "react";
 import { Dayjs } from "dayjs";
-import { mockCategories } from "../../../../assets/mocks/CategoriesMock.ts";
+import { CategoryDTO } from "../../../../api/generated";
 
 interface ExpensesFiltersProps {
   nameFilter: string;
@@ -29,8 +29,11 @@ interface ExpensesFiltersProps {
   setAmountFrom: (value: number | "") => void;
   amountTo: number | "";
   setAmountTo: (value: number | "") => void;
-  isPlanned: boolean | null;
-  setIsPlanned: (value: boolean | null) => void;
+  isPlanned: boolean | undefined;
+  setIsPlanned: (value: boolean | undefined) => void;
+
+  categories: CategoryDTO[];
+  categoriesLoading: boolean;
 }
 
 const ExpensesFilters: FC<ExpensesFiltersProps> = ({
@@ -48,6 +51,8 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
   setAmountTo,
   isPlanned,
   setIsPlanned,
+  categories,
+  categoriesLoading,
 }) => {
   function resetFilters() {
     setNameFilter("");
@@ -56,7 +61,7 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
     setDateTo(null);
     setAmountFrom("");
     setAmountTo("");
-    setIsPlanned(null);
+    setIsPlanned(undefined);
   }
 
   return (
@@ -78,7 +83,11 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
         onChange={(e) => setNameFilter(e.target.value)}
       />
 
-      <FormControl sx={{ width: "100%" }} size="small">
+      <FormControl
+        sx={{ width: "100%" }}
+        size="small"
+        disabled={categoriesLoading}
+      >
         <InputLabel>Kategoria</InputLabel>
         <Select
           multiple
@@ -87,14 +96,16 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
           input={<OutlinedInput label="Kategoria" />}
           renderValue={(selected: string[]) =>
             selected.length == 1
-              ? mockCategories.find((category) => category.id === selected[0])
-                  ?.name
-              : `Wybrano: ${selected.length}/${mockCategories.length}`
+              ? categories.find((category) => category.id === selected[0])?.name
+              : `Wybrano: ${selected.length}/${categories.length}`
           }
+          variant={"standard"}
         >
-          {mockCategories.map((category) => (
+          {categories.map((category) => (
             <MenuItem key={category.id} value={category.id}>
-              <Checkbox checked={categoryFilter.includes(category.id)} />
+              <Checkbox
+                checked={categoryFilter.includes(category.id as string)}
+              />
               <ListItemText primary={category.name} />
             </MenuItem>
           ))}
@@ -149,7 +160,7 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
         control={
           <Switch
             checked={isPlanned === true}
-            onChange={(e) => setIsPlanned(e.target.checked ? true : null)}
+            onChange={(e) => setIsPlanned(e.target.checked ? true : undefined)}
           />
         }
         label="Planowany"

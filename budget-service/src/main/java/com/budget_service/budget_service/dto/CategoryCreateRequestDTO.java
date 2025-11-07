@@ -4,14 +4,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
 @RequiredArgsConstructor
 public class CategoryCreateRequestDTO {
     private String name;
-    private String description;
-    private Boolean isActive;
-    private UUID userId;
+    private BigDecimal weekBudget;
+    private BigDecimal monthBudget;
+    private BigDecimal yearBudget;
 }

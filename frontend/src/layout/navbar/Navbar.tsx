@@ -20,9 +20,10 @@ import NKInfoIcon from "../../lib/icons/menu/NKInfoIcon.tsx";
 import NKSettingsIcon from "../../lib/icons/menu/NKSettingsIcon.tsx";
 import NKLogoutIcon from "../../lib/icons/menu/NKLogoutIcon.tsx";
 import NKMainIcon from "../../lib/icons/menu/NKMainIcon.tsx";
-import {NavLink} from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import NKDarkLightSwitch from "./dark-light-switch/NKDarkLightSwitch.tsx";
 import NKLanguageSelect from "./language-select/NKLanguageSelect.tsx";
+import { useSnackbar } from "notistack";
 
 const drawerWidth = 240;
 
@@ -30,18 +31,21 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
 
-    const menuItems = [
-        { text: "Strona główna", path: "/" },
-        { text: "Wydatki", path: "/expenses" },
-        { text: "Budżet", path: "/budget" },
-        { text: "Kategorie", path: "/categories" },
-    ];
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
-    const secondaryItems = [
-        { text: "Informacje", path: "/information" },
-        { text: "Ustawienia", path: "/settings" },
-        { text: "Wyloguj się", path: "/logout" },
-    ];
+  const menuItems = [
+    { text: "Strona główna", path: "/" },
+    { text: "Wydatki", path: "/expenses" },
+    { text: "Budżet", path: "/budget" },
+    { text: "Kategorie", path: "/categories" },
+  ];
+
+  const secondaryItems = [
+    { text: "Informacje", path: "/information" },
+    { text: "Ustawienia", path: "/settings" },
+    { text: "Wyloguj się", path: "/logout" },
+  ];
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -59,28 +63,36 @@ export default function Navbar() {
   };
 
   const getMainIcon = (id: number) => {
-      switch (id) {
-          case 0:
-              return <NKMainIcon />
-          case 1:
-              return <NKExpansesIcon />
-          case 2:
-              return <NKBudgetIcon />
-          case 3:
-              return <NKCategoryIcon />
-      }
-  }
+    switch (id) {
+      case 0:
+        return <NKMainIcon />;
+      case 1:
+        return <NKExpansesIcon />;
+      case 2:
+        return <NKBudgetIcon />;
+      case 3:
+        return <NKCategoryIcon />;
+    }
+  };
 
   const getSecondaryIcon = (id: number) => {
-      switch (id) {
-          case 0:
-              return <NKInfoIcon />
-          case 1:
-              return <NKSettingsIcon />
-          case 2:
-              return <NKLogoutIcon />
-      }
-  }
+    switch (id) {
+      case 0:
+        return <NKInfoIcon />;
+      case 1:
+        return <NKSettingsIcon />;
+      case 2:
+        return <NKLogoutIcon />;
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("jwtToken");
+
+    enqueueSnackbar("Wylogowano pomyślnie", { variant: "success" });
+
+    navigate("/login", { replace: true });
+  };
 
   const drawer = (
     <div>
@@ -89,51 +101,56 @@ export default function Navbar() {
         <Divider />
         <List>
           {menuItems.map((item, index) => (
-              <ListItem key={item.text} disablePadding>
-                <ListItemButton component={NavLink}
-                                to={item.path}
-                                sx={{
-                                    "&.active": {
-                                        backgroundColor: "rgba(255, 255, 255, 0.2)",
-                                        fontWeight: "bold",
-                                    },
-                                    "& .MuiSvgIcon-root": {
-                                        transition: "transform 0.3s ease-in-out",
-                                    },
-                                    "&:hover .MuiSvgIcon-root": {
-                                        transform: "scale(1.1)",
-                                    },
-                                }}>
-                  <ListItemIcon >
-                    {getMainIcon(index)}
-                  </ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
-            ),
-          )}
+            <ListItem
+              key={item.text}
+              disablePadding>
+              <ListItemButton
+                component={NavLink}
+                to={item.path}
+                sx={{
+                  "&.active": {
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    fontWeight: "bold",
+                  },
+                  "& .MuiSvgIcon-root": {
+                    transition: "transform 0.3s ease-in-out",
+                  },
+                  "&:hover .MuiSvgIcon-root": {
+                    transform: "scale(1.1)",
+                  },
+                }}>
+                <ListItemIcon>{getMainIcon(index)}</ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
         </List>
         <Divider />
         <Divider />
         <List>
           {secondaryItems.map((item, index) => (
-            <ListItem key={item.text} disablePadding>
-              <ListItemButton component={NavLink}
-                              to={item.path}
-                              sx={{
-                                  "&.active": {
-                                      backgroundColor: "rgba(255, 255, 255, 0.2)",
-                                      fontWeight: "bold",
-                                  },"& .MuiSvgIcon-root": {
-                                      transition: "transform 0.3s ease-in-out",
-                                  },
-                                  "&:hover .MuiSvgIcon-root": {
-                                      transform: "scale(1.1)",
-                                  },
-                              }}>
-                <ListItemIcon>
-                  {getSecondaryIcon(index)}
-                </ListItemIcon>
+            <ListItem
+              key={item.text}
+              disablePadding>
+              <ListItemButton
+                {
+                  ...(item.path === "/logout"
+                    ? { onClick: handleLogout } // Jeśli tak, dodaj onClick
+                    : { component: NavLink, to: item.path }) // Jeśli nie, działaj jak link
+                }
+                sx={{
+                  "&.active": {
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    fontWeight: "bold",
+                  },
+                  "& .MuiSvgIcon-root": {
+                    transition: "transform 0.3s ease-in-out",
+                  },
+                  "&:hover .MuiSvgIcon-root": {
+                    transform: "scale(1.1)",
+                  },
+                }}>
+                <ListItemIcon>{getSecondaryIcon(index)}</ListItemIcon>
                 <ListItemText primary={item.text} />
               </ListItemButton>
             </ListItem>
@@ -154,53 +171,50 @@ export default function Navbar() {
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
-        }}
-      >
+        }}>
         <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
+            sx={{ mr: 2, display: { sm: "none" } }}>
             <NKLogoIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography
+            variant="h6"
+            noWrap
+            component="div">
             Strona główna
           </Typography>
+          <Box
+            sx={{
+              marginLeft: "auto",
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              height: "100%",
+            }}>
             <Box
-                sx={{
-                    marginLeft: "auto",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 2,
-                    height: "100%"
-                }}
-            >
-                <Box
-                    sx={{
-                        width: { xs: "80px", sm: "100px", md: "120px" },
-                        minWidth: "80px",
-                        display: "flex",
-                        alignItems: "center",
-                        '& .MuiSelect-root': { 
-                            height: "40px",
-                        }
-                    }}
-                >
-                    <NKLanguageSelect />
-                </Box>
-                <NKDarkLightSwitch />
+              sx={{
+                width: { xs: "80px", sm: "100px", md: "120px" },
+                minWidth: "80px",
+                display: "flex",
+                alignItems: "center",
+                "& .MuiSelect-root": {
+                  height: "40px",
+                },
+              }}>
+              <NKLanguageSelect />
             </Box>
-
+            <NKDarkLightSwitch />
+          </Box>
         </Toolbar>
       </AppBar>
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
-      >
+        aria-label="mailbox folders">
         <Drawer
           container={container}
           variant="temporary"
@@ -216,8 +230,7 @@ export default function Navbar() {
               boxSizing: "border-box",
               width: drawerWidth,
             },
-          }}
-        >
+          }}>
           {drawer}
         </Drawer>
         <Drawer
@@ -229,8 +242,7 @@ export default function Navbar() {
               width: drawerWidth,
             },
           }}
-          open
-        >
+          open>
           {drawer}
         </Drawer>
       </Box>
@@ -240,8 +252,7 @@ export default function Navbar() {
           flexGrow: 1,
           p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-        }}
-      >
+        }}>
         <Toolbar />
       </Box>
     </Box>

@@ -19,6 +19,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({
     cancelButtonTitle: "",
     saveButtonTitle: "",
     title: "",
+    formId: undefined,
   });
   const [content, setContent] = useState<ReactNode>(null);
 
@@ -45,6 +46,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({
         title={dialogTitles.title}
         open={open}
         onClose={closeDialog}
+        formId={dialogTitles.formId} 
       />
     </DialogContext.Provider>
   );

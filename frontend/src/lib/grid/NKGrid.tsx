@@ -4,6 +4,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import {
   DataGrid,
   GridColDef,
+  GridPaginationModel,
   GridRowSelectionModel,
   GridSortModel,
   GridValidRowModel,
@@ -12,23 +13,31 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 
+// 1. Zaktualizowany interfejs Properties
 interface Properties {
   columns: GridColDef[];
   rows: Array<GridValidRowModel>;
-  sort?: GridSortModel;
+  rowCount: number;
+  loading: boolean;
+  sortModel?: GridSortModel;
   sx?: SxProps<Theme>;
   filters?: ReactNode;
   onDelete?: (selectedIds: string[]) => void;
   isCheckboxOn?: boolean;
+
+  pagination?: true;
+
+  paginationMode?: "server" | "client";
+  paginationModel?: GridPaginationModel;
+  onPaginationModelChange?: (model: GridPaginationModel) => void;
+
+  sortingMode?: "server" | "client";
+  onSortModelChange?: (model: GridSortModel) => void;
 }
 
 const NKGrid = (props: Properties) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
-  const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: 5,
-  });
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -57,6 +66,7 @@ const NKGrid = (props: Properties) => {
         overflow: "hidden",
         ...props.sx,
       }}>
+      {/* Toolbar usuwania (bez zmian) */}
       {selectedRows.length > 0 && (
         <Toolbar
           sx={{
@@ -84,19 +94,18 @@ const NKGrid = (props: Properties) => {
           key={windowWidth}
           columns={props.columns}
           rows={props.rows}
-          paginationModel={paginationModel}
-          onPaginationModelChange={model => setPaginationModel(model)}
-          initialState={{
-            sorting: {
-              sortModel: props.sort
-                ? props.sort
-                : [{ field: "name", sort: "desc" }],
-            },
-          }}
+          loading={props.loading}
+          rowCount={props.rowCount}
+          pagination={props.pagination}
+          paginationMode={props.paginationMode}
+          paginationModel={props.paginationModel}
+          onPaginationModelChange={props.onPaginationModelChange}
+          sortingMode={props.sortingMode}
+          sortModel={props.sortModel}
+          onSortModelChange={props.onSortModelChange}
           onRowSelectionModelChange={newSelection =>
             setSelectedRows(newSelection)
           }
-          pagination
           pageSizeOptions={[5, 10]}
           checkboxSelection={isCheckboxOn}
           disableRowSelectionOnClick

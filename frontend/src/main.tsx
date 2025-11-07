@@ -17,6 +17,8 @@ import { DialogProvider } from "./lib/dialog/NKDialogContext.tsx";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import NKDashboard from "./components/routes/dashboard/NKDashboard.tsx";
+import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
+import PublicRoute from "./components/auth/PublicRoute.tsx";
 
 const darkTheme = createTheme({
   palette: {
@@ -29,23 +31,27 @@ createRoot(document.getElementById("root")!).render(
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <SnackbarProvider
-          maxSnack={3}
-          anchorOrigin={{ horizontal: "right", vertical: "top" }}
-        >
+        <SnackbarProvider /* ...propsy... */>
           <DialogProvider>
             <Router>
               <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<NKRegister />} />
+                <Route element={<PublicRoute />}>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<NKRegister />} />
+                </Route>
 
-                <Route path="/" element={<NKLayout />}>
-                  <Route path="" element={<NKDashboard />}></Route>
-                  <Route path="settings" element={<NKSettings />}></Route>
-                  <Route path="expenses" element={<NKExpenses />}></Route>
-                  <Route path="budget" element={<NKBudget />}></Route>
-                  <Route path="categories" element={<NKCategories />}></Route>
-                  <Route path="information" element={<NKInformation />}></Route>
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/" element={<NKLayout />}>
+                    <Route path="" element={<NKDashboard />}></Route>
+                    <Route path="settings" element={<NKSettings />}></Route>
+                    <Route path="expenses" element={<NKExpenses />}></Route>
+                    <Route path="budget" element={<NKBudget />}></Route>
+                    <Route path="categories" element={<NKCategories />}></Route>
+                    <Route
+                      path="information"
+                      element={<NKInformation />}
+                    ></Route>
+                  </Route>
                 </Route>
               </Routes>
             </Router>
@@ -53,5 +59,5 @@ createRoot(document.getElementById("root")!).render(
         </SnackbarProvider>
       </LocalizationProvider>
     </ThemeProvider>
-  </StrictMode>
+  </StrictMode>,
 );

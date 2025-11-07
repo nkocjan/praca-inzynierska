@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Immutable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,14 +18,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Immutable
 public class BudgetRepEntity {
     @Id
     private UUID id;
-    private UUID userId;
     private UUID categoryId;
     @Enumerated(EnumType.STRING)
     private BudgetType period;
     private BigDecimal amount;
-    private BigDecimal currentSpent;
     private LocalDateTime periodEnd;
 }

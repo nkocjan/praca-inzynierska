@@ -1,6 +1,8 @@
 package com.budget_service.budget_service.enums;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 public enum BudgetType {

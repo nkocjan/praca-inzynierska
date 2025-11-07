@@ -15,20 +15,20 @@ public class CategoryQueryController {
     private final CategoryQueryService categoryQueryService;
 
     @GetMapping
-    public List<CategoryDTO> getAll(@RequestParam UUID userId) {
+    public List<CategoryDTO> getAll(@RequestHeader("X-User-Id") UUID userId) {
         return categoryQueryService.findAllByUser(userId);
     }
 
     @GetMapping("/by-ids")
     public List<CategoryDTO> getByIds(
             @RequestParam List<UUID> ids,
-            @RequestParam UUID userId
+            @RequestHeader("X-User-Id") UUID userId
     ) {
         return categoryQueryService.findByIdsAndUser(ids, userId);
     }
 
     @GetMapping("/{id}")
-    public CategoryDTO getById(@PathVariable UUID id, @RequestParam UUID userId) {
+    public CategoryDTO getById(@PathVariable UUID id, @RequestHeader("X-User-Id") UUID userId) {
         return categoryQueryService.getById(id, userId);
     }
 }

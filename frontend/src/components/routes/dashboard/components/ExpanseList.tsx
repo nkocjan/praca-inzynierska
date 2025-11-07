@@ -1,21 +1,18 @@
 import { List, ListItem, Typography, Paper } from "@mui/material";
 import EllipsisTooltip from "../../../../lib/textRefactor/TextRefactor";
-
-const expenses = [
-  { id: 1, category: "jedzenie", amount: "345.33 zł" },
-  { id: 2, category: "jedzenie", amount: "345.33 zł" },
-  { id: 3, category: "mieszkanie", amount: "345.33 zł" },
-  {
-    id: 4,
-    category: "zakupy i inne bardzo długie wydatki",
-    amount: "345.33 zł",
-  },
-  { id: 5, category: "jedzenie", amount: "345.33 zł" },
-];
+import { ExpenseUiDTO } from "../../../../api/generated";
 
 interface ExpenseListProperties {
   height?: number | string;
+  expenses: ExpenseUiDTO[];
 }
+
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("pl-PL", {
+    style: "currency",
+    currency: "PLN",
+  }).format(amount);
+};
 
 const ExpenseList = (props: ExpenseListProperties) => {
   return (
@@ -27,7 +24,8 @@ const ExpenseList = (props: ExpenseListProperties) => {
         maxHeight: 300,
         overflow: "hidden",
         height: props.height,
-      }}>
+      }}
+    >
       <Typography
         variant="subtitle1"
         sx={{
@@ -36,14 +34,12 @@ const ExpenseList = (props: ExpenseListProperties) => {
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-        }}>
-        <EllipsisTooltip
-          text="Ostatnie wydatki"
-          fontSize="1rem"
-        />
+        }}
+      >
+        <EllipsisTooltip text="Ostatnie wydatki" fontSize="1rem" />
       </Typography>
       <List sx={{ maxHeight: 250, overflowY: "auto" }}>
-        {expenses.map(expense => (
+        {props.expenses?.map((expense) => (
           <ListItem
             key={expense.id}
             sx={{
@@ -51,15 +47,18 @@ const ExpenseList = (props: ExpenseListProperties) => {
               justifyContent: "space-between",
               alignItems: "center",
               gap: 1,
-            }}>
+            }}
+          >
             <Typography
               sx={{
                 flexGrow: 1,
                 whiteSpace: "normal",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
-              }}>
-              <EllipsisTooltip text={expense.category} />
+              }}
+            >
+              {/* Zakładam, że DTO ma pole 'name' lub 'category' */}
+              <EllipsisTooltip text={expense.name || "Brak nazwy"} />
             </Typography>
 
             <Typography
@@ -70,8 +69,10 @@ const ExpenseList = (props: ExpenseListProperties) => {
                 whiteSpace: "nowrap",
                 fontSize: "0.8rem",
                 fontWeight: "bold",
-              }}>
-              {expense.amount}
+              }}
+            >
+              {/* Formatujemy kwotę z DTO */}
+              {formatCurrency(expense.amount as number)}
             </Typography>
           </ListItem>
         ))}

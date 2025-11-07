@@ -10,6 +10,7 @@ import * as React from "react";
 import dayjs from "dayjs";
 import ApproveStatusChange from "../forms/ApproveStatusChange.tsx";
 import ConfirmDelete from "../../../../lib/dialog/templates/ConfirmDelete.tsx";
+import { formatPolishDate } from "../../../../lib/dateUtils.ts";
 
 const getStatusLabel = (status: ExpanseStatusEnum) => {
   switch (status) {
@@ -24,51 +25,13 @@ const getStatusLabel = (status: ExpanseStatusEnum) => {
   }
 };
 
-const expansesColumns: GridColDef[] = [
-  { field: "name", headerName: "Nazwa", flex: 3 },
-  {
-    field: "category",
-    renderCell: params => `${params.value.name}`,
-    headerName: "Kategoria",
-    flex: 2,
-  },
-  {
-    field: "amount",
-    headerName: "Kwota",
-    flex: 1,
-    renderCell: params => `${params.value} zł`,
-  },
-  { field: "date", headerName: "Data", flex: 1.5 },
-  {
-    field: "planned",
-    headerName: "Status",
-    flex: 1.2,
-    renderCell: params => {
-      const { label, color } = getStatusLabel(
-        params.value as ExpanseStatusEnum
-      );
-      return (
-        <Chip
-          label={label}
-          color={color as never}
-          variant="outlined"
-        />
-      );
-    },
-  },
-  {
-    field: "actions",
-    headerName: "Akcje",
-    flex: 0.3,
-    sortable: false,
-    filterable: false,
-    align: "center",
-    renderCell: params => <ActionMenu row={params.row} />,
-  },
-];
-
-// eslint-disable-next-line react-refresh/only-export-components
-const ActionMenu = ({ row }: { row: IExpanse }) => {
+const ActionMenu = ({
+  row,
+  onSuccess,
+}: {
+  row: IExpanse;
+  onSuccess: () => void;
+}) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const { openDialog } = useDialog();
@@ -82,63 +45,73 @@ const ActionMenu = ({ row }: { row: IExpanse }) => {
   };
 
   const handleEdit = () => {
+    handleClose();
     openDialog(
       {
         title: "Edytuj wydatek",
         saveButtonTitle: "Zatwierdź",
         cancelButtonTitle: "Anuluj",
+        formId: "expense-form",
       },
       <AddExpanseForm
         isEdit={true}
+        id={row.id}
         amount={row.amount}
         planned={row.planned}
         name={row.name}
+        description={row.description}
         category={row.category}
-        date={dayjs(row.date)}></AddExpanseForm>
+        date={dayjs(row.date)}
+        onSuccess={onSuccess}
+      />,
     );
   };
 
   const handleDelete = () => {
+    handleClose();
     openDialog(
       {
         title: "Czy na pewno chcesz usunąć wydatek?",
         saveButtonTitle: "Usuń",
         cancelButtonTitle: "Anuluj",
       },
-      <ConfirmDelete translation="wydatku" />
+      <ConfirmDelete translation="wydatku" />,
     );
   };
 
   const handleApprove = () => {
+    handleClose();
     openDialog(
       {
         title: "Zatwierdź wydatek",
         saveButtonTitle: "Zatwierdź",
         cancelButtonTitle: "Anuluj",
       },
-      <ApproveStatusChange newOperation={row.planned} />
+      <ApproveStatusChange newOperation={row.planned} />,
     );
   };
 
   const handleWithdrawApprove = () => {
+    handleClose();
     openDialog(
       {
         title: "Wycofaj zatwierdzanie wydatku",
         saveButtonTitle: "Potwierdź wycofanie",
         cancelButtonTitle: "Anuluj",
       },
-      <ApproveStatusChange newOperation={row.planned} />
+      <ApproveStatusChange newOperation={row.planned} />,
     );
   };
 
   const handleSetAsPlanned = () => {
+    handleClose();
     openDialog(
       {
         title: "Ustaw jako zaplanowany",
         saveButtonTitle: "Zatwierdź",
         cancelButtonTitle: "Anuluj",
       },
-      <ApproveStatusChange newOperation={row.planned} />
+      <ApproveStatusChange newOperation={row.planned} />,
     );
   };
 
@@ -147,31 +120,52 @@ const ActionMenu = ({ row }: { row: IExpanse }) => {
       <IconButton onClick={handleClick}>
         <MoreVertIcon />
       </IconButton>
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}>
-        <MenuItem onClick={handleEdit}>Edytuj</MenuItem>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        {/* Zamykanie menu po kliknięciu przez dodanie handleClose */}
+        <MenuItem
+          onClick={() => {
+            handleEdit();
+          }}
+        >
+          Edytuj
+        </MenuItem>
 
         {row.planned === ExpanseStatusEnum.PLANNED && (
-          <MenuItem onClick={handleApprove}>Zatwierdź</MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleApprove();
+            }}
+          >
+            Zatwierdź
+          </MenuItem>
         )}
 
         {row.planned === ExpanseStatusEnum.APPROVED && (
-          <MenuItem onClick={handleWithdrawApprove}>
+          <MenuItem
+            onClick={() => {
+              handleWithdrawApprove();
+            }}
+          >
             Wycofaj zatwierdzanie
           </MenuItem>
         )}
 
         {row.planned === ExpanseStatusEnum.NORMAL && (
-          <MenuItem onClick={handleSetAsPlanned}>
+          <MenuItem
+            onClick={() => {
+              handleSetAsPlanned();
+            }}
+          >
             Ustaw jako zaplanowany
           </MenuItem>
         )}
 
         <MenuItem
-          onClick={handleDelete}
-          style={{ color: "red" }}>
+          onClick={() => {
+            handleDelete();
+          }}
+          style={{ color: "red" }}
+        >
           Usuń
         </MenuItem>
       </Menu>
@@ -179,4 +173,51 @@ const ActionMenu = ({ row }: { row: IExpanse }) => {
   );
 };
 
-export default { columns: expansesColumns };
+// --- DEFINICJA KOLUMN STAJE SIĘ FUNKCJĄ ---
+const getExpensesColumns = (onSuccess: () => void): GridColDef[] => [
+  { field: "name", headerName: "Nazwa", flex: 3 },
+  {
+    field: "category",
+    headerName: "Kategoria",
+    renderCell: (params) => `${params.value?.name}`,
+    flex: 2,
+  },
+  {
+    field: "amount",
+    headerName: "Kwota",
+    flex: 1,
+    renderCell: (params) => `${params.value} zł`,
+  },
+  {
+    field: "date",
+    headerName: "Data",
+    flex: 1.5,
+    renderCell: (params) => formatPolishDate(params.value),
+  },
+  {
+    field: "planned",
+    headerName: "Status",
+    flex: 1.2,
+    renderCell: (params) => {
+      const { label, color } = getStatusLabel(
+        params.value as ExpanseStatusEnum,
+      );
+      return <Chip label={label} color={color as never} variant="outlined" />;
+    },
+  },
+  {
+    field: "actions",
+    headerName: "Akcje",
+    flex: 0.3,
+    sortable: false,
+    filterable: false,
+    align: "center",
+    // --- RENDERCELL PRZEKAZUJE onSuccess DO ActionMenu ---
+    renderCell: (params) => (
+      <ActionMenu row={params.row} onSuccess={onSuccess} />
+    ),
+  },
+];
+
+// --- ZMIANA EKSPORTU ---
+export default getExpensesColumns;
