@@ -40,7 +40,7 @@ const NKExpenses = () => {
       setLoadingCategories(true);
       try {
         const response = await apiClient.get<CategoryDTO[]>(
-          "/api/bff/categories/combo",
+          "/api/bff/categories/combo"
         );
         setCategories(response.data);
       } catch (error) {
@@ -84,7 +84,7 @@ const NKExpenses = () => {
         description: undefined,
       };
 
-      const sortParams = sortModel.map((s) => `${s.field},${s.sort}`).join(",");
+      const sortParams = sortModel.map(s => `${s.field},${s.sort}`).join(",");
 
       try {
         const response = await apiClient.post(
@@ -96,7 +96,7 @@ const NKExpenses = () => {
               size: paginationModel.pageSize,
               sort: sortParams || "date,desc",
             },
-          },
+          }
         );
 
         setRows(response.data.content);
@@ -128,7 +128,7 @@ const NKExpenses = () => {
 
   const handleFormSuccess = () => {
     closeDialog();
-    setRefreshTrigger((prev) => prev + 1);
+    setRefreshTrigger(prev => prev + 1);
   };
 
   const columns = getExpensesColumns(handleFormSuccess);
@@ -141,12 +141,15 @@ const NKExpenses = () => {
         saveButtonTitle: "Potwierdź usunięcie",
         cancelButtonTitle: "Anuluj",
       },
-      <ConfirmDelete translation="wydatków"></ConfirmDelete>,
+      <ConfirmDelete translation="wydatków"></ConfirmDelete>
     );
   };
 
   return (
-    <Grid container spacing={3} sx={{ padding: 3, marginTop: 5 }}>
+    <Grid
+      container
+      spacing={3}
+      sx={{ padding: 3, marginTop: 5 }}>
       <Grid>
         <NKButton
           title="Dodaj wydatek"
@@ -161,24 +164,22 @@ const NKExpenses = () => {
               <AddExpanseForm
                 formId="expense-form"
                 onSuccess={handleFormSuccess}
-              />,
+              />
             )
-          }
-        ></NKButton>
+          }></NKButton>
       </Grid>
       <Grid>
-        <NKButton
+        {/* <NKButton
           title="Wczytaj wydatek z pliku"
           onClick={() =>
             enqueueSnackbar("Funkcjonalność wkrótce!", { variant: "info" })
           }
-        ></NKButton>
+        ></NKButton> */}
       </Grid>
 
       <Grid
         size={12}
-        sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
-      >
+        sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <NKGrid
           sx={{
             minHeight: 300,

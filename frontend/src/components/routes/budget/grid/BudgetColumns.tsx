@@ -19,40 +19,46 @@ const getTypelabel = (type: BudgetTypeEnum) => {
 };
 
 const getBudgetColumns = (): GridColDef[] => [
-  { field: "name", headerName: "Nazwa", flex: 1 },
+  // { field: "name", headerName: "Nazwa", flex: 1 },
   {
     field: "category",
     headerName: "Kategoria",
     flex: 1,
-    renderCell: (params) => params.value.name,
+    renderCell: params => params.value.name,
   },
   {
     field: "amount",
     headerName: "Kwota",
     flex: 1,
-    renderCell: (params) => `${params.value} zł`,
+    renderCell: params => `${params.value} zł`,
   },
   {
     field: "periodStart",
     headerName: "Od",
     flex: 1,
-    renderCell: (params) => formatPolishDate(params.value),
+    renderCell: params => formatPolishDate(params.value),
   },
   {
     field: "periodEnd",
     headerName: "Do",
     flex: 1,
-    renderCell: (params) => formatPolishDate(params.value),
+    renderCell: params => formatPolishDate(params.value),
   },
   {
     field: "period",
     headerName: "Typ",
     flex: 1,
-    renderCell: (params) => {
+    renderCell: params => {
       const { label, color } = getTypelabel(
-        params.value as unknown as BudgetTypeEnum,
+        params.value as unknown as BudgetTypeEnum
       );
-      return <Chip label={label} color={color as never} variant="outlined" />;
+      return (
+        <Chip
+          label={label}
+          color={color as never}
+          variant="outlined"
+        />
+      );
     },
   },
 ];

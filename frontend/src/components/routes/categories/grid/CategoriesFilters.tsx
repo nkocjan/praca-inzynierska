@@ -45,7 +45,7 @@ const CategoriesFilters: FC<CategoriesFiltersProps> = ({
         value={nameFilter}
         onChange={e => setNameFilter(e.target.value)}
       />
-      <FormControlLabel
+      {/* <FormControlLabel
         control={
           <Switch
             checked={hasAdditionalBudgets === true}
@@ -61,7 +61,7 @@ const CategoriesFilters: FC<CategoriesFiltersProps> = ({
           alignItems: "center",
           justifyContent: "center",
         }}
-      />
+      /> */}
       <FormControlLabel
         control={
           <Switch

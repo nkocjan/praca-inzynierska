@@ -63,7 +63,7 @@ const ActionMenu = ({
         category={row.category}
         date={dayjs(row.date)}
         onSuccess={onSuccess}
-      />,
+      />
     );
   };
 
@@ -75,7 +75,7 @@ const ActionMenu = ({
         saveButtonTitle: "Usuń",
         cancelButtonTitle: "Anuluj",
       },
-      <ConfirmDelete translation="wydatku" />,
+      <ConfirmDelete translation="wydatku" />
     );
   };
 
@@ -87,7 +87,7 @@ const ActionMenu = ({
         saveButtonTitle: "Zatwierdź",
         cancelButtonTitle: "Anuluj",
       },
-      <ApproveStatusChange newOperation={row.planned} />,
+      <ApproveStatusChange newOperation={row.planned} />
     );
   };
 
@@ -99,7 +99,7 @@ const ActionMenu = ({
         saveButtonTitle: "Potwierdź wycofanie",
         cancelButtonTitle: "Anuluj",
       },
-      <ApproveStatusChange newOperation={row.planned} />,
+      <ApproveStatusChange newOperation={row.planned} />
     );
   };
 
@@ -111,7 +111,7 @@ const ActionMenu = ({
         saveButtonTitle: "Zatwierdź",
         cancelButtonTitle: "Anuluj",
       },
-      <ApproveStatusChange newOperation={row.planned} />,
+      <ApproveStatusChange newOperation={row.planned} />
     );
   };
 
@@ -120,13 +120,15 @@ const ActionMenu = ({
       <IconButton onClick={handleClick}>
         <MoreVertIcon />
       </IconButton>
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}>
         {/* Zamykanie menu po kliknięciu przez dodanie handleClose */}
         <MenuItem
           onClick={() => {
             handleEdit();
-          }}
-        >
+          }}>
           Edytuj
         </MenuItem>
 
@@ -134,8 +136,7 @@ const ActionMenu = ({
           <MenuItem
             onClick={() => {
               handleApprove();
-            }}
-          >
+            }}>
             Zatwierdź
           </MenuItem>
         )}
@@ -144,8 +145,7 @@ const ActionMenu = ({
           <MenuItem
             onClick={() => {
               handleWithdrawApprove();
-            }}
-          >
+            }}>
             Wycofaj zatwierdzanie
           </MenuItem>
         )}
@@ -154,8 +154,7 @@ const ActionMenu = ({
           <MenuItem
             onClick={() => {
               handleSetAsPlanned();
-            }}
-          >
+            }}>
             Ustaw jako zaplanowany
           </MenuItem>
         )}
@@ -164,8 +163,7 @@ const ActionMenu = ({
           onClick={() => {
             handleDelete();
           }}
-          style={{ color: "red" }}
-        >
+          style={{ color: "red" }}>
           Usuń
         </MenuItem>
       </Menu>
@@ -179,32 +177,32 @@ const getExpensesColumns = (onSuccess: () => void): GridColDef[] => [
   {
     field: "category",
     headerName: "Kategoria",
-    renderCell: (params) => `${params.value?.name}`,
+    renderCell: params => `${params.value?.name}`,
     flex: 2,
   },
   {
     field: "amount",
     headerName: "Kwota",
     flex: 1,
-    renderCell: (params) => `${params.value} zł`,
+    renderCell: params => `${params.value} zł`,
   },
   {
     field: "date",
     headerName: "Data",
     flex: 1.5,
-    renderCell: (params) => formatPolishDate(params.value),
+    renderCell: params => formatPolishDate(params.value),
   },
-  {
-    field: "planned",
-    headerName: "Status",
-    flex: 1.2,
-    renderCell: (params) => {
-      const { label, color } = getStatusLabel(
-        params.value as ExpanseStatusEnum,
-      );
-      return <Chip label={label} color={color as never} variant="outlined" />;
-    },
-  },
+  // {
+  //   field: "planned",
+  //   headerName: "Status",
+  //   flex: 1.2,
+  //   renderCell: (params) => {
+  //     const { label, color } = getStatusLabel(
+  //       params.value as ExpanseStatusEnum,
+  //     );
+  //     return <Chip label={label} color={color as never} variant="outlined" />;
+  //   },
+  // },
   {
     field: "actions",
     headerName: "Akcje",
@@ -213,8 +211,11 @@ const getExpensesColumns = (onSuccess: () => void): GridColDef[] => [
     filterable: false,
     align: "center",
     // --- RENDERCELL PRZEKAZUJE onSuccess DO ActionMenu ---
-    renderCell: (params) => (
-      <ActionMenu row={params.row} onSuccess={onSuccess} />
+    renderCell: params => (
+      <ActionMenu
+        row={params.row}
+        onSuccess={onSuccess}
+      />
     ),
   },
 ];
