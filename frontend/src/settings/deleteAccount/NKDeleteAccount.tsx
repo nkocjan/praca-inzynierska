@@ -1,9 +1,11 @@
 import { Button, Typography } from "@mui/material";
 import { useDialog } from "../../lib/dialog/NKDialogContext";
 import NKDeleteResetDataForm from "../resetData/NKDeleteResetDataForm";
+import { useNavigate } from "react-router-dom";
 
 const NKDeleteAccount = () => {
   const { openDialog } = useDialog();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -32,8 +34,16 @@ const NKDeleteAccount = () => {
               title: "Potwierdź usunięcie konta",
               saveButtonTitle: "Potwierdzam",
               cancelButtonTitle: "Anuluj",
+              formId: "delete-account-form",
             },
-            <NKDeleteResetDataForm />
+            <NKDeleteResetDataForm
+              formId="delete-account-form"
+              mode="delete-account"
+              onSuccess={() => {
+                localStorage.removeItem("jwtToken");
+                navigate("/login", { replace: true });
+              }}
+            />
           )
         }
       >

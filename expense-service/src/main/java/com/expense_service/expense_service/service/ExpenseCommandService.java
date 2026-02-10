@@ -2,6 +2,7 @@ package com.expense_service.expense_service.service;
 
 import com.expense_service.expense_service.dto.CreateExpenseRequestDTO;
 import com.expense_service.expense_service.dto.ExpenseDTO;
+import com.expense_service.expense_service.dto.ResetCategoriesRequestDTO;
 import com.expense_service.expense_service.dto.UpdateExpenseRequestDTO;
 import com.expense_service.expense_service.entity.CategoryRepEntity;
 import com.expense_service.expense_service.entity.ExpenseEntity;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -66,5 +68,19 @@ public class ExpenseCommandService {
             throw new RuntimeException("Expense not found: " + expenseId);
         }
         expenseRepository.deleteById(expenseId);
+    }
+
+    @Transactional
+    public void resetData(UUID userId) {
+        expenseRepository.deleteByUser_Id(userId);
+    }
+
+    @Transactional
+    public void resetSelectedCategories(UUID userId, ResetCategoriesRequestDTO request) {
+        List<UUID> categoryIds = request != null ? request.getCategoryIds() : null;
+        if (categoryIds == null || categoryIds.isEmpty()) {
+            return;
+        }
+        expenseRepository.deleteByUser_IdAndCategory_IdIn(userId, categoryIds);
     }
 }

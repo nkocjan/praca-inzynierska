@@ -27,4 +27,10 @@ public interface UserServiceClient {
 
     @DeleteMapping("/api/v1/users/{id}")
     void deleteUser(@PathVariable UUID id);
+
+    @PutMapping("/api/v1/users/{id}/nickname")
+    UserDTO changeNickname(@PathVariable UUID id, @RequestBody ChangeNicknameRequestDTO request);
+
+    @PutMapping("/api/v1/users/{id}/email")
+    UserDTO changeEmail(@PathVariable UUID id, @RequestBody ChangeEmailRequestDTO request);
 }

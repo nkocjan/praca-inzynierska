@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map; 
 import java.util.UUID;
@@ -127,6 +128,39 @@ public class BudgetCommandService {
         }
 
         budgetConfigHistoryRepository.saveAll(newConfigs);
+    }
+
+    @Transactional
+    public void resetData(UUID userId) {
+        budgetRepository.deleteByCategory_User_Id(userId);
+
+        List<CategoryEntity> categories = categoryRepository.findAllByUserIdWithBudgets(userId);
+        recreateCurrentBudgets(categories);
+    }
+
+    @Transactional
+    public void resetSelectedCategories(UUID userId, Collection<UUID> categoryIds) {
+        if (categoryIds == null || categoryIds.isEmpty()) {
+            return;
+        }
+
+        budgetRepository.deleteByCategory_IdInAndCategory_User_Id(categoryIds, userId);
+
+        List<CategoryEntity> categories = categoryRepository.findAllByIdInAndUserIdWithBudgets(List.copyOf(categoryIds), userId);
+        recreateCurrentBudgets(categories);
+    }
+
+    private void recreateCurrentBudgets(List<CategoryEntity> categories) {
+        if (categories == null || categories.isEmpty()) {
+            return;
+        }
+
+        LocalDate today = LocalDate.now();
+        for (CategoryEntity category : categories) {
+            createAndSaveBudgetForPeriod(category, BudgetType.WEEK, today);
+            createAndSaveBudgetForPeriod(category, BudgetType.MONTH, today);
+            createAndSaveBudgetForPeriod(category, BudgetType.YEAR, today);
+        }
     }
 
     private BudgetEntity buildBudget(CategoryEntity category, BudgetType type, BigDecimal amount, LocalDateTime start, LocalDateTime end) {

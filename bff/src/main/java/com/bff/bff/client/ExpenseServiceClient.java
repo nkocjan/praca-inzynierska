@@ -40,4 +40,11 @@ public interface ExpenseServiceClient {
 
     @GetMapping("/api/v1/expenses/dashboard")
     DashboardDataResponseDTO getExpenseDashboardData();
+
+        @DeleteMapping("/api/v1/expenses/user/{userId}/data")
+        void resetData(@PathVariable("userId") UUID userId);
+
+        @PostMapping("/api/v1/expenses/user/{userId}/reset")
+        void resetSelectedCategories(
+                        @PathVariable("userId") UUID userId, @RequestBody ResetCategoriesRequestDTO request);
 }

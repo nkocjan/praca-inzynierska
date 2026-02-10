@@ -2,6 +2,7 @@ package com.budget_service.budget_service.service;
 
 import com.budget_service.budget_service.dto.CategoryCreateRequestDTO;
 import com.budget_service.budget_service.dto.CategoryDTO;
+import com.budget_service.budget_service.dto.ResetCategoriesRequestDTO;
 import com.budget_service.budget_service.dto.UpdateCategoryDTO;
 import com.budget_service.budget_service.entity.BudgetEntity;
 import com.budget_service.budget_service.entity.CategoryEntity;
@@ -136,5 +137,14 @@ public class CategoryCommandService {
 
             budgetCommandService.createInitialBudgetsForCategory(category, defaultsMap);
         }
+    }
+
+    @Transactional
+    public void resetSelectedCategories(UUID userId, ResetCategoriesRequestDTO request) {
+        if (request == null || request.getCategoryIds() == null || request.getCategoryIds().isEmpty()) {
+            return;
+        }
+
+        budgetCommandService.resetSelectedCategories(userId, request.getCategoryIds());
     }
 }

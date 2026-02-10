@@ -50,4 +50,10 @@ public interface BudgetServiceClient {
 
     @GetMapping("/api/v1/budgets/get-default/{categoryId}")
     GetDefaultBudgetsResponseDTO getDefaultBudgets(@PathVariable("categoryId") UUID categoryId);
+
+    @DeleteMapping("/api/v1/budgets/user/{userId}/data")
+    void resetData(@PathVariable("userId") UUID userId);
+
+    @PostMapping("/api/v1/categories/user/{userId}/reset")
+    void resetSelectedCategories(@PathVariable("userId") UUID userId, @RequestBody ResetCategoriesRequestDTO request);
 }

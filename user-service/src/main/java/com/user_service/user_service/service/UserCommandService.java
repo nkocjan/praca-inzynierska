@@ -72,4 +72,41 @@ public class UserCommandService {
         userValidator.validateForDelete(user);
         userRepository.deleteById(userId);
     }
+
+    public UserDTO changeNickname(UUID userId, ChangeNicknameRequestDTO request) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        String newNickname = request.getNewNickname();
+
+        if (!user.getUsername().equals(newNickname)) {
+            if (userRepository.findByUsername(newNickname).isPresent()) {
+                throw new IllegalArgumentException("Username is already taken");
+            }
+            user.setUsername(newNickname);
+            var savedUser = userRepository.save(user);
+            return mapper.toUserDTO(savedUser);
+        }
+        
+        return mapper.toUserDTO(user);
+    }
+
+    public UserDTO changeEmail(UUID userId, ChangeEmailRequestDTO request) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        String newEmail = request.getNewEmail();
+
+        if (!user.getEmail().equals(newEmail)) {
+            if (userRepository.findByEmail(newEmail).isPresent()) {
+                throw new IllegalArgumentException("Email is already taken");
+            }
+            
+            user.setEmail(newEmail);
+            var savedUser = userRepository.save(user);
+            return mapper.toUserDTO(savedUser);
+        }
+
+        return mapper.toUserDTO(user);
+    }
 }

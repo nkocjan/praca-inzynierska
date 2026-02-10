@@ -4,6 +4,7 @@ import { Button, Typography } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { useDialog } from "../../lib/dialog/NKDialogContext.tsx";
 import NKDeleteResetDataForm from "./NKDeleteResetDataForm.tsx";
+import NKResetSelectedCategoriesForm from "./NKResetSelectedCategoriesForm";
 
 interface properties {
   changeOption: ChangeOptionEnum;
@@ -41,7 +42,7 @@ const NKResetData = (props: properties) => {
         setLabels({
           label: "Resetuj dane z wybranych kategorii",
           stepsInfo:
-            "Wybierz co ma się stać z wydatkami podpiętymi do danej kategorii:",
+            "Wybierz kategorie, dla których chcesz usunąć dane:",
           info: "Dane dotyczące zaznaczonych kategorii zostaną usunięte:",
           buttonTitle: "Potwierdzam usunięcie danych z wybranych kategorii",
         });
@@ -49,6 +50,35 @@ const NKResetData = (props: properties) => {
       default:
     }
   }, [props.changeOption]);
+
+  const handleOpenDialog = () => {
+    if (props.changeOption === ChangeOptionEnum.RESET_DATA) {
+      const formId = "reset-data-form";
+      openDialog(
+        {
+          title: "Potwierdź reset danych",
+          saveButtonTitle: "Potwierdzam",
+          cancelButtonTitle: "Anuluj",
+          formId,
+        },
+        <NKDeleteResetDataForm formId={formId} mode="reset-data" />,
+      );
+      return;
+    }
+
+    if (props.changeOption === ChangeOptionEnum.RESET_CATEGORIES) {
+      const formId = "reset-categories-form";
+      openDialog(
+        {
+          title: "Potwierdź reset kategorii",
+          saveButtonTitle: "Potwierdzam",
+          cancelButtonTitle: "Anuluj",
+          formId,
+        },
+        <NKResetSelectedCategoriesForm formId={formId} />,
+      );
+    }
+  };
 
   return (
     <>
@@ -68,16 +98,7 @@ const NKResetData = (props: properties) => {
         sx={{ marginBottom: 1 }}
         variant="contained"
         color="error"
-        onClick={() =>
-          openDialog(
-            {
-              title: "Potwierdź reset danych",
-              saveButtonTitle: "Potwierdzam",
-              cancelButtonTitle: "Anuluj",
-            },
-            <NKDeleteResetDataForm />
-          )
-        }
+        onClick={handleOpenDialog}
       >
         {labels.buttonTitle}
       </Button>
