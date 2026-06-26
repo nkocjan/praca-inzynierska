@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs";
-import { useState, useEffect, useMemo } from "react"; // Importy
+import { useState, useEffect, useRef } from "react"; // Importy
 import Grid from "@mui/material/Grid2";
 import { NKButton } from "../../../lib/button/Button";
 import NKGrid from "../../../lib/grid/NKGrid";
@@ -7,13 +7,20 @@ import getBudgetColumns from "./grid/BudgetColumns"; // Poprawiony import
 import BudgetFilters from "./grid/BudgetFilters";
 import { IBudget } from "../../../types/interfaces/IBudget";
 import { useSnackbar } from "notistack";
-import { useDialog } from "../../../lib/dialog/NKDialogContext.tsx";
+import { useDialog } from "../../../lib/dialog/useDialog";
 import { apiClient } from "../../../api/apiClient.ts";
 import { useDebounce } from "../../../hooks/useDebounce.ts"; // Założenie, że hook istnieje
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import { BudgetSearchRequestDTO, CategoryDTO } from "../../../api/generated";
+import { useTranslation } from "react-i18next";
+import i18n, { normalizeLanguage } from "../../../i18n/i18n";
+import AddBudgetForm from "./forms/AddBudgetForm";
+import { useLocation } from "react-router-dom";
 
 const NKBudget = () => {
+  const { t } = useTranslation("budgets");
+  const language = normalizeLanguage(i18n.language);
+
   const [nameFilter, setNameFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
@@ -26,7 +33,7 @@ const NKBudget = () => {
   const [rows, setRows] = useState<IBudget[]>([]);
   const [rowCount, setRowCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [refreshTrigger] = useState(0);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const [categories, setCategories] = useState<CategoryDTO[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
@@ -40,7 +47,19 @@ const NKBudget = () => {
   ]);
 
   const { enqueueSnackbar } = useSnackbar();
-  const { openDialog } = useDialog();
+  const { openDialog, closeDialog } = useDialog();
+  const location = useLocation();
+  const prefillAppliedRef = useRef(false);
+
+  useEffect(() => {
+    const state = location.state as
+      | { prefillCategoryIds?: string[] }
+      | undefined;
+    if (prefillAppliedRef.current) return;
+    if (!state?.prefillCategoryIds?.length) return;
+    setCategoryFilter(state.prefillCategoryIds);
+    prefillAppliedRef.current = true;
+  }, [location.state]);
 
   const debouncedNameFilter = useDebounce(nameFilter, 500);
   const debouncedAmountFrom = useDebounce(amountFrom, 500);
@@ -56,7 +75,7 @@ const NKBudget = () => {
         setCategories(response.data);
       } catch (error) {
         console.error("Błąd podczas pobierania kategorii:", error);
-        enqueueSnackbar("Nie udało się pobrać listy kategorii", {
+        enqueueSnackbar(t("snackbar.categoriesFetchError"), {
           variant: "error",
         });
       } finally {
@@ -64,7 +83,7 @@ const NKBudget = () => {
       }
     };
     void fetchCategories();
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, t]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,7 +103,7 @@ const NKBudget = () => {
         periodType: periodTypeFilter || undefined,
       };
 
-      const sortParams = sortModel.map((s) => `${s.field},${s.sort}`).join(",");
+      const sortParams = sortModel.map(s => `${s.field},${s.sort}`).join(",");
 
       try {
         const response = await apiClient.post(
@@ -103,7 +122,7 @@ const NKBudget = () => {
         setRowCount(response.data.totalElements);
       } catch (error) {
         console.error("Błąd podczas pobierania budżetów:", error);
-        enqueueSnackbar("Nie udało się pobrać danych o budżetach", {
+        enqueueSnackbar(t("snackbar.budgetsFetchError"), {
           variant: "error",
         });
       } finally {
@@ -125,32 +144,43 @@ const NKBudget = () => {
     sortModel,
     refreshTrigger,
     enqueueSnackbar,
+    t,
   ]);
 
-  const columns = useMemo(() => getBudgetColumns(), []);
+  const handleFormSuccess = () => {
+    closeDialog();
+    setRefreshTrigger(prev => prev + 1);
+  };
+
+  const columns = getBudgetColumns({ t, language });
 
   return (
-    <Grid container spacing={3} sx={{ padding: 3, marginTop: 5 }}>
+    <Grid
+      container
+      spacing={3}
+      sx={{ padding: 3, marginTop: 5 }}>
       <Grid>
         <NKButton
-          title="Dodaj budżet"
-          onClick={() =>
+          title={t("page.addBudget")}
+          onClick={() => {
+            const formId = "budget-form";
             openDialog(
               {
-                title: "Dodaj nowy budżet",
-                saveButtonTitle: "Dodaj",
-                cancelButtonTitle: "Anuluj",
-                formId: "budget-form",
+                title: t("page.addNewBudgetTitle"),
+                saveButtonTitle: t("page.add"),
+                cancelButtonTitle: t("page.cancel"),
+                formId,
               },
-              <div>Formularz dodawania budżetu (TODO)</div>,
-            )
-          }
-        ></NKButton>
+              <AddBudgetForm
+                formId={formId}
+                onSuccess={handleFormSuccess}
+              />,
+            );
+          }}></NKButton>
       </Grid>
       <Grid
         size={12}
-        sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
-      >
+        sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <NKGrid
           sx={{
             minHeight: 300,
@@ -191,8 +221,7 @@ const NKBudget = () => {
               categories={categories}
               categoriesLoading={loadingCategories}
             />
-          }
-        ></NKGrid>
+          }></NKGrid>
       </Grid>
     </Grid>
   );

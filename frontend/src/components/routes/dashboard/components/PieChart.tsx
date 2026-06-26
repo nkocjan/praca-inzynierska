@@ -1,8 +1,11 @@
-import { Paper } from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { PieChartDataUiDTO } from "../../../../api/generated";
+import { useTranslation } from "react-i18next";
+import { normalizeLanguage } from "../../../../i18n/i18n";
+import { getCurrencySymbol } from "../../../../i18n/locale";
 ChartJS.register(ChartDataLabels);
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -10,7 +13,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 interface PieChartProperties {
   type: "week" | "month" | "year";
   height?: number | string;
-  chartData: PieChartDataUiDTO;
+  chartData?: PieChartDataUiDTO | null;
 }
 
 const backgroundColors = [
@@ -36,20 +39,27 @@ const borderColors = [
 ];
 
 const PieChart = (props: PieChartProperties) => {
-  const labels = props.chartData?.labels || [];
-  const chartData = props.chartData?.data || [];
+  const { t, i18n } = useTranslation(["dashboard", "common"]);
+  const language = normalizeLanguage(i18n.language);
+  const currencySymbol = getCurrencySymbol(language);
+
+  const labels = props.chartData?.labels ?? [];
+  const values = props.chartData?.data ?? [];
+
+  const totalValue = values.reduce((sum, v) => sum + (Number(v) || 0), 0);
+  const hasData = labels.length > 0 && values.length > 0 && totalValue > 0;
 
   let shouldHideLegend = true;
   let rows = 1;
   let len = 0;
 
   for (let i = 0; i < labels.length; i++) {
-    if (len + labels[i]?.length || 0 > 18) {
+    if (len + (labels[i]?.length || 0) > 18) {
       rows++;
       len = 0;
     }
 
-    len += labels[i].length;
+    len += labels[i]?.length || 0;
   }
 
   if (rows < 4) {
@@ -57,11 +67,11 @@ const PieChart = (props: PieChartProperties) => {
   }
 
   const data = {
-    labels: props.chartData.labels,
+    labels,
     datasets: [
       {
-        label: "Wydatki",
-        data: props.chartData.data,
+        label: t("dashboard:expenses"),
+        data: values,
         backgroundColor: labels.map(
           (_, i) => backgroundColors[i % backgroundColors.length],
         ),
@@ -116,21 +126,14 @@ const PieChart = (props: PieChartProperties) => {
       },
       title: {
         display: true,
-        text: `Ten ${
-          props.type == "week"
-            ? "tydzień"
-            : props.type == "month"
-              ? "miesiąc"
-              : "rok"
-        }`,
+        text: t(`dashboard:period.${props.type}`),
       },
       tooltip: {
         callbacks: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          label: (tooltipItem: any) => {
-            const label = tooltipItem.label || "";
-            const value = tooltipItem.raw || 0;
-            return `${label}: ${value} zł`;
+          label: (tooltipItem: { label?: string; raw?: unknown }) => {
+            const label = tooltipItem.label ?? "";
+            const value = Number(tooltipItem.raw) || 0;
+            return `${label}: ${value} ${currencySymbol}`;
           },
         },
       },
@@ -148,12 +151,17 @@ const PieChart = (props: PieChartProperties) => {
         backgroundColor: "transparent",
         boxShadow: "none",
         paddingBottom: 1,
-      }}
-    >
-      {chartData.length > 0 ? (
-        <Pie data={data} options={options as never}></Pie>
+      }}>
+      {hasData ? (
+        <Pie
+          data={data}
+          options={options as never}></Pie>
       ) : (
-        <p>Brak danych</p>
+        <Typography
+          variant="body2"
+          sx={{ opacity: 0.9 }}>
+          {t("common:noData")}
+        </Typography>
       )}
     </Paper>
   );

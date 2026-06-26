@@ -18,41 +18,50 @@ import {
 } from "../../api/generated";
 import { apiClient } from "../../api/apiClient.ts";
 import { useEffect, useState } from "react";
-
-const validationSchema = Yup.object({
-  categoryId: Yup.string().required("Kategoria jest wymagana"),
-  weeklyBudget: Yup.number()
-    .positive("Wartość musi być dodatnia")
-    .typeError("Wprowadź poprawną liczbę")
-    .nullable(),
-  monthlyBudget: Yup.number()
-    .positive("Wartość musi być dodatnia")
-    .typeError("Wprowadź poprawną liczbę")
-    .nullable(),
-  yearlyBudget: Yup.number()
-    .positive("Wartość musi być dodatnia")
-    .typeError("Wprowadź poprawną liczbę")
-    .nullable(),
-});
+import { useTranslation } from "react-i18next";
+import { useSnackbar } from "notistack";
 
 const ChangeDefaultBudgets = () => {
+  const { t } = useTranslation("settings");
+  const { enqueueSnackbar } = useSnackbar();
+
+  const validationSchema = Yup.object({
+    categoryId: Yup.string().required(
+      t("defaultBudgets.validation.categoryRequired"),
+    ),
+    weeklyBudget: Yup.number()
+      .positive(t("defaultBudgets.validation.positive"))
+      .typeError(t("defaultBudgets.validation.number"))
+      .nullable(),
+    monthlyBudget: Yup.number()
+      .positive(t("defaultBudgets.validation.positive"))
+      .typeError(t("defaultBudgets.validation.number"))
+      .nullable(),
+    yearlyBudget: Yup.number()
+      .positive(t("defaultBudgets.validation.positive"))
+      .typeError(t("defaultBudgets.validation.number"))
+      .nullable(),
+  });
+
   const [categories, setCategories] = useState<CategoryUiDTO[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
 
   useEffect(() => {
     apiClient
       .get<CategoryUiDTO[]>("/api/bff/categories/combo")
-      .then((response) => {
+      .then(response => {
         setCategories(response.data);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("Błąd pobierania kategorii:", error);
-        alert("Nie udało się pobrać listy kategorii.");
+        enqueueSnackbar(t("defaultBudgets.snackbar.fetchCategoriesError"), {
+          variant: "error",
+        });
       })
       .finally(() => {
         setLoadingCategories(false);
       });
-  }, []);
+  }, [enqueueSnackbar, t]);
 
   const formik = useFormik({
     initialValues: {
@@ -77,15 +86,19 @@ const ChangeDefaultBudgets = () => {
         yearlyAmount: parseAmount(values.yearlyBudget),
       };
 
-      console.log("Wysyłanie requestu API z danymi:", payload);
-
       apiClient
         .post("/api/bff/budgets/set-default", payload)
         .then(() => {
           resetForm();
+          enqueueSnackbar(t("defaultBudgets.snackbar.saveSuccess"), {
+            variant: "success",
+          });
         })
-        .catch((error) => {
+        .catch(error => {
           console.error("Błąd podczas aktualizacji budżetów:", error);
+          enqueueSnackbar(t("defaultBudgets.snackbar.saveError"), {
+            variant: "error",
+          });
         })
         .finally(() => {
           setSubmitting(false);
@@ -117,6 +130,9 @@ const ChangeDefaultBudgets = () => {
         setFieldValue("yearlyBudget", budgets.yearlyAmount || "");
       } catch (error) {
         console.error("Błąd pobierania domyślnych budżetów:", error);
+        enqueueSnackbar(t("defaultBudgets.snackbar.fetchDefaultsError"), {
+          variant: "error",
+        });
         setFieldValue("weeklyBudget", "");
         setFieldValue("monthlyBudget", "");
         setFieldValue("yearlyBudget", "");
@@ -124,12 +140,14 @@ const ChangeDefaultBudgets = () => {
     };
 
     void fetchDefaultBudgets();
-  }, [selectedCategoryId, setFieldValue]);
+  }, [enqueueSnackbar, selectedCategoryId, setFieldValue, t]);
 
   return (
     <>
-      <Typography variant="h5" gutterBottom>
-        Edycja domyślnych budżetów kategorii
+      <Typography
+        variant="h5"
+        gutterBottom>
+        {t("defaultBudgets.title")}
       </Typography>
 
       <form onSubmit={formik.handleSubmit}>
@@ -140,27 +158,29 @@ const ChangeDefaultBudgets = () => {
             disabled={loadingCategories}
             error={
               formik.touched.categoryId && Boolean(formik.errors.categoryId)
-            }
-          >
-            <InputLabel id="category-select-label">Kategoria *</InputLabel>
+            }>
+            <InputLabel id="category-select-label">
+              {t("defaultBudgets.categoryLabel")}
+            </InputLabel>
             <Select
               labelId="category-select-label"
-              label="Kategoria *"
+              label={t("defaultBudgets.categoryLabel")}
               name="categoryId"
               value={formik.values.categoryId}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              variant={"standard"}
-            >
+              variant={"standard"}>
               <MenuItem value="">
                 <em>
                   {loadingCategories
-                    ? "Ładowanie kategorii..."
-                    : "Wybierz kategorię"}
+                    ? t("defaultBudgets.loadingCategories")
+                    : t("defaultBudgets.chooseCategory")}
                 </em>
               </MenuItem>
-              {categories.map((category) => (
-                <MenuItem key={category.id} value={category.id}>
+              {categories.map(category => (
+                <MenuItem
+                  key={category.id}
+                  value={category.id}>
                   {category.name}
                 </MenuItem>
               ))}
@@ -174,7 +194,7 @@ const ChangeDefaultBudgets = () => {
         {/* Pola tekstowe bez zmian */}
         <Box sx={{ mb: 4 }}>
           <NKTextInput
-            label="Budżet tygodniowy"
+            label={t("defaultBudgets.weeklyBudget")}
             type="number"
             name="weeklyBudget"
             value={formik.values.weeklyBudget}
@@ -190,7 +210,7 @@ const ChangeDefaultBudgets = () => {
         </Box>
         <Box sx={{ mb: 4 }}>
           <NKTextInput
-            label="Budżet miesięczny"
+            label={t("defaultBudgets.monthlyBudget")}
             type="number"
             name="monthlyBudget"
             value={formik.values.monthlyBudget}
@@ -207,7 +227,7 @@ const ChangeDefaultBudgets = () => {
         </Box>
         <Box sx={{ mb: 4 }}>
           <NKTextInput
-            label="Budżet roczny"
+            label={t("defaultBudgets.yearlyBudget")}
             type="number"
             name="yearlyBudget"
             value={formik.values.yearlyBudget}
@@ -224,12 +244,12 @@ const ChangeDefaultBudgets = () => {
 
         <Box sx={{ display: "flex", gap: 2 }}>
           <NKButton
-            title="Zatwierdź"
+            title={t("defaultBudgets.submit")}
             type="submit"
             disabled={formik.isSubmitting}
           />
           <NKButton
-            title="Resetuj"
+            title={t("defaultBudgets.reset")}
             type="button"
             onClick={() => formik.resetForm()}
           />

@@ -1,15 +1,7 @@
-import * as React from "react";
-import { ReactNode, useContext, useState } from "react";
+import { ReactNode, useState } from "react";
 import NKDialog from "./NKDialog.tsx";
 import { DialogTitles } from "../../types/interfaces/others/IDialogTitle.tsx";
-
-interface DialogContextType {
-  dialogTitles: DialogTitles;
-  openDialog: (dialogTitle: DialogTitles, content: ReactNode) => void;
-  closeDialog: () => void;
-}
-
-const DialogContext = React.createContext<DialogContextType | null>(null);
+import { DialogContext } from "./dialogContext";
 
 export const DialogProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -46,16 +38,8 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({
         title={dialogTitles.title}
         open={open}
         onClose={closeDialog}
-        formId={dialogTitles.formId} 
+        formId={dialogTitles.formId}
       />
     </DialogContext.Provider>
   );
-};
-
-export const useDialog = () => {
-  const context = useContext(DialogContext);
-  if (!context) {
-    throw new Error("useDialog must be used within a DialogProvider");
-  }
-  return context;
 };

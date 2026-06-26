@@ -4,15 +4,17 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { ICategoryBudgetSummary } from "../../../types/interfaces/ICategory";
 import CategoriesFilters from "./grid/CategoriesFilters";
 import { NKButton } from "../../../lib/button/Button";
-import { useDialog } from "../../../lib/dialog/NKDialogContext";
+import { useDialog } from "../../../lib/dialog/useDialog";
 import AddCategoryForm from "./forms/AddCategoryForm";
-import GenerateReportForm from "./forms/GenerateReportForm";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import { useSnackbar } from "notistack";
 import { apiClient } from "../../../api/apiClient.ts";
 import getCategoriesColumns from "./grid/CategoriesColumns";
+import { useTranslation } from "react-i18next";
 
 const NKCategories = () => {
+  const { t } = useTranslation("categories");
+
   const [nameFilter, setNameFilter] = useState("");
   const [hasAdditionalBudgets, setHasAdditionalBudgets] = useState<
     boolean | null
@@ -25,7 +27,7 @@ const NKCategories = () => {
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const handleRefresh = useCallback(() => {
-    setRefreshTrigger((prev) => prev + 1);
+    setRefreshTrigger(prev => prev + 1);
   }, []);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -51,7 +53,7 @@ const NKCategories = () => {
         setRows(response.data);
       } catch (error) {
         console.error("Błąd podczas pobierania kategorii:", error);
-        enqueueSnackbar("Nie udało się pobrać danych o kategoriach", {
+        enqueueSnackbar(t("snackbar.categoriesFetchError"), {
           variant: "error",
         });
       } finally {
@@ -59,8 +61,8 @@ const NKCategories = () => {
       }
     };
 
-    fetchData().then((r) => r);
-  }, [refreshTrigger, enqueueSnackbar]);
+    fetchData().then(r => r);
+  }, [refreshTrigger, enqueueSnackbar, t]);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row: ICategoryBudgetSummary) => {
@@ -79,23 +81,26 @@ const NKCategories = () => {
     });
   }, [rows, nameFilter, hasAdditionalBudgets, hasExceededBudget]);
 
-  const columns = useMemo(
-    () => getCategoriesColumns({ onRefresh: handleRefresh }),
-    [handleRefresh],
-  );
+  const columns = getCategoriesColumns({ onRefresh: handleRefresh, t });
 
   return (
-    <Grid container spacing={3} sx={{ padding: 3, marginTop: 5 }}>
-      <Grid container size={9} sx={{ textAlign: "center" }}>
+    <Grid
+      container
+      spacing={3}
+      sx={{ padding: 3, marginTop: 5 }}>
+      <Grid
+        container
+        size={9}
+        sx={{ textAlign: "center" }}>
         <Grid size={4}>
           <NKButton
-            title="Dodaj kategorię"
+            title={t("page.addCategory")}
             onClick={() =>
               openDialog(
                 {
-                  title: "Dodaj kategorię",
-                  saveButtonTitle: "Utwórz",
-                  cancelButtonTitle: "Anuluj",
+                  title: t("page.addCategoryTitle"),
+                  saveButtonTitle: t("page.create"),
+                  cancelButtonTitle: t("page.cancel"),
                   formId: "edit-budget-form",
                 },
                 <AddCategoryForm
@@ -107,29 +112,19 @@ const NKCategories = () => {
                   }}
                 />,
               )
-            }
-          ></NKButton>
+            }></NKButton>
         </Grid>
         <Grid size={4}>
           <NKButton
-            title="Generuj raport"
+            title={t("page.generateReport")}
             onClick={() =>
-              openDialog(
-                {
-                  title: "Generuj raport",
-                  saveButtonTitle: "Wygeneruj",
-                  cancelButtonTitle: "Anuluj",
-                },
-                <GenerateReportForm />,
-              )
-            }
-          ></NKButton>
+              enqueueSnackbar(t("snackbar.comingSoon"), { variant: "info" })
+            }></NKButton>
         </Grid>
         <Grid size={4}></Grid>
         <Grid
           size={12}
-          sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
-        >
+          sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
           <NKGrid
             sx={{
               minHeight: 300,
@@ -155,17 +150,14 @@ const NKCategories = () => {
                 hasAdditionalBudgets={hasAdditionalBudgets}
                 setHasAdditionalBudgets={setHasAdditionalBudgets}
                 hasExceededBudget={hasExceededBudget}
-                setHasExceededBudget={setHasExceededBudget}
-              ></CategoriesFilters>
-            }
-          ></NKGrid>
+                setHasExceededBudget={setHasExceededBudget}></CategoriesFilters>
+            }></NKGrid>
         </Grid>
       </Grid>
       <Grid
         container
         size={3}
-        sx={{ textAlign: "center", minHeight: "30vh" }}
-      ></Grid>
+        sx={{ textAlign: "center", minHeight: "30vh" }}></Grid>
     </Grid>
   );
 };

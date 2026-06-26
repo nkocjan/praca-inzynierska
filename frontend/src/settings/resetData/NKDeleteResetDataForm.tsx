@@ -3,7 +3,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { apiClient } from "../../api/apiClient";
 import { useSnackbar } from "notistack";
-import { useDialog } from "../../lib/dialog/NKDialogContext";
+import { useDialog } from "../../lib/dialog/useDialog";
+import { useTranslation } from "react-i18next";
 
 type Mode = "reset-data" | "delete-account";
 
@@ -13,16 +14,19 @@ interface Props {
   onSuccess?: () => void;
 }
 
-const validationSchema = Yup.object({
-  email: Yup.string()
-    .email("Musisz podać adres email")
-    .required("Musisz podać adres email"),
-  password: Yup.string().required("Musisz podać hasło"),
-});
-
 const NKDeleteResetDataForm = (props: Props) => {
   const { enqueueSnackbar } = useSnackbar();
   const { closeDialog } = useDialog();
+  const { t } = useTranslation("settings");
+
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .email(t("deleteResetForm.validation.emailInvalid"))
+      .required(t("deleteResetForm.validation.emailRequired")),
+    password: Yup.string().required(
+      t("deleteResetForm.validation.passwordRequired"),
+    ),
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -34,12 +38,18 @@ const NKDeleteResetDataForm = (props: Props) => {
       try {
         if (props.mode === "reset-data") {
           await apiClient.post("/api/bff/users/me/reset-data", values);
-          enqueueSnackbar("Dane zostały zresetowane", { variant: "success" });
+          enqueueSnackbar(t("deleteResetForm.snackbar.resetSuccess"), {
+            variant: "success",
+          });
         } else if (props.mode === "delete-account") {
           await apiClient.post("/api/bff/users/me/delete", values);
-          enqueueSnackbar("Konto zostało usunięte", { variant: "success" });
+          enqueueSnackbar(t("deleteResetForm.snackbar.deleteSuccess"), {
+            variant: "success",
+          });
         } else {
-          enqueueSnackbar("Brak akcji dla formularza", { variant: "warning" });
+          enqueueSnackbar(t("deleteResetForm.snackbar.missingAction"), {
+            variant: "warning",
+          });
           return;
         }
 
@@ -48,7 +58,9 @@ const NKDeleteResetDataForm = (props: Props) => {
         props.onSuccess?.();
       } catch (error) {
         console.error("Błąd operacji ustawień:", error);
-        enqueueSnackbar("Operacja nie powiodła się", { variant: "error" });
+        enqueueSnackbar(t("deleteResetForm.snackbar.failed"), {
+          variant: "error",
+        });
       } finally {
         setSubmitting(false);
       }
@@ -63,11 +75,10 @@ const NKDeleteResetDataForm = (props: Props) => {
         flexDirection: "column",
         gap: "8px",
         maxWidth: "450px",
-      }}
-    >
+      }}>
       <TextField
         sx={{ marginTop: "8px" }}
-        label="Email"
+        label={t("deleteResetForm.fields.email")}
         variant="outlined"
         fullWidth
         size="small"
@@ -85,7 +96,7 @@ const NKDeleteResetDataForm = (props: Props) => {
       />
       <TextField
         sx={{ marginTop: "8px" }}
-        label="Hasło"
+        label={t("deleteResetForm.fields.password")}
         variant="outlined"
         type="password"
         fullWidth

@@ -1,0 +1,18 @@
+{
+  "required": "To pole jest wymagane",
+  "nameRequired": "Imię jest wymagane",
+  "surnameRequired": "Nazwisko jest wymagane",
+  "usernameMin": "Login musi zawierać minimum {{min}} znaki",
+  "usernameRequired": "Login jest wymagany",
+  "passwordMin": "Hasło musi zawierać minimum {{min}} znaków",
+  "passwordUppercase": "Musi zawierać co najmniej jedną dużą literę",
+  "passwordNumber": "Musi zawierać co najmniej jedną cyfrę",
+  "passwordRequired": "Hasło jest wymagane",
+  "confirmPasswordMatch": "Hasła muszą być identyczne",
+  "confirmPasswordRequired": "Proszę powtórzyć hasło",
+  "emailInvalid": "Niepoprawny format email",
+  "emailRequired": "Email jest wymagany",
+  "confirmEmailMatch": "Adresy email muszą być identyczne",
+  "confirmEmailRequired": "Proszę powtórzyć email",
+  "phoneRequired": "Numer telefonu jest wymagany"
+}

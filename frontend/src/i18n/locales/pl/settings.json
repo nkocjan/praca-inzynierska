@@ -1,0 +1,136 @@
+{
+  "menu": {
+    "title": "Ustawienia konta",
+    "setDefaultBudgets": "Ustaw domyślne budżety",
+    "changeLogin": "Zmień login",
+    "changePassword": "Zmień hasło",
+    "changeEmail": "Zmień email",
+    "resetData": "Resetuj dane",
+    "resetCategories": "Resetuj wybrane kategorie",
+    "deleteAccount": "Usuń konto"
+  },
+  "changeData": {
+    "profileTitle": "Edycja profilu",
+    "contactAdmin": "W razie problemów skontaktuj się z administratorem",
+    "login": {
+      "label": "Ustaw nowy login",
+      "title1": "Nowy login",
+      "title2": "Aktualne hasło",
+      "title3": "Powtórz hasło",
+      "submit": "Ustaw nowy login"
+    },
+    "password": {
+      "label": "Ustaw nowe hasło",
+      "title1": "Aktualne hasło",
+      "title2": "Nowe hasło",
+      "title3": "Potwierdź nowe hasło",
+      "submit": "Zapisz nowe hasło"
+    },
+    "email": {
+      "label": "Ustaw nowy email",
+      "title1": "Nowy adres email",
+      "title2": "Potwierdź nowy email",
+      "title3": "Wpisz hasło dla potwierdzenia",
+      "submit": "Zapisz nowy email"
+    },
+    "reset": "Resetuj",
+    "snackbar": {
+      "saved": "Zapisano zmiany",
+      "saveError": "Nie udało się zapisać zmian"
+    },
+    "validation": {
+      "newLoginRequired": "Musisz podać nowy login",
+      "passwordRequired": "Musisz podać hasło",
+      "repeatPasswordRequired": "Musisz powtórzyć hasło",
+      "passwordsMustMatch": "Hasła muszą być takie same",
+      "oldPasswordRequired": "Musisz podać aktualne hasło",
+      "newPasswordRequired": "Musisz podać nowe hasło",
+      "confirmNewPasswordRequired": "Musisz potwierdzić nowe hasło",
+      "invalidEmail": "Musisz podać poprawny adres email",
+      "newEmailRequired": "Musisz podać nowy adres email",
+      "confirmEmailRequired": "Musisz potwierdzić nowy email",
+      "emailsMustMatch": "Adresy email muszą być takie same"
+    }
+  },
+  "resetData": {
+    "dialog": {
+      "confirm": "Potwierdzam",
+      "cancel": "Anuluj"
+    },
+    "resetAll": {
+      "label": "Resetuj wszystkie dane",
+      "stepsInfo": "Zostaniesz poproszony o podanie adresu email oraz hasła w celu potwierdzenia usunięcia danych.",
+      "buttonTitle": "Potwierdzam usunięcie danych",
+      "info": "Wszystkie Twoje dane (budżety, wydatki, kategorie) zostaną usunięte. Będziesz mógł zacząć od nowa. Jeśli chcesz zresetować dane tylko dla wybranych kategorii, wybierz opcję „Resetuj wybrane kategorie”.",
+      "dialogTitle": "Potwierdź reset danych"
+    },
+    "resetCategories": {
+      "label": "Resetuj dane z wybranych kategorii",
+      "stepsInfo": "Wybierz kategorie, dla których chcesz usunąć dane:",
+      "info": "Dane dotyczące zaznaczonych kategorii zostaną usunięte:",
+      "buttonTitle": "Potwierdzam usunięcie danych z wybranych kategorii",
+      "dialogTitle": "Potwierdź reset kategorii"
+    }
+  },
+  "deleteAccount": {
+    "title": "Usuń konto",
+    "warning": "Twoje konto zostanie trwale usunięte. W celu potwierdzenia zostaniesz poproszony o podanie adresu email oraz hasła. Czy na pewno chcesz usunąć konto?",
+    "dialogTitle": "Potwierdź usunięcie konta",
+    "confirm": "Potwierdzam",
+    "cancel": "Anuluj",
+    "button": "Tak, chcę usunąć moje konto"
+  },
+  "deleteResetForm": {
+    "validation": {
+      "emailInvalid": "Musisz podać poprawny adres email",
+      "emailRequired": "Musisz podać adres email",
+      "passwordRequired": "Musisz podać hasło"
+    },
+    "fields": {
+      "email": "Email",
+      "password": "Hasło"
+    },
+    "snackbar": {
+      "resetSuccess": "Dane zostały zresetowane",
+      "deleteSuccess": "Konto zostało usunięte",
+      "missingAction": "Brak akcji dla formularza",
+      "failed": "Operacja nie powiodła się"
+    }
+  },
+  "resetSelectedCategories": {
+    "title": "Wybierz kategorie do resetu:",
+    "validation": {
+      "minOne": "Wybierz przynajmniej jedną kategorię"
+    },
+    "snackbar": {
+      "fetchError": "Nie udało się pobrać listy kategorii",
+      "resetSuccess": "Zresetowano dane w wybranych kategoriach",
+      "resetError": "Nie udało się zresetować danych"
+    }
+  },
+  "defaultBudgets": {
+    "title": "Edycja domyślnych budżetów kategorii",
+    "categoryLabel": "Kategoria *",
+    "loadingCategories": "Ładowanie kategorii...",
+    "chooseCategory": "Wybierz kategorię",
+    "weeklyBudget": "Budżet tygodniowy",
+    "monthlyBudget": "Budżet miesięczny",
+    "yearlyBudget": "Budżet roczny",
+    "submit": "Zatwierdź",
+    "reset": "Resetuj",
+    "validation": {
+      "categoryRequired": "Kategoria jest wymagana",
+      "positive": "Wartość musi być dodatnia",
+      "number": "Wprowadź poprawną liczbę"
+    },
+    "snackbar": {
+      "fetchCategoriesError": "Nie udało się pobrać listy kategorii.",
+      "fetchDefaultsError": "Nie udało się pobrać domyślnych budżetów.",
+      "saveSuccess": "Zapisano domyślne budżety.",
+      "saveError": "Nie udało się zapisać domyślnych budżetów."
+    },
+    "alerts": {
+      "fetchCategoriesError": "Nie udało się pobrać listy kategorii."
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { Button, FormControlLabel, Switch, TextField } from "@mui/material";
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 
 interface CategoriesFiltersProps {
   nameFilter: string;
@@ -17,11 +18,12 @@ interface CategoriesFiltersProps {
 const CategoriesFilters: FC<CategoriesFiltersProps> = ({
   nameFilter,
   setNameFilter,
-  hasAdditionalBudgets,
   setHasAdditionalBudgets,
   hasExceededBudget,
   setHasExceededBudget,
 }) => {
+  const { t } = useTranslation("categories");
+
   function resetFilters() {
     setNameFilter("");
     setHasAdditionalBudgets(null);
@@ -38,7 +40,7 @@ const CategoriesFilters: FC<CategoriesFiltersProps> = ({
         alignItems: "center",
       }}>
       <TextField
-        label="Szukaj"
+        label={t("filters.search")}
         variant="outlined"
         size="small"
         sx={{ width: "100%" }}
@@ -69,7 +71,7 @@ const CategoriesFilters: FC<CategoriesFiltersProps> = ({
             onChange={e => setHasExceededBudget(e.target.checked ? true : null)}
           />
         }
-        label="Przekroczony budżet?"
+        label={t("filters.hasExceededBudget")}
         sx={{
           width: "100%",
           display: "flex",
@@ -90,7 +92,7 @@ const CategoriesFilters: FC<CategoriesFiltersProps> = ({
           borderRadius: "4px",
           fontSize: "0.875rem",
         }}>
-        Reset
+        {t("filters.reset")}
       </Button>
     </div>
   );
