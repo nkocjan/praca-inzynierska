@@ -5,8 +5,10 @@ import com.user_service.user_service.entity.UserEntity;
 import com.user_service.user_service.exception.UserAlreadyExistsException;
 import com.user_service.user_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -71,6 +73,11 @@ public class UserValidator {
 
     public void validateForDelete(UserEntity user) {
         if (user == null) throw new IllegalArgumentException("User not found");
+    }
+
+    public void validateNotDemoAccount(UserEntity user) {
+        if (Boolean.TRUE.equals(user.getIsDemo()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Demo account data cannot be changed");
     }
 
     private void validateCommonFields(String username, String name, String surname, String email, String phoneNumber) {

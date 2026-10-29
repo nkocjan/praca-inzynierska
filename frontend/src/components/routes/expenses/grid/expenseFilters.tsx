@@ -15,6 +15,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { FC } from "react";
 import { Dayjs } from "dayjs";
 import { CategoryDTO } from "../../../../api/generated";
+import { useTranslation } from "react-i18next";
 
 interface ExpensesFiltersProps {
   nameFilter: string;
@@ -54,6 +55,8 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
   categories,
   categoriesLoading,
 }) => {
+  const { t } = useTranslation("expenses");
+
   function resetFilters() {
     setNameFilter("");
     setCategoryFilter([]);
@@ -72,37 +75,39 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
         gridTemplateRows: "repeat(2, auto)",
         gap: "8px",
         marginBottom: "10px",
-      }}
-    >
+      }}>
       <TextField
-        label="Szukaj"
+        label={t("filters.search")}
         variant="outlined"
         size="small"
         sx={{ width: "100%" }}
         value={nameFilter}
-        onChange={(e) => setNameFilter(e.target.value)}
+        onChange={e => setNameFilter(e.target.value)}
       />
 
       <FormControl
         sx={{ width: "100%" }}
         size="small"
-        disabled={categoriesLoading}
-      >
-        <InputLabel>Kategoria</InputLabel>
+        disabled={categoriesLoading}>
+        <InputLabel>{t("filters.category")}</InputLabel>
         <Select
           multiple
           value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value as string[])}
-          input={<OutlinedInput label="Kategoria" />}
+          onChange={e => setCategoryFilter(e.target.value as string[])}
+          input={<OutlinedInput label={t("filters.category")} />}
           renderValue={(selected: string[]) =>
             selected.length == 1
-              ? categories.find((category) => category.id === selected[0])?.name
-              : `Wybrano: ${selected.length}/${categories.length}`
+              ? categories.find(category => category.id === selected[0])?.name
+              : t("filters.categoriesSelected", {
+                  selected: selected.length,
+                  total: categories.length,
+                })
           }
-          variant={"standard"}
-        >
-          {categories.map((category) => (
-            <MenuItem key={category.id} value={category.id}>
+          variant={"standard"}>
+          {categories.map(category => (
+            <MenuItem
+              key={category.id}
+              value={category.id}>
               <Checkbox
                 checked={categoryFilter.includes(category.id as string)}
               />
@@ -113,9 +118,9 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
       </FormControl>
 
       <DatePicker
-        label="Data od"
+        label={t("filters.dateFrom")}
         value={dateFrom}
-        onChange={(newDate) => setDateFrom(newDate)}
+        onChange={newDate => setDateFrom(newDate)}
         slotProps={{
           textField: { variant: "outlined", size: "small", sx: { height: 36 } },
         }}
@@ -123,9 +128,9 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
       />
 
       <DatePicker
-        label="Data do"
+        label={t("filters.dateTo")}
         value={dateTo}
-        onChange={(newDate) => setDateTo(newDate)}
+        onChange={newDate => setDateTo(newDate)}
         slotProps={{
           textField: { variant: "outlined", size: "small", sx: { height: 36 } },
         }}
@@ -134,24 +139,24 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
 
       <TextField
         size="small"
-        label="Kwota od"
+        label={t("filters.amountFrom")}
         type="number"
         variant="outlined"
         sx={{ width: "100%" }}
         value={amountFrom}
-        onChange={(e) =>
+        onChange={e =>
           setAmountFrom(e.target.value === "" ? "" : Number(e.target.value))
         }
       />
 
       <TextField
         size="small"
-        label="Kwota do"
+        label={t("filters.amountTo")}
         type="number"
         variant="outlined"
         sx={{ width: "100%" }}
         value={amountTo}
-        onChange={(e) =>
+        onChange={e =>
           setAmountTo(e.target.value === "" ? "" : Number(e.target.value))
         }
       />
@@ -160,10 +165,10 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
         control={
           <Switch
             checked={isPlanned === true}
-            onChange={(e) => setIsPlanned(e.target.checked ? true : undefined)}
+            onChange={e => setIsPlanned(e.target.checked ? true : undefined)}
           />
         }
-        label="Planowany"
+        label={t("filters.planned")}
         sx={{
           width: "100%",
           display: "flex",
@@ -186,9 +191,8 @@ const ExpensesFilters: FC<ExpensesFiltersProps> = ({
           borderColor: "rgba(255, 255, 255, 0.23)",
           borderRadius: "4px",
           fontSize: "0.875rem",
-        }}
-      >
-        Reset
+        }}>
+        {t("filters.reset")}
       </Button>
     </div>
   );

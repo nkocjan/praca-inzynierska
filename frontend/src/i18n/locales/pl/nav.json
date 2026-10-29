@@ -1,0 +1,17 @@
+{
+  "appBarTitle": "Strona główna",
+  "menu": {
+    "home": "Strona główna",
+    "expenses": "Wydatki",
+    "budget": "Budżet",
+    "categories": "Kategorie"
+  },
+  "secondary": {
+    "information": "Informacje",
+    "settings": "Ustawienia",
+    "logout": "Wyloguj się"
+  },
+  "snackbar": {
+    "logoutSuccess": "Wylogowano pomyślnie"
+  }
+}

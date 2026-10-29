@@ -1,0 +1,55 @@
+{
+  "page": {
+    "addBudget": "Dodaj budżet",
+    "addNewBudgetTitle": "Dodaj nowy budżet",
+    "add": "Dodaj",
+    "cancel": "Anuluj",
+    "addFormTodo": "Formularz dodawania budżetu (TODO)"
+  },
+  "snackbar": {
+    "categoriesFetchError": "Nie udało się pobrać listy kategorii",
+    "budgetsFetchError": "Nie udało się pobrać danych o budżetach",
+    "comingSoon": "Wkrótce dostępne",
+    "budgetCreated": "Budżet został utworzony",
+    "budgetCreateError": "Nie udało się utworzyć budżetu. Spróbuj ponownie."
+  },
+  "form": {
+    "name": "Nazwa *",
+    "descriptionOptional": "Opis (opcjonalnie)",
+    "category": "Kategoria *",
+    "categoriesLoading": "Ładowanie kategorii...",
+    "chooseCategory": "Wybierz kategorię"
+  },
+  "validation": {
+    "nameRequired": "Nazwa jest wymagana",
+    "categoryRequired": "Kategoria jest wymagana",
+    "descriptionMax": "Opis może mieć maksymalnie 255 znaków"
+  },
+  "filters": {
+    "search": "Szukaj",
+    "category": "Kategoria",
+    "dateFrom": "Data od",
+    "dateTo": "Data do",
+    "amountFrom": "Kwota od",
+    "amountTo": "Kwota do",
+    "archived": "Archiwalny",
+    "periodType": "Typ okresu",
+    "all": "Wszystkie",
+    "reset": "Reset",
+    "categoriesSelected": "Wybrano: {{selected}}/{{total}}"
+  },
+  "columns": {
+    "category": "Kategoria",
+    "amount": "Kwota",
+    "periodStart": "Od",
+    "periodEnd": "Do",
+    "periodType": "Typ"
+  },
+  "periodType": {
+    "week": "Tygodniowy",
+    "month": "Miesięczny",
+    "year": "Roczny",
+    "custom": "Niestandardowy",
+    "unknown": "Nieznany"
+  }
+}

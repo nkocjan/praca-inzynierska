@@ -14,5 +14,9 @@ public interface BudgetRepository extends JpaRepository<BudgetEntity, UUID>, Jpa
 
     void deleteByCategory_User_Id(UUID userId);
 
+    void deleteByCategory_Id(UUID categoryId);
+
+    boolean existsByIdAndCategory_User_Id(UUID id, UUID userId);
+
     void deleteByCategory_IdInAndCategory_User_Id(Collection<UUID> categoryIds, UUID userId);
 }

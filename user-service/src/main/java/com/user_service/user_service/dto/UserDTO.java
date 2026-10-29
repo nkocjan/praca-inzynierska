@@ -18,4 +18,5 @@ public class UserDTO {
     private String phoneNumber;
     private Boolean isActive;
     private Boolean isPremium;
+    private Boolean isDemo;
 }

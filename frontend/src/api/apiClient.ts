@@ -1,7 +1,8 @@
 import axios from "axios";
 
 export const apiClient = axios.create({
-  baseURL: "http://localhost:8080",
+  // Production builds use .env.production (the server proxies /api to the BFF).
+  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8080",
   headers: {
     "Content-Type": "application/json",
   },
@@ -28,6 +29,10 @@ apiClient.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       console.error("Błąd autoryzacji (401). Wylogowywanie.");
       localStorage.removeItem("jwtToken");
+      // An expired token would otherwise leave the user on empty pages.
+      if (window.location.pathname !== "/login") {
+        window.location.assign("/login");
+      }
     }
     return Promise.reject(error);
   }

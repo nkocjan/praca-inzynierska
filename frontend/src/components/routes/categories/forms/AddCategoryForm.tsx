@@ -3,24 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { apiClient } from "../../../../api/apiClient.ts";
 import { enqueueSnackbar } from "notistack";
-
-const validationSchema = Yup.object({
-  name: Yup.string()
-    .required("Nazwa jest wymagana")
-    .min(2, "Nazwa jest za krótka"),
-  weekBudget: Yup.number()
-    .min(0, "Wartość musi być większa od 0")
-    .positive("Wartość musi być większa od 0")
-    .required("Podanie budżetu jest wymagane"),
-  monthBudget: Yup.number()
-    .min(0, "Wartość musi być większa od 0")
-    .positive("Wartość musi być większa od 0")
-    .required("Podanie budżetu jest wymagane"),
-  yearBudget: Yup.number()
-    .min(0, "Wartość musi być większa od 0")
-    .positive("Wartość musi być większa od 0")
-    .required("Podanie budżetu jest wymagane"),
-});
+import { useTranslation } from "react-i18next";
 
 interface properties {
   isEdit?: boolean;
@@ -34,6 +17,28 @@ interface properties {
 }
 
 const AddCategoryForm = (props: properties) => {
+  const { i18n, t } = useTranslation("categories");
+  const tt = (key: string, options?: Record<string, unknown>) =>
+    i18n.t(key, { ns: "categories", ...options });
+
+  const validationSchema = Yup.object({
+    name: Yup.string()
+      .required(tt("validation.nameRequired"))
+      .min(2, tt("validation.nameMin")),
+    weekBudget: Yup.number()
+      .min(0, tt("validation.valueMin"))
+      .positive(tt("validation.valueMin"))
+      .required(tt("validation.budgetRequired")),
+    monthBudget: Yup.number()
+      .min(0, tt("validation.valueMin"))
+      .positive(tt("validation.valueMin"))
+      .required(tt("validation.budgetRequired")),
+    yearBudget: Yup.number()
+      .min(0, tt("validation.valueMin"))
+      .positive(tt("validation.valueMin"))
+      .required(tt("validation.budgetRequired")),
+  });
+
   const formik = useFormik({
     initialValues: {
       id: props.id || null,
@@ -54,16 +59,16 @@ const AddCategoryForm = (props: properties) => {
       try {
         if (props.isEdit) {
           if (!props.id) {
-            throw new Error("Brak ID wydatku podczas próby edycji.");
+            throw new Error("Brak ID kategorii podczas próby edycji.");
           }
 
           await apiClient.put(`/api/bff/categories/${props.id}`, requestBody);
-          enqueueSnackbar("Kategoria zaktualizowana pomyślnie", {
+          enqueueSnackbar(t("snackbar.categoryUpdated"), {
             variant: "success",
           });
         } else {
           await apiClient.post("/api/bff/categories", requestBody);
-          enqueueSnackbar("Kategoria utworzona pomyślnie", {
+          enqueueSnackbar(t("snackbar.categoryCreated"), {
             variant: "success",
           });
         }
@@ -71,7 +76,7 @@ const AddCategoryForm = (props: properties) => {
         props.onSuccess();
       } catch (error) {
         console.error("Błąd podczas zapisywania kategorii:", error);
-        enqueueSnackbar("Wystąpił błąd. Spróbuj ponownie.", {
+        enqueueSnackbar(t("snackbar.categorySaveError"), {
           variant: "error",
         });
       } finally {
@@ -89,11 +94,10 @@ const AddCategoryForm = (props: properties) => {
         flexDirection: "column",
         gap: "8px",
         maxWidth: "450px",
-      }}
-    >
+      }}>
       <TextField
         sx={{ marginTop: "8px" }}
-        label="Nazwa"
+        label={t("form.name")}
         variant="outlined"
         disabled={props.isEdit}
         fullWidth
@@ -112,7 +116,7 @@ const AddCategoryForm = (props: properties) => {
 
       <TextField
         sx={{ marginTop: "8px" }}
-        label="Budżet tygodniowy"
+        label={t("form.weeklyBudget")}
         variant="outlined"
         fullWidth
         size="small"
@@ -130,7 +134,7 @@ const AddCategoryForm = (props: properties) => {
 
       <TextField
         sx={{ marginTop: "8px" }}
-        label="Budżet miesięczny"
+        label={t("form.monthlyBudget")}
         variant="outlined"
         fullWidth
         size="small"
@@ -148,7 +152,7 @@ const AddCategoryForm = (props: properties) => {
 
       <TextField
         sx={{ marginTop: "8px" }}
-        label="Budżet tygodniowy"
+        label={t("form.yearlyBudget")}
         variant="outlined"
         fullWidth
         size="small"

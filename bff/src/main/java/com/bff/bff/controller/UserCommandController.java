@@ -24,6 +24,14 @@ public class UserCommandController {
     private final ExpenseServiceClient expenseServiceClient;
     private final MapperExtension mapperExtension;
 
+    // Demo accounts are shared by all visitors, so wiping their data is not allowed.
+    private void assertNotDemoAccount(UUID userId) {
+        if (Boolean.TRUE.equals(userServiceClient.getUserById(userId).getIsDemo())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Demo account data cannot be reset");
+        }
+    }
+
     @PostMapping
     public ResponseEntity<UserUiDTO> createUser(@RequestBody UserCreateRequestDTO request) {
         var userDTO = userServiceClient.createUser(request);
@@ -136,6 +144,7 @@ public class UserCommandController {
     // 3. Reset danych konta (np. wyczyszczenie wszystkich transakcji i budżetów)
     @PostMapping("/{id}/reset-data")
     public ResponseEntity<Void> resetAccountData(@PathVariable UUID id) {
+        assertNotDemoAccount(id);
         budgetServiceClient.resetData(id);
         expenseServiceClient.resetData(id);
         return ResponseEntity.noContent().build();
@@ -145,6 +154,7 @@ public class UserCommandController {
     public ResponseEntity<Void> resetAccountDataMe(
             @AuthenticationPrincipal UUID userId,
             @RequestBody(required = false) ConfirmCredentialsRequestDTO _confirm) {
+        assertNotDemoAccount(userId);
         budgetServiceClient.resetData(userId);
         expenseServiceClient.resetData(userId);
         return ResponseEntity.noContent().build();

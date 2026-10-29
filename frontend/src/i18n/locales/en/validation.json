@@ -1,0 +1,18 @@
+{
+  "required": "This field is required",
+  "nameRequired": "First name is required",
+  "surnameRequired": "Last name is required",
+  "usernameMin": "Username must be at least {{min}} characters",
+  "usernameRequired": "Username is required",
+  "passwordMin": "Password must be at least {{min}} characters",
+  "passwordUppercase": "Must include at least one uppercase letter",
+  "passwordNumber": "Must include at least one number",
+  "passwordRequired": "Password is required",
+  "confirmPasswordMatch": "Passwords must match",
+  "confirmPasswordRequired": "Please confirm your password",
+  "emailInvalid": "Invalid email format",
+  "emailRequired": "Email is required",
+  "confirmEmailMatch": "Emails must match",
+  "confirmEmailRequired": "Please confirm your email",
+  "phoneRequired": "Phone number is required"
+}

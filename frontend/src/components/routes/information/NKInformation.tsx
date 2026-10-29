@@ -1,223 +1,313 @@
 import Grid from "@mui/material/Grid2";
 import {
-    Box,
-    Divider,
-    List,
-    ListItem,
-    ListItemText,
-    Paper,
-    Typography,
+  Box,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Typography,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const NKInformation = () => {
-    return (
-        <Grid container spacing={3} sx={{ padding: 3, marginTop: 5 }}>
-            <Grid size={12}>
-                <Typography variant="h4" gutterBottom>
-                    Informacje o aplikacji
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                    Aplikacja do zarządzania budżetami i wydatkami w kategoriach — zaprojektowana jako projekt
-                    portfolio oraz przykład rozwiązania opartego o mikroserwisy.
-                </Typography>
-            </Grid>
+  const { t } = useTranslation("information");
 
-            <Grid size={12}>
-                <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Typography variant="h5" gutterBottom>
-                        1) Instrukcja korzystania (dla nietechnicznych)
-                    </Typography>
-                    <Divider sx={{ mb: 2 }} />
+  return (
+    <Grid
+      container
+      spacing={3}
+      sx={{ padding: 3, marginTop: 5 }}>
+      <Grid size={12}>
+        <Typography
+          variant="h4"
+          gutterBottom>
+          {t("title")}
+        </Typography>
+        <Typography
+          variant="body1"
+          color="text.secondary">
+          {t("description")}
+        </Typography>
+      </Grid>
 
-                    <List dense>
-                        <ListItem>
-                            <ListItemText
-                                primary="1. Zarejestruj konto i zaloguj się"
-                                secondary="Po zalogowaniu aplikacja zapamięta Twoją sesję i pokaże panel główny."
-                            />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText
-                                primary="2. Dodaj kategorie"
-                                secondary="Kategorie to np. Jedzenie, Transport, Rozrywka — w nich grupujesz wydatki i budżety."
-                            />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText
-                                primary="3. Ustaw budżety"
-                                secondary="Dla każdej kategorii możesz ustawić budżet tygodniowy, miesięczny i roczny."
-                            />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText
-                                primary="4. Dodawaj wydatki"
-                                secondary="Wydatki przypisujesz do kategorii, z datą i kwotą. Aplikacja zestawia je z budżetem."
-                            />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText
-                                primary="5. Sprawdzaj dashboard"
-                                secondary="W panelu głównym zobaczysz podsumowania, wykresy oraz informację czy mieścisz się w budżecie."
-                            />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText
-                                primary="6. Zarządzaj danymi w ustawieniach"
-                                secondary="Możesz zmienić dane konta, zresetować dane lub usunąć konto."
-                            />
-                        </ListItem>
-                    </List>
-                </Paper>
-            </Grid>
+      <Grid size={12}>
+        <Paper
+          variant="outlined"
+          sx={{ p: 2 }}>
+          <Typography
+            variant="h5"
+            gutterBottom>
+            {t("usage.title")}
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
 
-            <Grid size={12}>
-                <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Typography variant="h5" gutterBottom>
-                        2) Opis techniczny (dla technicznych)
-                    </Typography>
-                    <Divider sx={{ mb: 2 }} />
+          <List dense>
+            <ListItem>
+              <ListItemText
+                primary={t("usage.items.register.primary")}
+                secondary={t("usage.items.register.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("usage.items.categories.primary")}
+                secondary={t("usage.items.categories.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("usage.items.budgets.primary")}
+                secondary={t("usage.items.budgets.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("usage.items.expenses.primary")}
+                secondary={t("usage.items.expenses.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("usage.items.dashboard.primary")}
+                secondary={t("usage.items.dashboard.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("usage.items.settings.primary")}
+                secondary={t("usage.items.settings.secondary")}
+              />
+            </ListItem>
+          </List>
+        </Paper>
+      </Grid>
 
-                    <Typography variant="body1" gutterBottom>
-                        Rozwiązanie jest oparte o architekturę rozproszoną: frontend komunikuje się z warstwą BFF
-                        (Backend For Frontend), a BFF orkiestruje wywołania do niezależnych mikroserwisów.
-                    </Typography>
+      <Grid size={12}>
+        <Paper
+          variant="outlined"
+          sx={{ p: 2 }}>
+          <Typography
+            variant="h5"
+            gutterBottom>
+            {t("technical.title")}
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
 
-                    <Box sx={{ mt: 1 }}>
-                        <Typography variant="subtitle1" gutterBottom>
-                            Skład systemu:
-                        </Typography>
-                        <List dense>
-                            <ListItem>
-                                <ListItemText
-                                    primary="Frontend (React + TypeScript)"
-                                    secondary="Aplikacja SPA: widoki, formularze, wykresy, walidacja, komunikacja HTTP."
-                                />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText
-                                    primary="BFF (Spring Boot)"
-                                    secondary="Jedno wejście z frontu, autoryzacja JWT, agregacja danych, wywołania OpenFeign do serwisów."
-                                />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText
-                                    primary="user-service"
-                                    secondary="Operacje konta użytkownika (np. rejestracja, logowanie, dane profilu)."
-                                />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText
-                                    primary="budget-service"
-                                    secondary="Kategorie oraz budżety (np. tygodniowy/miesięczny/roczny), logika resetowania budżetów."
-                                />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText
-                                    primary="expense-service"
-                                    secondary="Wydatki oraz operacje bulk (np. reset danych), przygotowanie danych do dashboardu."
-                                />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText
-                                    primary="Bazy danych (PostgreSQL)"
-                                    secondary="Oddzielne bazy dla serwisów; część środowiska zakłada replikację instancji expense DB."
-                                />
-                            </ListItem>
-                        </List>
-                    </Box>
+          <Typography
+            variant="body1"
+            gutterBottom>
+            {t("technical.intro")}
+          </Typography>
 
-                    <Typography variant="body2" color="text.secondary">
-                        Bezpieczeństwo: komunikacja front→BFF używa tokenu JWT (Bearer), a BFF przekazuje kontekst
-                        użytkownika do mikroserwisów.
-                    </Typography>
-                </Paper>
-            </Grid>
+          <Box sx={{ mt: 1 }}>
+            <Typography
+              variant="subtitle1"
+              gutterBottom>
+              {t("technical.systemPartsTitle")}
+            </Typography>
+            <List dense>
+              <ListItem>
+                <ListItemText
+                  primary={t("technical.parts.frontend.primary")}
+                  secondary={t("technical.parts.frontend.secondary")}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary={t("technical.parts.bff.primary")}
+                  secondary={t("technical.parts.bff.secondary")}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary={t("technical.parts.userService.primary")}
+                  secondary={t("technical.parts.userService.secondary")}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary={t("technical.parts.budgetService.primary")}
+                  secondary={t("technical.parts.budgetService.secondary")}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary={t("technical.parts.expenseService.primary")}
+                  secondary={t("technical.parts.expenseService.secondary")}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary={t("technical.parts.databases.primary")}
+                  secondary={t("technical.parts.databases.secondary")}
+                />
+              </ListItem>
+            </List>
+          </Box>
 
-            <Grid size={12}>
-                <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Typography variant="h5" gutterBottom>
-                        3) Wykorzystane technologie
-                    </Typography>
-                    <Divider sx={{ mb: 2 }} />
+          <Typography
+            variant="body2"
+            color="text.secondary">
+            {t("technical.security")}
+          </Typography>
+        </Paper>
+      </Grid>
 
-                    <Typography variant="subtitle1" gutterBottom>
-                        Frontend
-                    </Typography>
-                    <List dense>
-                        <ListItem>
-                            <ListItemText primary="React + TypeScript" secondary="SPA, komponenty, routing" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Vite" secondary="Dev server i build" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Material UI" secondary="Komponenty UI" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Axios" secondary="Komunikacja HTTP + interceptory" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Formik + Yup" secondary="Formularze + walidacja" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="notistack" secondary="Powiadomienia (snackbars)" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Chart.js" secondary="Wizualizacje na dashboardzie" />
-                        </ListItem>
-                    </List>
+      <Grid size={12}>
+        <Paper
+          variant="outlined"
+          sx={{ p: 2 }}>
+          <Typography
+            variant="h5"
+            gutterBottom>
+            {t("technologies.title")}
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
 
-                    <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
-                        Backend
-                    </Typography>
-                    <List dense>
-                        <ListItem>
-                            <ListItemText primary="Java 21" secondary="Język/Platforma" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Spring Boot 3" secondary="REST, konfiguracja, Actuator" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Spring Security + JWT" secondary="Autoryzacja i ochrona endpointów" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Spring Data JPA / Hibernate" secondary="Warstwa danych" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="OpenFeign" secondary="Komunikacja BFF→mikroserwisy" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Kafka" secondary="Komunikacja asynchroniczna (eventy)" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="MapStruct + Lombok" secondary="Mapowania DTO i redukcja boilerplate" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="OpenAPI / springdoc" secondary="Dokumentacja API" />
-                        </ListItem>
-                    </List>
+          <Typography
+            variant="subtitle1"
+            gutterBottom>
+            {t("technologies.frontendTitle")}
+          </Typography>
+          <List dense>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.frontend.react.primary")}
+                secondary={t("technologies.frontend.react.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.frontend.vite.primary")}
+                secondary={t("technologies.frontend.vite.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.frontend.mui.primary")}
+                secondary={t("technologies.frontend.mui.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.frontend.axios.primary")}
+                secondary={t("technologies.frontend.axios.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.frontend.formikYup.primary")}
+                secondary={t("technologies.frontend.formikYup.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.frontend.notistack.primary")}
+                secondary={t("technologies.frontend.notistack.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.frontend.chart.primary")}
+                secondary={t("technologies.frontend.chart.secondary")}
+              />
+            </ListItem>
+          </List>
 
-                    <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
-                        Infrastruktura / narzędzia
-                    </Typography>
-                    <List dense>
-                        <ListItem>
-                            <ListItemText primary="PostgreSQL 16" secondary="Bazy danych dla mikroserwisów" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Docker + Docker Compose" secondary="Uruchamianie środowiska lokalnie" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Maven" secondary="Budowanie backendu" />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="OpenAPI Generator" secondary="Generowanie klienta API dla frontendu" />
-                        </ListItem>
-                    </List>
-                </Paper>
-            </Grid>
-        </Grid>
-    );
+          <Typography
+            variant="subtitle1"
+            gutterBottom
+            sx={{ mt: 2 }}>
+            {t("technologies.backendTitle")}
+          </Typography>
+          <List dense>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.backend.java.primary")}
+                secondary={t("technologies.backend.java.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.backend.spring.primary")}
+                secondary={t("technologies.backend.spring.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.backend.security.primary")}
+                secondary={t("technologies.backend.security.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.backend.jpa.primary")}
+                secondary={t("technologies.backend.jpa.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.backend.feign.primary")}
+                secondary={t("technologies.backend.feign.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.backend.kafka.primary")}
+                secondary={t("technologies.backend.kafka.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.backend.mapstruct.primary")}
+                secondary={t("technologies.backend.mapstruct.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.backend.openapi.primary")}
+                secondary={t("technologies.backend.openapi.secondary")}
+              />
+            </ListItem>
+          </List>
+
+          <Typography
+            variant="subtitle1"
+            gutterBottom
+            sx={{ mt: 2 }}>
+            {t("technologies.infraTitle")}
+          </Typography>
+          <List dense>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.infra.postgres.primary")}
+                secondary={t("technologies.infra.postgres.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.infra.docker.primary")}
+                secondary={t("technologies.infra.docker.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.infra.maven.primary")}
+                secondary={t("technologies.infra.maven.secondary")}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={t("technologies.infra.generator.primary")}
+                secondary={t("technologies.infra.generator.secondary")}
+              />
+            </ListItem>
+          </List>
+        </Paper>
+      </Grid>
+    </Grid>
+  );
 };
 
 export default NKInformation;

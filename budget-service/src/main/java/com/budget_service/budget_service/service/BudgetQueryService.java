@@ -84,7 +84,8 @@ public class BudgetQueryService {
         Map<BudgetType, BigDecimal> configMap = activeConfigs.stream()
                 .collect(Collectors.toMap(
                         BudgetConfigHistoryEntity::getBudgetType,
-                        BudgetConfigHistoryEntity::getAmount
+                        BudgetConfigHistoryEntity::getAmount,
+                        (existing, replacement) -> existing
                 ));
 
         GetDefaultBudgetsResponseDTO response = new GetDefaultBudgetsResponseDTO();

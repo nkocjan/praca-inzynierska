@@ -15,61 +15,62 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import dayjs, { Dayjs } from "dayjs";
-import { ExpanseStatusEnum } from "../../../../types/enums/ExpanseStatusEnum.tsx";
-import { ICategory } from "../../../../types/interfaces/ICategory.tsx";
 
 import { useSnackbar } from "notistack";
 import { apiClient } from "../../../../api/apiClient.ts";
 import {
+  CategoryUiDTO,
   CreateExpenseRequestUiDTO,
   UpdateExpenseRequestUiDTO,
 } from "../../../../api/generated";
 import { useEffect, useState } from "react";
-
-const validationSchema = Yup.object({
-  name: Yup.string().required("Nazwa jest wymagana"),
-  category: Yup.string().required("Kategoria jest wymagana"),
-  amount: Yup.number()
-    .min(0.01, "Kwota musi być większa niż 0")
-    .required("Kwota jest wymagana"),
-  date: Yup.mixed<Dayjs>().nullable().required("Data jest wymagana"),
-  planned: Yup.boolean().required("Wybierz opcję"),
-  description: Yup.string().max(
-    255,
-    "Opis nie może być dłuższy niż 255 znaków",
-  ),
-});
+import { useTranslation } from "react-i18next";
 
 interface properties {
   isEdit?: boolean;
   id?: string;
   name?: string;
   description?: string;
-  category?: ICategory;
+  category?: { id?: string; name?: string };
   amount?: number;
   date?: Dayjs;
-  planned?: ExpanseStatusEnum;
+  planned?: boolean;
   onSuccess: () => void;
   formId?: string;
 }
 
 const AddExpenseForm = (props: properties) => {
   const { enqueueSnackbar } = useSnackbar();
+  const { t, i18n } = useTranslation("expenses");
 
-  const [categories, setCategories] = useState<ICategory[]>([]);
+  const tt = (key: string, options?: Record<string, unknown>) =>
+    i18n.t(key, { ns: "expenses", ...options });
+
+  const validationSchema = Yup.object({
+    name: Yup.string().required(tt("validation.nameRequired")),
+    category: Yup.string().required(tt("validation.categoryRequired")),
+    amount: Yup.number()
+      .min(0.01, tt("validation.amountMin"))
+      .required(tt("validation.amountRequired")),
+    date: Yup.mixed<Dayjs>().nullable().required(tt("validation.dateRequired")),
+    planned: Yup.boolean().required(tt("validation.plannedRequired")),
+    description: Yup.string().max(255, tt("validation.descriptionMax")),
+  });
+
+  const [categories, setCategories] = useState<CategoryUiDTO[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         setLoadingCategories(true);
-        const response = await apiClient.get<ICategory[]>(
-          "/api/bff/categories",
+        const response = await apiClient.get<CategoryUiDTO[]>(
+          "/api/bff/categories/combo",
         );
         setCategories(response.data);
       } catch (error) {
         console.error("Nie udało się pobrać kategorii:", error);
-        enqueueSnackbar("Nie udało się pobrać listy kategorii", {
+        enqueueSnackbar(t("snackbar.categoriesFetchError"), {
           variant: "error",
         });
       } finally {
@@ -78,7 +79,7 @@ const AddExpenseForm = (props: properties) => {
     };
 
     void fetchCategories();
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, t]);
 
   const formik = useFormik({
     initialValues: {
@@ -87,9 +88,7 @@ const AddExpenseForm = (props: properties) => {
       category: props.category?.id ?? "",
       amount: props.amount ?? "",
       date: props.date ? dayjs(props.date) : dayjs(),
-      planned: props.planned
-        ? props.planned !== ExpanseStatusEnum.NORMAL
-        : false,
+      planned: props.planned ?? false,
     },
     validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
@@ -107,7 +106,7 @@ const AddExpenseForm = (props: properties) => {
             date: localDateTimeString,
           };
           await apiClient.put(`/api/bff/expenses/${props.id}`, requestBody);
-          enqueueSnackbar("Wydatek zaktualizowany pomyślnie", {
+          enqueueSnackbar(t("snackbar.expenseUpdated"), {
             variant: "success",
           });
         } else {
@@ -120,12 +119,12 @@ const AddExpenseForm = (props: properties) => {
             isPlanned: values.planned,
           };
           await apiClient.post("/api/bff/expenses", requestBody);
-          enqueueSnackbar("Wydatek dodany pomyślnie", { variant: "success" });
+          enqueueSnackbar(t("snackbar.expenseAdded"), { variant: "success" });
         }
         props.onSuccess();
       } catch (error) {
         console.error("Błąd podczas zapisywania wydatku:", error);
-        enqueueSnackbar("Wystąpił błąd. Spróbuj ponownie.", {
+        enqueueSnackbar(t("snackbar.expenseSaveError"), {
           variant: "error",
         });
       } finally {
@@ -143,11 +142,10 @@ const AddExpenseForm = (props: properties) => {
         flexDirection: "column",
         gap: "8px",
         maxWidth: "450px",
-      }}
-    >
+      }}>
       <TextField
         sx={{ marginTop: "8px" }}
-        label="Nazwa"
+        label={t("form.name")}
         variant="outlined"
         fullWidth
         size="small"
@@ -165,7 +163,7 @@ const AddExpenseForm = (props: properties) => {
       />
 
       <TextField
-        label="Opis (opcjonalnie)"
+        label={t("form.descriptionOptional")}
         variant="outlined"
         fullWidth
         multiline
@@ -188,23 +186,25 @@ const AddExpenseForm = (props: properties) => {
         sx={{ width: "100%" }}
         size="small"
         error={formik.touched.category && Boolean(formik.errors.category)}
-        disabled={props.isEdit || formik.isSubmitting || loadingCategories}
-      >
-        <InputLabel>Kategoria</InputLabel>
+        disabled={props.isEdit || formik.isSubmitting || loadingCategories}>
+        <InputLabel>{t("form.category")}</InputLabel>
         <Select
           name="category"
           value={formik.values.category}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          input={<OutlinedInput label="Kategoria" />}
-        >
+          input={<OutlinedInput label={t("form.category")} />}>
           {loadingCategories && (
-            <MenuItem disabled value="">
-              Ładowanie kategorii...
+            <MenuItem
+              disabled
+              value="">
+              {t("form.categoriesLoading")}
             </MenuItem>
           )}
-          {categories.map((category) => (
-            <MenuItem key={category.id} value={category.id}>
+          {categories.map(category => (
+            <MenuItem
+              key={category.id}
+              value={category.id}>
               {category.name}
             </MenuItem>
           ))}
@@ -215,7 +215,7 @@ const AddExpenseForm = (props: properties) => {
       </FormControl>
 
       <TextField
-        label="Kwota"
+        label={t("form.amount")}
         type="number"
         variant="outlined"
         fullWidth
@@ -234,7 +234,7 @@ const AddExpenseForm = (props: properties) => {
       />
 
       <DatePicker
-        label="Data"
+        label={t("form.date")}
         value={formik.values.date}
         onChange={(date: Dayjs | null) =>
           formik.setFieldValue("date", date ? dayjs(date) : null)
@@ -261,18 +261,24 @@ const AddExpenseForm = (props: properties) => {
         sx={{ marginTop: "8px" }}
         component="fieldset"
         error={formik.touched.planned && Boolean(formik.errors.planned)}
-        disabled={props.isEdit || formik.isSubmitting}
-      >
-        <FormLabel component="legend">Czy planowany?</FormLabel>
+        disabled={props.isEdit || formik.isSubmitting}>
+        <FormLabel component="legend">{t("form.plannedQuestion")}</FormLabel>
         <RadioGroup
           row
           name="planned"
           value={formik.values.planned}
           onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-        >
-          <FormControlLabel value={true} control={<Radio />} label="Tak" />
-          <FormControlLabel value={false} control={<Radio />} label="Nie" />
+          onBlur={formik.handleBlur}>
+          <FormControlLabel
+            value={true}
+            control={<Radio />}
+            label={t("form.yes")}
+          />
+          <FormControlLabel
+            value={false}
+            control={<Radio />}
+            label={t("form.no")}
+          />
         </RadioGroup>
         {formik.touched.planned && formik.errors.planned && (
           <FormHelperText sx={{ minHeight: "20px" }}>

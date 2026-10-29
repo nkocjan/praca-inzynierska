@@ -1,0 +1,17 @@
+{
+  "appBarTitle": "Home",
+  "menu": {
+    "home": "Home",
+    "expenses": "Expenses",
+    "budget": "Budget",
+    "categories": "Categories"
+  },
+  "secondary": {
+    "information": "Information",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "snackbar": {
+    "logoutSuccess": "Logged out successfully"
+  }
+}

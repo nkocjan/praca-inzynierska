@@ -1,0 +1,55 @@
+{
+  "page": {
+    "addBudget": "Add budget",
+    "addNewBudgetTitle": "Add new budget",
+    "add": "Add",
+    "cancel": "Cancel",
+    "addFormTodo": "Budget form (TODO)"
+  },
+  "snackbar": {
+    "categoriesFetchError": "Couldn't load categories list",
+    "budgetsFetchError": "Couldn't load budgets",
+    "comingSoon": "Coming soon",
+    "budgetCreated": "Budget has been created",
+    "budgetCreateError": "Couldn't create budget. Please try again."
+  },
+  "form": {
+    "name": "Name *",
+    "descriptionOptional": "Description (optional)",
+    "category": "Category *",
+    "categoriesLoading": "Loading categories...",
+    "chooseCategory": "Choose a category"
+  },
+  "validation": {
+    "nameRequired": "Name is required",
+    "categoryRequired": "Category is required",
+    "descriptionMax": "Description must be at most 255 characters"
+  },
+  "filters": {
+    "search": "Search",
+    "category": "Category",
+    "dateFrom": "Date from",
+    "dateTo": "Date to",
+    "amountFrom": "Amount from",
+    "amountTo": "Amount to",
+    "archived": "Archived",
+    "periodType": "Period type",
+    "all": "All",
+    "reset": "Reset",
+    "categoriesSelected": "Selected: {{selected}}/{{total}}"
+  },
+  "columns": {
+    "category": "Category",
+    "amount": "Amount",
+    "periodStart": "From",
+    "periodEnd": "To",
+    "periodType": "Type"
+  },
+  "periodType": {
+    "week": "Weekly",
+    "month": "Monthly",
+    "year": "Yearly",
+    "custom": "Custom",
+    "unknown": "Unknown"
+  }
+}

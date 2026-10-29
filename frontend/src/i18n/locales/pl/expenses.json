@@ -1,0 +1,92 @@
+{
+  "page": {
+    "addExpense": "Dodaj wydatek",
+    "addNewExpenseTitle": "Dodaj nowy wydatek",
+    "loadFromFile": "Wczytaj wydatek z pliku",
+    "add": "Dodaj",
+    "cancel": "Anuluj",
+    "editExpenseTitle": "Edytuj wydatek",
+    "approveExpenseTitle": "Zatwierdź wydatek",
+    "withdrawApproveTitle": "Wycofaj zatwierdzanie wydatku",
+    "setAsPlannedTitle": "Ustaw jako zaplanowany",
+    "confirm": "Zatwierdź",
+    "confirmWithdrawal": "Potwierdź wycofanie"
+  },
+  "snackbar": {
+    "categoriesFetchError": "Nie udało się pobrać listy kategorii",
+    "expensesFetchError": "Nie udało się pobrać danych o wydatkach",
+    "comingSoon": "Funkcjonalność wkrótce!",
+    "expenseAdded": "Wydatek dodany pomyślnie",
+    "expenseUpdated": "Wydatek zaktualizowany pomyślnie",
+    "expenseSaveError": "Wystąpił błąd. Spróbuj ponownie.",
+    "expenseDeleted": "Wydatek usunięty pomyślnie",
+    "expenseDeleteError": "Nie udało się usunąć wydatku",
+    "plannedUpdated": "Zmieniono status planowania wydatku",
+    "plannedUpdateError": "Nie udało się zmienić statusu planowania wydatku",
+    "bulkDeleteSuccess": "Usunięto {{count}} wydatków",
+    "bulkDeleteError": "Nie udało się usunąć {{count}} wydatków"
+  },
+  "delete": {
+    "singleTitle": "Czy na pewno chcesz usunąć wydatek?",
+    "bulkTitle": "Usuń wiele wydatków",
+    "saveSingle": "Usuń",
+    "saveBulk": "Potwierdź usunięcie",
+    "expenseAcc": "wydatku",
+    "expensesAcc": "wydatków"
+  },
+  "columns": {
+    "name": "Nazwa",
+    "category": "Kategoria",
+    "amount": "Kwota",
+    "date": "Data",
+    "actions": "Akcje"
+  },
+  "actions": {
+    "edit": "Edytuj",
+    "approve": "Zatwierdź",
+    "withdrawApprove": "Wycofaj zatwierdzanie",
+    "setAsPlanned": "Ustaw jako zaplanowany",
+    "unsetPlanned": "Ustaw jako nieplanowany",
+    "delete": "Usuń"
+  },
+  "filters": {
+    "search": "Szukaj",
+    "category": "Kategoria",
+    "dateFrom": "Data od",
+    "dateTo": "Data do",
+    "amountFrom": "Kwota od",
+    "amountTo": "Kwota do",
+    "planned": "Planowany",
+    "reset": "Reset",
+    "categoriesSelected": "Wybrano: {{selected}}/{{total}}"
+  },
+  "form": {
+    "name": "Nazwa",
+    "descriptionOptional": "Opis (opcjonalnie)",
+    "category": "Kategoria",
+    "categoriesLoading": "Ładowanie kategorii...",
+    "amount": "Kwota",
+    "date": "Data",
+    "plannedQuestion": "Czy planowany?",
+    "yes": "Tak",
+    "no": "Nie"
+  },
+  "validation": {
+    "nameRequired": "Nazwa jest wymagana",
+    "categoryRequired": "Kategoria jest wymagana",
+    "amountMin": "Kwota musi być większa niż 0",
+    "amountRequired": "Kwota jest wymagana",
+    "dateRequired": "Data jest wymagana",
+    "plannedRequired": "Wybierz opcję",
+    "descriptionMax": "Opis nie może być dłuższy niż 255 znaków"
+  },
+  "status": {
+    "planned": "Zaplanowany",
+    "approved": "Zatwierdzony",
+    "normal": "Zwykły"
+  },
+  "approve": {
+    "prompt": "Czy na pewno chcesz ustawić nowy stan wydatku jako",
+    "unknownStatus": "nieznany"
+  }
+}

@@ -7,8 +7,11 @@ import Divider from "@mui/material/Divider";
 import NKResetData from "./resetData/NKResetData.tsx";
 import NKDeleteAccount from "./deleteAccount/NKDeleteAccount.tsx";
 import ChangeDefaultBudgets from "./changeDefaultBudgets/ChangeDefaultBudgets.tsx";
+import { useTranslation } from "react-i18next";
 
 const NKSettings = () => {
+  const { t } = useTranslation("settings");
+
   const [changeOption, setChangeOption] = useState<ChangeOptionEnum>(
     ChangeOptionEnum.NONE,
   );
@@ -33,16 +36,18 @@ const NKSettings = () => {
   };
 
   return (
-    <Grid container spacing={3} sx={{ padding: 3, marginTop: 10 }}>
+    <Grid
+      container
+      spacing={3}
+      sx={{ padding: 3, marginTop: 10 }}>
       <Grid size={3}>
         <Paper sx={{ padding: 2 }}>
           <Typography
             variant="h6"
             gutterBottom
             onClick={() => setChangeOption(ChangeOptionEnum.NONE)}
-            sx={{ cursor: "pointer" }}
-          >
-            Ustawienia konta
+            sx={{ cursor: "pointer" }}>
+            {t("menu.title")}
           </Typography>
           <Divider sx={{ marginBottom: 4, marginTop: 4 }} />
           <Button
@@ -51,34 +56,30 @@ const NKSettings = () => {
             variant="outlined"
             onClick={() =>
               setChangeOption(ChangeOptionEnum.SET_DEFAULT_BUDGETS)
-            }
-          >
-            Ustaw domyślne budżety
+            }>
+            {t("menu.setDefaultBudgets")}
           </Button>
           <Divider sx={{ marginBottom: 4, marginTop: 4 }} />
           <Button
             fullWidth
             sx={{ marginBottom: 1 }}
             variant="outlined"
-            onClick={() => setChangeOption(ChangeOptionEnum.LOGIN)}
-          >
-            Zmień login
+            onClick={() => setChangeOption(ChangeOptionEnum.LOGIN)}>
+            {t("menu.changeLogin")}
           </Button>
           <Button
             fullWidth
             sx={{ marginBottom: 1 }}
             variant="outlined"
-            onClick={() => setChangeOption(ChangeOptionEnum.PASSWORD)}
-          >
-            Zmień hasło
+            onClick={() => setChangeOption(ChangeOptionEnum.PASSWORD)}>
+            {t("menu.changePassword")}
           </Button>
           <Button
             fullWidth
             sx={{ marginBottom: 1 }}
             variant="outlined"
-            onClick={() => setChangeOption(ChangeOptionEnum.EMAIL)}
-          >
-            Zmień email
+            onClick={() => setChangeOption(ChangeOptionEnum.EMAIL)}>
+            {t("menu.changeEmail")}
           </Button>
           <Divider sx={{ marginBottom: 4, marginTop: 4 }} />
           <Button
@@ -86,18 +87,16 @@ const NKSettings = () => {
             sx={{ marginBottom: 1 }}
             variant="outlined"
             color="warning"
-            onClick={() => setChangeOption(ChangeOptionEnum.RESET_DATA)}
-          >
-            Resetuj dane
+            onClick={() => setChangeOption(ChangeOptionEnum.RESET_DATA)}>
+            {t("menu.resetData")}
           </Button>
           <Button
             fullWidth
             sx={{ marginBottom: 1 }}
             variant="outlined"
             color="warning"
-            onClick={() => setChangeOption(ChangeOptionEnum.RESET_CATEGORIES)}
-          >
-            Resetuj wybrane kategorie
+            onClick={() => setChangeOption(ChangeOptionEnum.RESET_CATEGORIES)}>
+            {t("menu.resetCategories")}
           </Button>
           <Divider sx={{ marginBottom: 4, marginTop: 4 }} />
           <Button
@@ -105,9 +104,8 @@ const NKSettings = () => {
             sx={{ marginBottom: 1 }}
             variant="outlined"
             color="error"
-            onClick={() => setChangeOption(ChangeOptionEnum.DELETE_ACCOUNT)}
-          >
-            Usuń konto
+            onClick={() => setChangeOption(ChangeOptionEnum.DELETE_ACCOUNT)}>
+            {t("menu.deleteAccount")}
           </Button>
         </Paper>
       </Grid>

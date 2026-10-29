@@ -75,8 +75,9 @@ public class ExpenseCommandService {
         expenseRepository.deleteByUser_Id(userId);
     }
 
+    // userId must stay the last parameter: ShardAspect routes on args(.., userId).
     @Transactional
-    public void resetSelectedCategories(UUID userId, ResetCategoriesRequestDTO request) {
+    public void resetSelectedCategories(ResetCategoriesRequestDTO request, UUID userId) {
         List<UUID> categoryIds = request != null ? request.getCategoryIds() : null;
         if (categoryIds == null || categoryIds.isEmpty()) {
             return;
