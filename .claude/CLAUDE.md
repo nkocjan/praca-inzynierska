@@ -27,8 +27,8 @@ Modules, ports and local setup: `README.md`. Databases, demo data and the reset 
 
 What the server runs now, seen from outside: login fails (the BFF calls a hardcoded `localhost:8081` and gets
 "Connection refused"), and the frontend is `dev` plus an uncommitted edit of `frontend/src/api/apiClient.ts`
-(`baseURL: "/api"`). The code to deploy is on branch `claude/tender-mccarthy-ei79vs` (or `dev` once it is
-merged): security and data fixes, demo accounts, reset script, demo panel on the login page.
+(`baseURL: "/api"`). The code to deploy is on `dev`, the only branch: security and data fixes, demo accounts,
+reset script, demo panel on the login page, the June frontend work (i18n, theme, wired actions).
 
 1. Look before touching anything:
    ```bash
@@ -41,7 +41,7 @@ merged): security and data fixes, demo accounts, reset script, demo panel on the
    real server configuration: move it into environment variables or re-apply it after the update, never
    just drop it.
 2. Update the code: discard or stash the saved edits, then
-   `git fetch origin && git checkout claude/tender-mccarthy-ei79vs && git pull`.
+   `git fetch --prune origin && git checkout dev && git pull`.
 3. Service configuration, wherever the services are started:
    - `JWT_SECRET`: one value for both `user-service` and `bff`, generated once with
      `openssl rand -base64 48` and kept only on the server. Without it both use the development key from
