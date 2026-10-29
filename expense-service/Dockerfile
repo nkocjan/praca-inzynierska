@@ -24,7 +24,7 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 # Ustalenie portu, na którym aplikacja będzie nasłuchiwać
-EXPOSE 8080
+EXPOSE 28081
 
 # Polecenie uruchamiające aplikację
 ENTRYPOINT ["java", "-jar", "app.jar"]

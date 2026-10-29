@@ -2,8 +2,12 @@ name: Deploy to VPS
 
 on:
   push:
-    branches: [ dev, main, master ]
+    branches: [ dev ]
   workflow_dispatch:
+
+concurrency:
+  group: deploy-praca-inzynierska
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -16,7 +20,13 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          # Budowa czterech serwisów Mavena trwa kilka minut.
+          command_timeout: 30m
           script: |
+            set -eu
             cd /home/nkocjan/apps/praca-inzynierska
-            git pull
-            docker compose -f docker-compose.yaml up -d --build
+            git pull --ff-only origin dev
+            # Po jednym obrazie naraz: równoległe buildy Mavena zjadłyby pamięć działających aplikacji.
+            docker compose --parallel 1 build
+            docker compose up -d --remove-orphans
+            docker image prune -f || true
