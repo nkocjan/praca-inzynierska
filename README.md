@@ -28,3 +28,5 @@ Szczegóły baz danych, danych demo i resetu przez cron: [db/README.md](db/READM
 - `JWT_SECRET` — ta sama wartość dla `user-service` i `bff` (np. `openssl rand -base64 48`). Bez niej
   serwisy używają klucza deweloperskiego z repozytorium, którym każdy może podpisać własny token.
 - Frontend budowany przez `npm run build` używa `VITE_API_URL` z `frontend/.env.production` (`/api`).
+- Na serwerze całość (bazy, serwisy, frontend) startuje z `docker-compose.yaml`; `JWT_SECRET` czyta z `.env`
+  obok niego. Wdrożenie: push na `dev` (`.github/workflows/deploy.yml`).
