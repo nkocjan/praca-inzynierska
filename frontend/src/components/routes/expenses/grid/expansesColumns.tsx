@@ -4,26 +4,13 @@ import { useState } from "react";
 import { ExpanseStatusEnum } from "../../../../types/enums/ExpanseStatusEnum.tsx";
 import { useDialog } from "../../../../lib/dialog/NKDialogContext.tsx";
 import AddExpanseForm from "../forms/AddEditExpanseForm.tsx";
-import { Chip, IconButton, Menu, MenuItem } from "@mui/material";
+import { IconButton, Menu, MenuItem } from "@mui/material";
 import { IExpanse } from "../../../../types/interfaces/IExpanse.tsx";
 import * as React from "react";
 import dayjs from "dayjs";
 import ApproveStatusChange from "../forms/ApproveStatusChange.tsx";
 import ConfirmDelete from "../../../../lib/dialog/templates/ConfirmDelete.tsx";
 import { formatPolishDate } from "../../../../lib/dateUtils.ts";
-
-const getStatusLabel = (status: ExpanseStatusEnum) => {
-  switch (status) {
-    case ExpanseStatusEnum.PLANNED:
-      return { label: "Zaplanowany", color: "warning" };
-    case ExpanseStatusEnum.APPROVED:
-      return { label: "Zatwierdzony", color: "success" };
-    case ExpanseStatusEnum.NORMAL:
-      return { label: "Dynamiczny", color: "info" };
-    default:
-      return { label: "Nieznany", color: "default" };
-  }
-};
 
 const ActionMenu = ({
   row,

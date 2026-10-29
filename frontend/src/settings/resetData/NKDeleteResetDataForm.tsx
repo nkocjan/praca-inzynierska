@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { apiClient } from "../../api/apiClient";
 import { useSnackbar } from "notistack";
+import { demoAwareErrorMessage } from "../../lib/errors/demoAccountError.ts";
 import { useDialog } from "../../lib/dialog/NKDialogContext";
 
 type Mode = "reset-data" | "delete-account";
@@ -48,7 +49,9 @@ const NKDeleteResetDataForm = (props: Props) => {
         props.onSuccess?.();
       } catch (error) {
         console.error("Błąd operacji ustawień:", error);
-        enqueueSnackbar("Operacja nie powiodła się", { variant: "error" });
+        enqueueSnackbar(demoAwareErrorMessage(error, "Operacja nie powiodła się"), {
+          variant: "error",
+        });
       } finally {
         setSubmitting(false);
       }

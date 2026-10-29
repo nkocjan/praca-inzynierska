@@ -8,6 +8,7 @@ import {useFormik} from "formik";
 import * as Yup from "yup";
 import {apiClient} from "../../api/apiClient";
 import {useSnackbar} from "notistack";
+import {demoAwareErrorMessage} from "../../lib/errors/demoAccountError.ts";
 
 interface properties {
     changeOption: ChangeOptionEnum;
@@ -148,7 +149,7 @@ const NKChangeData = (props: properties) => {
                 resetForm();
             } catch (error) {
                 console.error("Błąd zapisu ustawień:", error);
-                enqueueSnackbar("Nie udało się zapisać zmian", {variant: "error"});
+                enqueueSnackbar(demoAwareErrorMessage(error, "Nie udało się zapisać zmian"), {variant: "error"});
             } finally {
                 setSubmitting(false);
             }

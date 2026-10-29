@@ -17,7 +17,6 @@ interface CategoriesFiltersProps {
 const CategoriesFilters: FC<CategoriesFiltersProps> = ({
   nameFilter,
   setNameFilter,
-  hasAdditionalBudgets,
   setHasAdditionalBudgets,
   hasExceededBudget,
   setHasExceededBudget,
