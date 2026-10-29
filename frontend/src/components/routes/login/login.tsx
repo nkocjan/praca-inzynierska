@@ -1,20 +1,32 @@
-import { NKTextInput } from "../../../lib/Input/TextInput.tsx";
-import { NKButton } from "../../../lib/button/Button.tsx";
-import Grid from "@mui/material/Grid2";
-import { Stack, Typography } from "@mui/material";
-import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
-import { useSnackbar } from "notistack";
-import { apiClient } from "../../../api/apiClient"; // Upewnij się, że ścieżka jest poprawna
 import { useState } from "react";
-import { AuthRequestDTO } from "../../../api/generated/api.ts";
+import {
+  Button,
+  Divider,
+  IconButton,
+  InputAdornment,
+  Link,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
+import { useFormik } from "formik";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
+import { apiClient } from "../../../api/apiClient";
+import { AuthRequestDTO } from "../../../api/generated/api.ts";
+import AuthLayout from "../../auth/AuthLayout.tsx";
 import DemoAccountsPanel from "./DemoAccountsPanel.tsx";
 
 const Login = () => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { t } = useTranslation("auth");
 
   const login = async (values: AuthRequestDTO) => {
@@ -51,71 +63,107 @@ const Login = () => {
   });
 
   return (
-    <Grid
-      container
-      component="main"
-      spacing={4}
-      justifyContent="center"
-      alignItems="center"
-      sx={{ minHeight: "100vh", p: 2 }}>
-      <Grid size={{ xs: 12, sm: 8, md: 5, lg: 4 }}>
-        <form onSubmit={formik.handleSubmit}>
-          <Stack spacing={3}>
-            <Typography
-              variant="h4"
-              component="h1">
-              {t("login.title")}
-            </Typography>
+    <AuthLayout>
+      <Typography
+        variant="h4"
+        component="h1"
+        sx={{ mb: 1 }}>
+        {t("login.heading")}
+      </Typography>
+      <Typography
+        color="text.secondary"
+        sx={{ mb: 4 }}>
+        {t("login.subtitle")}
+      </Typography>
 
-            <NKTextInput
-              label={t("login.username")}
-              required={true}
-              name="username"
-              value={formik.values.username}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
+      <form
+        onSubmit={formik.handleSubmit}
+        noValidate>
+        <Stack spacing={2.5}>
+          <TextField
+            label={t("login.username")}
+            name="username"
+            autoComplete="username"
+            required
+            fullWidth
+            value={formik.values.username}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PersonOutlineIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+          <TextField
+            label={t("login.password")}
+            name="password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
+            required
+            fullWidth
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockOutlinedIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      edge="end"
+                      size="small"
+                      aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
+                      onClick={() => setShowPassword(value => !value)}>
+                      {showPassword ? (
+                        <VisibilityOffOutlinedIcon fontSize="small" />
+                      ) : (
+                        <VisibilityOutlinedIcon fontSize="small" />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            fullWidth
+            disabled={loading}>
+            {loading ? t("login.submitting") : t("login.submit")}
+          </Button>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ textAlign: "center" }}>
+            {t("login.noAccount")}{" "}
+            <Link
+              component={RouterLink}
+              to="/register"
+              fontWeight={600}>
+              {t("login.registerLink")}
+            </Link>
+          </Typography>
+        </Stack>
+      </form>
 
-            <NKTextInput
-              label={t("login.password")}
-              required={true}
-              type="password"
-              name="password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
-            />
+      <Divider sx={{ my: 4, color: "text.secondary", fontSize: "0.85rem" }}>{t("demo.divider")}</Divider>
 
-            <Stack
-              direction="row"
-              spacing={2}>
-              <NKButton
-                title={loading ? t("login.submitting") : t("login.submit")}
-                type="submit"
-                disabled={loading}
-              />
-              <NKButton
-                type="button"
-                title={t("login.register")}
-                onClick={() => navigate("/register")}
-              />
-            </Stack>
-          </Stack>
-        </form>
-      </Grid>
-
-      {/* On narrow screens the demo accounts come first: that is what most visitors want. */}
-      <Grid
-        size={{ xs: 12, sm: 8, md: 6, lg: 5 }}
-        sx={{ order: { xs: -1, md: 0 } }}>
-        <DemoAccountsPanel
-          disabled={loading}
-          onLogin={(username, password) => login({ username, password })}
-        />
-      </Grid>
-    </Grid>
+      <DemoAccountsPanel
+        disabled={loading}
+        onLogin={(username, password) => login({ username, password })}
+      />
+    </AuthLayout>
   );
 };
 

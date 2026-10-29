@@ -1,9 +1,8 @@
 {
-  "appBarTitle": "Strona główna",
   "menu": {
-    "home": "Strona główna",
+    "home": "Pulpit",
     "expenses": "Wydatki",
-    "budget": "Budżet",
+    "budget": "Budżety",
     "categories": "Kategorie"
   },
   "secondary": {
@@ -11,6 +10,12 @@
     "settings": "Ustawienia",
     "logout": "Wyloguj się"
   },
+  "sections": {
+    "finance": "Finanse",
+    "account": "Konto"
+  },
+  "openMenu": "Otwórz menu",
+  "demoAccount": "Konto demo",
   "snackbar": {
     "logoutSuccess": "Wylogowano pomyślnie"
   }

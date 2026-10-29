@@ -1,4 +1,4 @@
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { SnackbarProvider } from "notistack";
@@ -22,6 +22,7 @@ import PublicRoute from "./components/auth/PublicRoute.tsx";
 import i18n, { normalizeLanguage } from "./i18n/i18n";
 import ColorModeProvider from "./theme/ColorModeProvider";
 import { useColorMode } from "./theme/useColorMode";
+import { createAppTheme } from "./theme/theme";
 
 const AppContent = () => {
   // Hook zapewnia re-render po zmianie języka
@@ -29,15 +30,7 @@ const AppContent = () => {
   const language = normalizeLanguage(i18n.language);
 
   const { mode } = useColorMode();
-  const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode,
-        },
-      }),
-    [mode],
-  );
+  const theme = useMemo(() => createAppTheme(mode), [mode]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -45,7 +38,8 @@ const AppContent = () => {
       <LocalizationProvider
         dateAdapter={AdapterDayjs}
         adapterLocale={language}>
-        <SnackbarProvider /* ...propsy... */>
+        <SnackbarProvider
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
           <DialogProvider>
             <Router>
               <Routes>

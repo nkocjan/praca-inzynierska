@@ -1,18 +1,16 @@
-import {
-  Box,
-  Button,
-  Chip,
-  Divider,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Avatar, Box, ButtonBase, Stack, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import { useTranslation } from "react-i18next";
 
 // Keep in sync with db/sql/demo-data.sql (accounts are recreated by db/reset-demo-data.sh).
 // Titles and descriptions live in the "auth" translations under demo.accounts.<username>.
 export const DEMO_PASSWORD = "demo1234";
-const DEMO_USERNAMES = ["demo", "student", "rodzina"];
+const DEMO_ACCOUNTS = [
+  { username: "demo", initials: "AK" },
+  { username: "student", initials: "JN" },
+  { username: "rodzina", initials: "KW" },
+];
 
 interface Props {
   disabled: boolean;
@@ -23,78 +21,69 @@ const DemoAccountsPanel = ({ disabled, onLogin }: Props) => {
   const { t } = useTranslation("auth");
 
   return (
-    <Paper
+    <Box
       component="section"
-      aria-labelledby="demo-heading"
-      variant="outlined"
-      sx={{ p: 3 }}>
-      <Stack spacing={2}>
-        <Box>
-          <Chip
-            label={t("demo.badge")}
-            color="info"
-            size="small"
-            sx={{ mb: 1 }}
-          />
-          <Typography
-            id="demo-heading"
-            variant="h6"
-            component="h2">
-            {t("demo.heading")}
-          </Typography>
-          <Typography
-            variant="body2"
-            color="text.secondary">
-            {t("demo.intro")}
-          </Typography>
-        </Box>
-
-        <Stack
-          spacing={1.5}
-          divider={<Divider flexItem />}>
-          {DEMO_USERNAMES.map(username => (
-            <Stack
-              key={username}
-              direction="row"
-              spacing={2}
-              alignItems="center"
-              justifyContent="space-between">
-              <Box>
-                <Typography variant="subtitle2">
-                  {t(`demo.accounts.${username}.title`)}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary">
-                  {t(`demo.accounts.${username}.description`)}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="text.secondary">
-                  {t("demo.loginLabel")}: <strong>{username}</strong>
-                </Typography>
-              </Box>
-              <Button
-                variant="outlined"
-                size="small"
-                disabled={disabled}
-                aria-label={t("demo.loginAs", { username })}
-                onClick={() => onLogin(username, DEMO_PASSWORD)}
-                sx={{ flexShrink: 0 }}>
-                {t("demo.loginButton")}
-              </Button>
-            </Stack>
-          ))}
-        </Stack>
-
-        <Typography
-          variant="body2"
-          color="text.secondary">
-          {t("demo.password")} <strong>{DEMO_PASSWORD}</strong>.{" "}
-          {t("demo.notice")}
-        </Typography>
+      aria-label={t("demo.heading")}>
+      <Stack spacing={1.25}>
+        {DEMO_ACCOUNTS.map(account => (
+          <ButtonBase
+            key={account.username}
+            disabled={disabled}
+            aria-label={t("demo.loginAs", { username: account.username })}
+            onClick={() => onLogin(account.username, DEMO_PASSWORD)}
+            sx={theme => ({
+              justifyContent: "flex-start",
+              textAlign: "left",
+              gap: 1.5,
+              p: 1.5,
+              borderRadius: "14px",
+              border: 1,
+              borderColor: "divider",
+              backgroundColor: "background.paper",
+              transition: theme.transitions.create(["border-color", "background-color"]),
+              "&:hover, &.Mui-focusVisible": {
+                borderColor: "primary.main",
+                backgroundColor: alpha(theme.palette.primary.main, 0.06),
+              },
+              "&:hover .demo-arrow, &.Mui-focusVisible .demo-arrow": {
+                color: "primary.main",
+                transform: "translateX(2px)",
+              },
+            })}>
+            <Avatar
+              sx={theme => ({
+                width: 40,
+                height: 40,
+                fontSize: "0.85rem",
+                fontWeight: 700,
+                color: "primary.main",
+                backgroundColor: alpha(theme.palette.primary.main, 0.12),
+              })}>
+              {account.initials}
+            </Avatar>
+            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+              <Typography variant="subtitle2">{t(`demo.accounts.${account.username}.title`)}</Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary">
+                {t(`demo.accounts.${account.username}.description`)}
+              </Typography>
+            </Box>
+            <ArrowForwardRoundedIcon
+              className="demo-arrow"
+              sx={{ color: "text.secondary", transition: "transform 150ms, color 150ms" }}
+            />
+          </ButtonBase>
+        ))}
       </Stack>
-    </Paper>
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        component="p"
+        sx={{ mt: 1.5, textAlign: "center" }}>
+        {t("demo.noticeShort", { password: DEMO_PASSWORD })}
+      </Typography>
+    </Box>
   );
 };
 

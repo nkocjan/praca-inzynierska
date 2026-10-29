@@ -1,6 +1,6 @@
 {
   "title": "About the application",
-  "description": "An application for managing budgets and expenses by category — designed as a portfolio project and an example of a microservices-based solution.",
+  "description": "An application for managing budgets and expenses by category - designed as a portfolio project and an example of a microservices-based solution.",
   "usage": {
     "title": "1) Usage guide (non-technical)",
     "items": {
@@ -10,7 +10,7 @@
       },
       "categories": {
         "primary": "2. Add categories",
-        "secondary": "Categories are e.g. Food, Transport, Entertainment — they help you group expenses and budgets."
+        "secondary": "Categories are e.g. Food, Transport, Entertainment - they help you group expenses and budgets."
       },
       "budgets": {
         "primary": "3. Set budgets",
