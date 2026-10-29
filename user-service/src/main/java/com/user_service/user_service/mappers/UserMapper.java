@@ -14,6 +14,7 @@ public interface UserMapper {
 
     @Mapping(target="isActive", constant = "true")
     @Mapping(target="isPremium", constant = "false")
+    @Mapping(target="isDemo", constant = "false")
     UserEntity createUserEntityFromDTO(UserCreateRequestDTO userDTO);
 
     void updateEntityFromDto(UserUpdateRequestDTO userDTO, @MappingTarget UserEntity entity);

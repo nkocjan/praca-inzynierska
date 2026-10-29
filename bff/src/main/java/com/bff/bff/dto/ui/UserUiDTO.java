@@ -13,4 +13,5 @@ public class UserUiDTO {
     private String phoneNumber;
     private Boolean isActive;
     private Boolean isPremium;
+    private Boolean isDemo;
 }

@@ -59,6 +59,8 @@ public class UserEntity {
     private String phoneNumber;
     private Boolean isActive;
     private Boolean isPremium;
+    // Shared demo accounts (seeded by db/reset-demo-data.sh): their credentials cannot be changed.
+    private Boolean isDemo;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -31,6 +31,7 @@ public class UserCommandService {
     public UserDTO updateUser(UUID id, UserUpdateRequestDTO request) {
         var user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        userValidator.validateNotDemoAccount(user);
         userValidator.validateForUpdate(id, request);
         mapper.updateEntityFromDto(request, user);
         UserEntity updatedUser = userRepository.save(user);
@@ -61,6 +62,7 @@ public class UserCommandService {
     public void changePassword(UUID userId, ChangePasswordRequestDTO request) {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        userValidator.validateNotDemoAccount(user);
         userValidator.validateForChangePassword(user, request);
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
@@ -70,12 +72,14 @@ public class UserCommandService {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         userValidator.validateForDelete(user);
+        userValidator.validateNotDemoAccount(user);
         userRepository.deleteById(userId);
     }
 
     public UserDTO changeNickname(UUID userId, ChangeNicknameRequestDTO request) {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        userValidator.validateNotDemoAccount(user);
 
         String newNickname = request.getNewNickname();
 
@@ -94,6 +98,7 @@ public class UserCommandService {
     public UserDTO changeEmail(UUID userId, ChangeEmailRequestDTO request) {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        userValidator.validateNotDemoAccount(user);
 
         String newEmail = request.getNewEmail();
 
