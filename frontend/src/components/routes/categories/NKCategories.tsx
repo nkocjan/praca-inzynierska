@@ -71,12 +71,9 @@ const NKCategories = () => {
           row.name.toLowerCase().includes(nameFilter.toLowerCase())) &&
         (hasAdditionalBudgets === null || row.hasCustomBudgets) &&
         (hasExceededBudget === null ||
-          (row.weeklyBudget?.spentAmount !== undefined &&
-            row.weeklyBudget.spentAmount < 0) ||
-          (row.monthlyBudget?.spentAmount !== undefined &&
-            row.monthlyBudget.spentAmount < 0) ||
-          (row.yearlyBudget?.spentAmount !== undefined &&
-            row.yearlyBudget.spentAmount < 0))
+          [row.weeklyBudget, row.monthlyBudget, row.yearlyBudget].some(
+            budget => budget !== undefined && budget.spentAmount > budget.amount,
+          ))
       );
     });
   }, [rows, nameFilter, hasAdditionalBudgets, hasExceededBudget]);

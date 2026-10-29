@@ -42,6 +42,7 @@ const ExpenseActionMenu = ({
         formId: "expense-form",
       },
       <AddExpanseForm
+        formId="expense-form"
         isEdit={true}
         id={row.id}
         amount={row.amount}
