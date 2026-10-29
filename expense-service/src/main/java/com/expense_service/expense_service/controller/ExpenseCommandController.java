@@ -61,6 +61,6 @@ public class ExpenseCommandController {
             @RequestBody ResetCategoriesRequestDTO request,
             @RequestHeader("X-User-Id") UUID headerUserId) {
         assertSameUser(headerUserId, userId);
-        expenseCommandService.resetSelectedCategories(userId, request);
+        expenseCommandService.resetSelectedCategories(request, userId);
     }
 }

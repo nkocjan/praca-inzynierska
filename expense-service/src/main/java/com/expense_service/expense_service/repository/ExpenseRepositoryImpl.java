@@ -158,12 +158,14 @@ public class ExpenseRepositoryImpl implements ExpenseRepositoryCustom {
 
     @Override
     public List<ExpenseEntity> findRecentExpenses(UUID userId) {
+        // Planned expenses dated in the future are not "recent".
         String jpql = "SELECT e FROM ExpenseEntity e " +
-                "WHERE e.user.id = :userId " +
+                "WHERE e.user.id = :userId AND e.date <= :now " +
                 "ORDER BY e.date DESC";
 
         return entityManager.createQuery(jpql, ExpenseEntity.class)
                 .setParameter("userId", userId)
+                .setParameter("now", LocalDateTime.now())
                 .setMaxResults(5)
                 .getResultList();
     }

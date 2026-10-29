@@ -24,13 +24,13 @@ public class BudgetCommandController {
     }
 
     @PostMapping
-    public BudgetDTO create(@RequestBody BudgetCreateRequestDTO dto) {
-        return budgetCommandService.create(dto);
+    public BudgetDTO create(@RequestBody BudgetCreateRequestDTO dto, @RequestHeader("X-User-Id") UUID userId) {
+        return budgetCommandService.create(dto, userId);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable UUID id) {
-        budgetCommandService.delete(id);
+    public void delete(@PathVariable UUID id, @RequestHeader("X-User-Id") UUID userId) {
+        budgetCommandService.delete(id, userId);
     }
 
     @PostMapping("/set-default")

@@ -13,8 +13,10 @@ import com.budget_service.budget_service.repository.BudgetConfigHistoryRepositor
 import com.budget_service.budget_service.repository.BudgetRepository;
 import com.budget_service.budget_service.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
@@ -31,23 +33,27 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class BudgetCommandService {
+    // Microsecond precision: LocalTime.MAX would be rounded by Postgres to midnight of the next day.
+    private static final LocalTime END_OF_DAY = LocalTime.of(23, 59, 59, 999_999_000);
+
     private final BudgetRepository budgetRepository;
     private final BudgetMapper budgetMapper;
     private final CategoryRepository categoryRepository;
     private final BudgetConfigQueryService budgetConfigQueryService;
     private final BudgetConfigHistoryRepository budgetConfigHistoryRepository;
 
-    public BudgetDTO create(BudgetCreateRequestDTO dto) {
-        CategoryEntity category = categoryRepository.getReferenceById(dto.getCategoryId());
+    public BudgetDTO create(BudgetCreateRequestDTO dto, UUID userId) {
+        CategoryEntity category = categoryRepository.findByIdAndUserId(dto.getCategoryId(), userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found: " + dto.getCategoryId()));
 
         BudgetEntity entity = budgetMapper.toEntity(dto);
         entity.setCategory(category);
         return budgetMapper.toDto(budgetRepository.save(entity));
     }
 
-    public void delete(UUID id) {
-        if (!budgetRepository.existsById(id)) {
-            throw new RuntimeException("Budget not found: " + id);
+    public void delete(UUID id, UUID userId) {
+        if (!budgetRepository.existsByIdAndCategory_User_Id(id, userId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Budget not found: " + id);
         }
 
         budgetRepository.deleteById(id);
@@ -189,22 +195,22 @@ public class BudgetCommandService {
             case WEEK:
                 LocalDate startOfWeek = forDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
                 LocalDate endOfWeek = forDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-                start = startOfWeek.atTime(0, 1, 0);
-                end = endOfWeek.atTime(LocalTime.MAX);
+                start = startOfWeek.atStartOfDay();
+                end = endOfWeek.atTime(END_OF_DAY);
                 break;
 
             case MONTH:
                 LocalDate startOfMonth = forDate.with(TemporalAdjusters.firstDayOfMonth());
                 LocalDate endOfMonth = forDate.with(TemporalAdjusters.lastDayOfMonth());
                 start = startOfMonth.atStartOfDay();
-                end = endOfMonth.atTime(LocalTime.MAX);
+                end = endOfMonth.atTime(END_OF_DAY);
                 break;
 
             case YEAR:
                 LocalDate startOfYear = forDate.with(TemporalAdjusters.firstDayOfYear());
                 LocalDate endOfYear = forDate.with(TemporalAdjusters.lastDayOfYear());
                 start = startOfYear.atStartOfDay();
-                end = endOfYear.atTime(LocalTime.MAX);
+                end = endOfYear.atTime(END_OF_DAY);
                 break;
 
             default:

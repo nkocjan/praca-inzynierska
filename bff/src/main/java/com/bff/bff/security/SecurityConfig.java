@@ -3,6 +3,7 @@ package com.bff.bff.security;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -25,6 +26,16 @@ public class SecurityConfig {
         return new JwtAuthFilter(jwtUtil);
     }
 
+    // The filter must run only inside the security chain, not as a global servlet filter.
+    @Bean
+    public FilterRegistrationBean<JwtAuthFilter> jwtAuthFilterRegistration(
+            JwtAuthFilter jwtAuthFilter) {
+        FilterRegistrationBean<JwtAuthFilter> registration =
+                new FilterRegistrationBean<>(jwtAuthFilter);
+        registration.setEnabled(false);
+        return registration;
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -43,7 +54,7 @@ public class SecurityConfig {
     @Bean
     @Order(0)
     public SecurityFilterChain optionsCorsFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher(HttpMethod.OPTIONS.toString(), "/**")
+        http.securityMatcher(request -> HttpMethod.OPTIONS.matches(request.getMethod()))
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());

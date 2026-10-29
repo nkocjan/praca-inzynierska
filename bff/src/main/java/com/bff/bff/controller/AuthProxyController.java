@@ -1,41 +1,43 @@
 package com.bff.bff.controller;
 
 import com.bff.bff.dto.api.AuthRequestDTO;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
 public class AuthProxyController {
 
     private final RestTemplate restTemplate;
+    private final String userServiceUrl;
+
+    public AuthProxyController(
+            RestTemplate restTemplate, @Value("${user-service.url}") String userServiceUrl) {
+        this.restTemplate = restTemplate;
+        this.userServiceUrl = userServiceUrl;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody AuthRequestDTO authRequest) {
-        System.out.println(
-                "Received auth request: " + authRequest.getUsername() + authRequest.getPassword());
-        String userApiUrl = "http://localhost:8081/api/v1/auth/login";
+        log.info("Login attempt for user: {}", authRequest.getUsername());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<AuthRequestDTO> entity = new HttpEntity<>(authRequest, headers);
-        System.out.println("Forwarding request to User API at: " + userApiUrl);
         try {
-            ResponseEntity<String> response =
-                    restTemplate.postForEntity(userApiUrl, entity, String.class);
-            System.out.println(
-                    "Received response from User API: "
-                            + response.getStatusCode()
-                            + " "
-                            + response.getBody());
-            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
-        } catch (Exception e) {
-            System.out.println("Exception while calling User API: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Exception: " + e.getMessage());
+            return restTemplate.postForEntity(
+                    userServiceUrl + "/api/v1/auth/login", entity, String.class);
+        } catch (HttpStatusCodeException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+        } catch (RestClientException e) {
+            log.error("User service unavailable: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body("User service unavailable");
         }
     }
 }

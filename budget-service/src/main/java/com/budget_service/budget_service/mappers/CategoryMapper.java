@@ -46,17 +46,18 @@ public abstract class CategoryMapper {
             return;
         }
 
-        LocalDate today = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDate today = now.toLocalDate();
 
-        BudgetEntity weeklyBudget = findActiveBudget(budgets, BudgetType.WEEK, today)
+        BudgetEntity weeklyBudget = findActiveBudget(budgets, BudgetType.WEEK, now)
                 .orElseGet(() -> createMissingBudget(entity, BudgetType.WEEK, today));
         dto.setWeeklyBudget(budgetMapper.toDto(weeklyBudget));
 
-        BudgetEntity monthlyBudget = findActiveBudget(budgets, BudgetType.MONTH, today)
+        BudgetEntity monthlyBudget = findActiveBudget(budgets, BudgetType.MONTH, now)
                 .orElseGet(() -> createMissingBudget(entity, BudgetType.MONTH, today));
         dto.setMonthlyBudget(budgetMapper.toDto(monthlyBudget));
 
-        BudgetEntity yearlyBudget = findActiveBudget(budgets, BudgetType.YEAR, today)
+        BudgetEntity yearlyBudget = findActiveBudget(budgets, BudgetType.YEAR, now)
                 .orElseGet(() -> createMissingBudget(entity, BudgetType.YEAR, today));
         dto.setYearlyBudget(budgetMapper.toDto(yearlyBudget));
     }
@@ -69,20 +70,18 @@ public abstract class CategoryMapper {
         return newBudget;
     }
 
-    private Optional<BudgetEntity> findActiveBudget(List<BudgetEntity> budgets, BudgetType type, LocalDate today) {
+    private Optional<BudgetEntity> findActiveBudget(List<BudgetEntity> budgets, BudgetType type, LocalDateTime now) {
         return budgets.stream()
                 .filter(b -> b.getPeriod() == type)
-                .filter(b -> isDateActive(b.getPeriodStart(), b.getPeriodEnd(), today))
+                .filter(b -> isActive(b.getPeriodStart(), b.getPeriodEnd(), now))
                 .findFirst();
     }
 
-    private boolean isDateActive(LocalDateTime start, LocalDateTime end, LocalDate today) {
+    // Older rows end at midnight of the next day, so the end bound is exclusive.
+    private boolean isActive(LocalDateTime start, LocalDateTime end, LocalDateTime now) {
         if (start == null || end == null) {
             return false;
         }
-        LocalDate startDate = start.toLocalDate();
-        LocalDate endDate = end.toLocalDate();
-
-        return !today.isBefore(startDate) && !today.isAfter(endDate);
+        return !now.isBefore(start.toLocalDate().atStartOfDay()) && now.isBefore(end);
     }
 }

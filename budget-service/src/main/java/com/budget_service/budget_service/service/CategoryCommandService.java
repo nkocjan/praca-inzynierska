@@ -9,15 +9,19 @@ import com.budget_service.budget_service.entity.CategoryEntity;
 import com.budget_service.budget_service.entity.UserRepEntity;
 import com.budget_service.budget_service.enums.BudgetType;
 import com.budget_service.budget_service.mappers.CategoryMapper;
+import com.budget_service.budget_service.repository.BudgetConfigHistoryRepository;
 import com.budget_service.budget_service.repository.BudgetRepository;
 import com.budget_service.budget_service.repository.CategoryRepository;
 import com.budget_service.budget_service.repository.UserRepRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,6 +35,7 @@ public class CategoryCommandService {
     private final BudgetCommandService budgetCommandService;
     private final BudgetConfigCommandService budgetConfigCommandService;
     private final BudgetRepository budgetRepository;
+    private final BudgetConfigHistoryRepository budgetConfigHistoryRepository;
 
     @Transactional
     public CategoryDTO createCategory(CategoryCreateRequestDTO requestDTO, UUID userId) {
@@ -49,14 +54,14 @@ public class CategoryCommandService {
 
     @Transactional
     public void updateCategory(UUID categoryId, UpdateCategoryDTO request, UUID userId) {
-        CategoryEntity entity = categoryRepository.findById(categoryId).orElseThrow(() -> new RuntimeException("Category not found: " + categoryId));
+        CategoryEntity entity = categoryRepository.findByIdAndUserId(categoryId, userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found: " + categoryId));
         entity.setName(request.getName());
         categoryRepository.save(entity);
-        Map<BudgetType, BigDecimal> newAmounts = Map.of(
-                BudgetType.WEEK, request.getWeekBudget(),
-                BudgetType.MONTH, request.getMonthBudget(),
-                BudgetType.YEAR, request.getYearBudget()
-        );
+        Map<BudgetType, BigDecimal> newAmounts = new EnumMap<>(BudgetType.class);
+        newAmounts.put(BudgetType.WEEK, request.getWeekBudget());
+        newAmounts.put(BudgetType.MONTH, request.getMonthBudget());
+        newAmounts.put(BudgetType.YEAR, request.getYearBudget());
 
         LocalDateTime now = LocalDateTime.now();
         List<BudgetEntity> activeBudgets = budgetRepository
@@ -75,9 +80,11 @@ public class CategoryCommandService {
     @Transactional
     public void delete(UUID id, UUID userId) {
         if(!categoryRepository.existsByIdAndUserId(id, userId)) {
-            throw new RuntimeException("Expense not found: " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found: " + id);
         }
 
+        budgetRepository.deleteByCategory_Id(id);
+        budgetConfigHistoryRepository.deleteByCategory_Id(id);
         categoryRepository.deleteById(id);
     }
 
