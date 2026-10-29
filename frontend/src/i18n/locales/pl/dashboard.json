@@ -1,0 +1,14 @@
+{
+  "expenses": "Wydatki",
+  "budget": "Budżet",
+  "recentExpenses": "Ostatnie wydatki",
+  "noName": "Brak nazwy",
+  "selectCategory": "Wybierz kategorię",
+  "loading": "Ładowanie danych...",
+  "loadError": "Wystąpił błąd podczas ładowania danych.",
+  "period": {
+    "week": "Ten tydzień",
+    "month": "Ten miesiąc",
+    "year": "Ten rok"
+  }
+}

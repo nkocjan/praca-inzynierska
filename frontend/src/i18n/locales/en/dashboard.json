@@ -1,0 +1,14 @@
+{
+  "expenses": "Expenses",
+  "budget": "Budget",
+  "recentExpenses": "Recent expenses",
+  "noName": "No name",
+  "selectCategory": "Select category",
+  "loading": "Loading data...",
+  "loadError": "An error occurred while loading data.",
+  "period": {
+    "week": "This week",
+    "month": "This month",
+    "year": "This year"
+  }
+}

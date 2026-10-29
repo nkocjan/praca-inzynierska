@@ -2,9 +2,10 @@ import { ChangeOptionEnum } from "../../types/enums/ChangeOptionsEnum.tsx";
 import { useEffect, useState } from "react";
 import { Button, Typography } from "@mui/material";
 import Divider from "@mui/material/Divider";
-import { useDialog } from "../../lib/dialog/NKDialogContext.tsx";
+import { useDialog } from "../../lib/dialog/useDialog";
 import NKDeleteResetDataForm from "./NKDeleteResetDataForm.tsx";
 import NKResetSelectedCategoriesForm from "./NKResetSelectedCategoriesForm";
+import { useTranslation } from "react-i18next";
 
 interface properties {
   changeOption: ChangeOptionEnum;
@@ -25,43 +26,45 @@ const NKResetData = (props: properties) => {
     stepsInfo: "",
   });
   const { openDialog } = useDialog();
+  const { t } = useTranslation("settings");
 
   useEffect(() => {
     switch (props.changeOption) {
       case ChangeOptionEnum.RESET_DATA:
         setLabels({
-          label: "Resetuj wszystkie dane",
-          stepsInfo:
-            "Zostaniesz poproszony o podanie swojego maila, oraz hasła w celu potwierdzenia usunięcia danych",
-          buttonTitle: "Potwierdzam usunięcie danych",
-          info: "Wszystkie twoje dane: uzupełnione budżety, wprowadzone wydatki, zapisane kategorie, zostaną usunięte. Będziesz mógł zacząć prowadzić swoje konto na nowo. Jeżeli chcesz zresetować dane tylko z konkretnych kategorii, wybierz opcję, resetuj wybrane kategorie",
+          label: t("resetData.resetAll.label"),
+          stepsInfo: t("resetData.resetAll.stepsInfo"),
+          buttonTitle: t("resetData.resetAll.buttonTitle"),
+          info: t("resetData.resetAll.info"),
         });
 
         break;
       case ChangeOptionEnum.RESET_CATEGORIES:
         setLabels({
-          label: "Resetuj dane z wybranych kategorii",
-          stepsInfo:
-            "Wybierz kategorie, dla których chcesz usunąć dane:",
-          info: "Dane dotyczące zaznaczonych kategorii zostaną usunięte:",
-          buttonTitle: "Potwierdzam usunięcie danych z wybranych kategorii",
+          label: t("resetData.resetCategories.label"),
+          stepsInfo: t("resetData.resetCategories.stepsInfo"),
+          info: t("resetData.resetCategories.info"),
+          buttonTitle: t("resetData.resetCategories.buttonTitle"),
         });
         break;
       default:
     }
-  }, [props.changeOption]);
+  }, [props.changeOption, t]);
 
   const handleOpenDialog = () => {
     if (props.changeOption === ChangeOptionEnum.RESET_DATA) {
       const formId = "reset-data-form";
       openDialog(
         {
-          title: "Potwierdź reset danych",
-          saveButtonTitle: "Potwierdzam",
-          cancelButtonTitle: "Anuluj",
+          title: t("resetData.resetAll.dialogTitle"),
+          saveButtonTitle: t("resetData.dialog.confirm"),
+          cancelButtonTitle: t("resetData.dialog.cancel"),
           formId,
         },
-        <NKDeleteResetDataForm formId={formId} mode="reset-data" />,
+        <NKDeleteResetDataForm
+          formId={formId}
+          mode="reset-data"
+        />,
       );
       return;
     }
@@ -70,9 +73,9 @@ const NKResetData = (props: properties) => {
       const formId = "reset-categories-form";
       openDialog(
         {
-          title: "Potwierdź reset kategorii",
-          saveButtonTitle: "Potwierdzam",
-          cancelButtonTitle: "Anuluj",
+          title: t("resetData.resetCategories.dialogTitle"),
+          saveButtonTitle: t("resetData.dialog.confirm"),
+          cancelButtonTitle: t("resetData.dialog.cancel"),
           formId,
         },
         <NKResetSelectedCategoriesForm formId={formId} />,
@@ -82,14 +85,22 @@ const NKResetData = (props: properties) => {
 
   return (
     <>
-      <Typography variant="h5" gutterBottom>
+      <Typography
+        variant="h5"
+        gutterBottom>
         {labels.label}
       </Typography>
-      <Typography variant="subtitle1" gutterBottom sx={{ color: "red" }}>
+      <Typography
+        variant="subtitle1"
+        gutterBottom
+        sx={{ color: "red" }}>
         {labels.info}
       </Typography>
       <Divider sx={{ marginBottom: 2, marginTop: 4 }} />
-      <Typography variant="caption" gutterBottom sx={{ color: "red" }}>
+      <Typography
+        variant="caption"
+        gutterBottom
+        sx={{ color: "red" }}>
         {labels.stepsInfo}
       </Typography>
       <Divider sx={{ marginBottom: 4, marginTop: 2 }} />
@@ -98,8 +109,7 @@ const NKResetData = (props: properties) => {
         sx={{ marginBottom: 1 }}
         variant="contained"
         color="error"
-        onClick={handleOpenDialog}
-      >
+        onClick={handleOpenDialog}>
         {labels.buttonTitle}
       </Button>
     </>

@@ -1,4 +1,6 @@
 import { Box, LinearProgress, Typography } from "@mui/material";
+import i18n, { normalizeLanguage } from "../../i18n/i18n";
+import { formatCurrencyPLN } from "../../i18n/locale";
 
 const NKStaticLinearProgressBar = ({
   value,
@@ -9,6 +11,7 @@ const NKStaticLinearProgressBar = ({
 }) => {
   const percent = (value * 100) / maxValue;
   const progressValue = Math.min(percent, 100);
+  const language = normalizeLanguage(i18n.language);
 
   return (
     <Box sx={{ position: "relative", width: "80%", textAlign: "center" }}>
@@ -40,9 +43,9 @@ const NKStaticLinearProgressBar = ({
           fontSize: "smaller",
           color: "rgba(255,255,255,1.0)",
           textShadow: "0px 0px 5px rgba(0,0,0,0.7)",
-        }}
-      >
-        {value} zł / {maxValue} zł
+        }}>
+        {formatCurrencyPLN(value, language)} /{" "}
+        {formatCurrencyPLN(maxValue, language)}
       </Typography>
     </Box>
   );

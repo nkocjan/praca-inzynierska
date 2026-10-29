@@ -16,6 +16,7 @@ import { FC } from "react";
 import { DatePicker } from "@mui/x-date-pickers";
 import { CategoryDTO } from "../../../../api/generated";
 import { BudgetTypeEnum } from "../../../../types/enums/BudgetTypeEnum.tsx";
+import { useTranslation } from "react-i18next";
 
 interface BudgetFiltersProps {
   nameFilter: string;
@@ -38,13 +39,6 @@ interface BudgetFiltersProps {
   categoriesLoading: boolean;
 }
 
-const periodTypeOptions = [
-  { value: BudgetTypeEnum.WEEK, label: "Tygodniowy" },
-  { value: BudgetTypeEnum.MONTH, label: "Miesięczny" },
-  { value: BudgetTypeEnum.YEAR, label: "Roczny" },
-  { value: BudgetTypeEnum.CUSTOM, label: "Niestandardowy" },
-];
-
 const BudgetFilters: FC<BudgetFiltersProps> = ({
   nameFilter,
   setNameFilter,
@@ -65,6 +59,15 @@ const BudgetFilters: FC<BudgetFiltersProps> = ({
   categories,
   categoriesLoading,
 }) => {
+  const { t } = useTranslation("budgets");
+
+  const periodTypeOptions = [
+    { value: BudgetTypeEnum.WEEK, label: t("periodType.week") },
+    { value: BudgetTypeEnum.MONTH, label: t("periodType.month") },
+    { value: BudgetTypeEnum.YEAR, label: t("periodType.year") },
+    { value: BudgetTypeEnum.CUSTOM, label: t("periodType.custom") },
+  ];
+
   function resetFilters() {
     setNameFilter("");
     setCategoryFilter([]);
@@ -98,37 +101,39 @@ const BudgetFilters: FC<BudgetFiltersProps> = ({
         gridTemplateRows: "repeat(2, auto)",
         gap: "8px",
         marginBottom: "10px",
-      }}
-    >
+      }}>
       <TextField
-        label="Szukaj"
+        label={t("filters.search")}
         variant="outlined"
         size="small"
         sx={{ width: "100%" }}
         value={nameFilter ?? ""}
-        onChange={(e) => setNameFilter(e.target.value)}
+        onChange={e => setNameFilter(e.target.value)}
       />
 
       <FormControl
         sx={{ width: "100%" }}
         size="small"
-        disabled={categoriesLoading}
-      >
-        <InputLabel>Kategoria</InputLabel>
+        disabled={categoriesLoading}>
+        <InputLabel>{t("filters.category")}</InputLabel>
         <Select
           multiple
           value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value as string[])}
-          input={<OutlinedInput label="Kategoria" />}
+          onChange={e => setCategoryFilter(e.target.value as string[])}
+          input={<OutlinedInput label={t("filters.category")} />}
           renderValue={(selected: string[]) =>
             selected.length == 1
-              ? categories.find((category) => category.id === selected[0])?.name
-              : `Wybrano: ${selected.length}/${categories.length}`
+              ? categories.find(category => category.id === selected[0])?.name
+              : t("filters.categoriesSelected", {
+                  selected: selected.length,
+                  total: categories.length,
+                })
           }
-          variant={"standard"}
-        >
-          {categories.map((category) => (
-            <MenuItem key={category.id} value={category.id}>
+          variant={"standard"}>
+          {categories.map(category => (
+            <MenuItem
+              key={category.id}
+              value={category.id}>
               <Checkbox
                 checked={categoryFilter.includes(category.id as string)}
               />
@@ -139,9 +144,9 @@ const BudgetFilters: FC<BudgetFiltersProps> = ({
       </FormControl>
 
       <DatePicker
-        label="Data od"
+        label={t("filters.dateFrom")}
         value={dateFrom}
-        onChange={(newDate) => setDateFrom(newDate)}
+        onChange={newDate => setDateFrom(newDate)}
         slotProps={{
           textField: { variant: "outlined", size: "small", sx: { height: 36 } },
         }}
@@ -149,9 +154,9 @@ const BudgetFilters: FC<BudgetFiltersProps> = ({
       />
 
       <DatePicker
-        label="Data do"
+        label={t("filters.dateTo")}
         value={dateTo}
-        onChange={(newDate) => setDateTo(newDate)}
+        onChange={newDate => setDateTo(newDate)}
         slotProps={{
           textField: { variant: "outlined", size: "small", sx: { height: 36 } },
         }}
@@ -160,32 +165,32 @@ const BudgetFilters: FC<BudgetFiltersProps> = ({
 
       <TextField
         size="small"
-        label="Kwota od"
+        label={t("filters.amountFrom")}
         type="number"
         variant="outlined"
         sx={{ width: "100%" }}
         value={amountFrom === null ? "" : amountFrom}
-        onChange={(e) => handleAmountChange(setAmountFrom, e.target.value)}
+        onChange={e => handleAmountChange(setAmountFrom, e.target.value)}
       />
 
       <TextField
         size="small"
-        label="Kwota do"
+        label={t("filters.amountTo")}
         type="number"
         variant="outlined"
         sx={{ width: "100%" }}
         value={amountTo === null ? "" : amountTo}
-        onChange={(e) => handleAmountChange(setAmountTo, e.target.value)}
+        onChange={e => handleAmountChange(setAmountTo, e.target.value)}
       />
 
       <FormControlLabel
         control={
           <Switch
             checked={isArchived === true}
-            onChange={(e) => setIsArchived(e.target.checked ? true : null)}
+            onChange={e => setIsArchived(e.target.checked ? true : null)}
           />
         }
-        label="Archiwalny"
+        label={t("filters.archived")}
         sx={{
           width: "100%",
           display: "flex",
@@ -193,22 +198,25 @@ const BudgetFilters: FC<BudgetFiltersProps> = ({
           justifyContent: "center",
         }}
       />
-      <FormControl sx={{ width: "100%" }} size="small">
-        <InputLabel>Typ okresu</InputLabel>
+      <FormControl
+        sx={{ width: "100%" }}
+        size="small">
+        <InputLabel>{t("filters.periodType")}</InputLabel>
         <Select
           value={periodTypeFilter ?? ""}
-          onChange={(e) =>
+          onChange={e =>
             setPeriodTypeFilter(e.target.value === "" ? null : e.target.value)
           }
-          input={<OutlinedInput label="Typ okresu" />}
+          input={<OutlinedInput label={t("filters.periodType")} />}
           variant={"outlined"}
-          size="small"
-        >
+          size="small">
           <MenuItem value="">
-            <em>Wszystkie</em>
+            <em>{t("filters.all")}</em>
           </MenuItem>
-          {periodTypeOptions.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
+          {periodTypeOptions.map(option => (
+            <MenuItem
+              key={option.value}
+              value={option.value}>
               {option.label}
             </MenuItem>
           ))}
@@ -243,9 +251,8 @@ const BudgetFilters: FC<BudgetFiltersProps> = ({
           borderColor: "rgba(255, 255, 255, 0.23)",
           borderRadius: "4px",
           fontSize: "0.875rem",
-        }}
-      >
-        Reset
+        }}>
+        {t("filters.reset")}
       </Button>
     </div>
   );

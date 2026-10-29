@@ -1,0 +1,61 @@
+{
+  "page": {
+    "addCategory": "Dodaj kategorię",
+    "generateReport": "Generuj raport",
+    "addCategoryTitle": "Dodaj kategorię",
+    "create": "Utwórz",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "generate": "Wygeneruj"
+  },
+  "snackbar": {
+    "categoriesFetchError": "Nie udało się pobrać danych o kategoriach",
+    "categoryUpdated": "Kategoria zaktualizowana pomyślnie",
+    "categoryCreated": "Kategoria utworzona pomyślnie",
+    "categorySaveError": "Wystąpił błąd. Spróbuj ponownie.",
+    "categoryDeleted": "Kategoria została usunięta",
+    "categoryDeleteError": "Nie udało się usunąć kategorii. Spróbuj ponownie.",
+    "comingSoon": "Wkrótce dostępne"
+  },
+  "columns": {
+    "name": "Nazwa",
+    "weeklyBudget": "Budżet tygodniowy",
+    "monthlyBudget": "Budżet miesięczny",
+    "yearlyBudget": "Budżet roczny",
+    "actions": "Akcje"
+  },
+  "filters": {
+    "search": "Szukaj",
+    "hasExceededBudget": "Przekroczony budżet?",
+    "reset": "Reset"
+  },
+  "actions": {
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "generateReport": "Generuj raport",
+    "showExpenses": "Pokaż wydatki",
+    "showOtherBudgets": "Pokaż pozostałe budżety"
+  },
+  "dialogs": {
+    "editTitle": "Edytuj budżet kategorii",
+    "deleteTitle": "Usuń kategorię",
+    "deleteSave": "Usuń",
+    "reportTitle": "Generuj raport",
+    "reportSave": "Generuj"
+  },
+  "delete": {
+    "categoryGen": "kategorii"
+  },
+  "form": {
+    "name": "Nazwa",
+    "weeklyBudget": "Budżet tygodniowy",
+    "monthlyBudget": "Budżet miesięczny",
+    "yearlyBudget": "Budżet roczny"
+  },
+  "validation": {
+    "nameRequired": "Nazwa jest wymagana",
+    "nameMin": "Nazwa jest za krótka",
+    "valueMin": "Wartość musi być większa od 0",
+    "budgetRequired": "Podanie budżetu jest wymagane"
+  }
+}

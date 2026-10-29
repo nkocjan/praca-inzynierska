@@ -7,27 +7,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 // Keep in sync with db/sql/demo-data.sql (accounts are recreated by db/reset-demo-data.sh).
+// Titles and descriptions live in the "auth" translations under demo.accounts.<username>.
 export const DEMO_PASSWORD = "demo1234";
-
-const DEMO_ACCOUNTS = [
-  {
-    username: "demo",
-    title: "Anna — singielka w dużym mieście",
-    description: "Najpełniejsza historia: wynajem, auto, podróże.",
-  },
-  {
-    username: "student",
-    title: "Jan — student",
-    description: "Mały budżet, akademik, stołówka i wyjścia ze znajomymi.",
-  },
-  {
-    username: "rodzina",
-    title: "Rodzina 2+2",
-    description: "Kredyt hipoteczny, przedszkole, dwa auta, wakacje.",
-  },
-];
+const DEMO_USERNAMES = ["demo", "student", "rodzina"];
 
 interface Props {
   disabled: boolean;
@@ -35,6 +20,8 @@ interface Props {
 }
 
 const DemoAccountsPanel = ({ disabled, onLogin }: Props) => {
+  const { t } = useTranslation("auth");
+
   return (
     <Paper
       component="section"
@@ -44,7 +31,7 @@ const DemoAccountsPanel = ({ disabled, onLogin }: Props) => {
       <Stack spacing={2}>
         <Box>
           <Chip
-            label="Wersja demonstracyjna"
+            label={t("demo.badge")}
             color="info"
             size="small"
             sx={{ mb: 1 }}
@@ -53,49 +40,48 @@ const DemoAccountsPanel = ({ disabled, onLogin }: Props) => {
             id="demo-heading"
             variant="h6"
             component="h2">
-            Wypróbuj aplikację bez rejestracji
+            {t("demo.heading")}
           </Typography>
           <Typography
             variant="body2"
             color="text.secondary">
-            Aplikacja do planowania budżetu domowego — projekt inżynierski
-            (React, Spring Boot, mikroserwisy, PostgreSQL ze shardingiem i
-            replikacją). Każde konto ma wydatki i budżety z ostatnich
-            miesięcy.
+            {t("demo.intro")}
           </Typography>
         </Box>
 
         <Stack
           spacing={1.5}
           divider={<Divider flexItem />}>
-          {DEMO_ACCOUNTS.map(account => (
+          {DEMO_USERNAMES.map(username => (
             <Stack
-              key={account.username}
+              key={username}
               direction="row"
               spacing={2}
               alignItems="center"
               justifyContent="space-between">
               <Box>
-                <Typography variant="subtitle2">{account.title}</Typography>
+                <Typography variant="subtitle2">
+                  {t(`demo.accounts.${username}.title`)}
+                </Typography>
                 <Typography
                   variant="body2"
                   color="text.secondary">
-                  {account.description}
+                  {t(`demo.accounts.${username}.description`)}
                 </Typography>
                 <Typography
                   variant="caption"
                   color="text.secondary">
-                  Login: <strong>{account.username}</strong>
+                  {t("demo.loginLabel")}: <strong>{username}</strong>
                 </Typography>
               </Box>
               <Button
                 variant="outlined"
                 size="small"
                 disabled={disabled}
-                aria-label={`Zaloguj jako ${account.username}`}
-                onClick={() => onLogin(account.username, DEMO_PASSWORD)}
+                aria-label={t("demo.loginAs", { username })}
+                onClick={() => onLogin(username, DEMO_PASSWORD)}
                 sx={{ flexShrink: 0 }}>
-                Zaloguj
+                {t("demo.loginButton")}
               </Button>
             </Stack>
           ))}
@@ -104,10 +90,8 @@ const DemoAccountsPanel = ({ disabled, onLogin }: Props) => {
         <Typography
           variant="body2"
           color="text.secondary">
-          Hasło do wszystkich kont: <strong>{DEMO_PASSWORD}</strong>. Dane są
-          wspólne dla wszystkich odwiedzających i co 2 godziny wracają do stanu
-          początkowego. Zmiana hasła i usunięcie kont demo są zablokowane — aby
-          przetestować te funkcje, załóż własne konto.
+          {t("demo.password")} <strong>{DEMO_PASSWORD}</strong>.{" "}
+          {t("demo.notice")}
         </Typography>
       </Stack>
     </Paper>

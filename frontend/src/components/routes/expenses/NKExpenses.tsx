@@ -2,20 +2,27 @@ import { NKButton } from "../../../lib/button/Button.tsx";
 import Grid from "@mui/material/Grid2";
 import NKGrid from "../../../lib/grid/NKGrid.tsx";
 import getExpensesColumns from "./grid/expansesColumns.tsx";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ExpensesFilters from "./grid/expenseFilters.tsx";
 import { Dayjs } from "dayjs";
 import { useSnackbar } from "notistack";
-import { useDialog } from "../../../lib/dialog/NKDialogContext.tsx";
+import { useDialog } from "../../../lib/dialog/useDialog";
 import AddExpanseForm from "./forms/AddEditExpanseForm.tsx";
 import ConfirmDelete from "../../../lib/dialog/templates/ConfirmDelete.tsx";
-import { IExpanse } from "../../../types/interfaces/IExpanse.tsx";
 import { apiClient } from "../../../api/apiClient.ts";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
-import { CategoryDTO, ExpenseSearchRequestUiDTO } from "../../../api/generated";
+import {
+  CategoryDTO,
+  ExpenseSearchRequestUiDTO,
+  ExpenseUiDTO,
+} from "../../../api/generated";
 import { useDebounce } from "../../../hooks/useDebounce.ts";
+import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 
 const NKExpenses = () => {
+  const { t } = useTranslation("expenses");
+
   const [nameFilter, setNameFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
@@ -24,7 +31,10 @@ const NKExpenses = () => {
   const [amountTo, setAmountTo] = useState<number | "">("");
   const [isPlanned, setIsPlanned] = useState<boolean | undefined>(undefined);
 
-  const [rows, setRows] = useState<IExpanse[]>([]);
+  const location = useLocation();
+  const prefillAppliedRef = useRef(false);
+
+  const [rows, setRows] = useState<ExpenseUiDTO[]>([]);
   const [rowCount, setRowCount] = useState(0);
   const [categories, setCategories] = useState<CategoryDTO[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
@@ -40,12 +50,12 @@ const NKExpenses = () => {
       setLoadingCategories(true);
       try {
         const response = await apiClient.get<CategoryDTO[]>(
-          "/api/bff/categories/combo"
+          "/api/bff/categories/combo",
         );
         setCategories(response.data);
       } catch (error) {
         console.error("Błąd podczas pobierania kategorii:", error);
-        enqueueSnackbar("Nie udało się pobrać listy kategorii", {
+        enqueueSnackbar(t("snackbar.categoriesFetchError"), {
           variant: "error",
         });
       } finally {
@@ -54,7 +64,18 @@ const NKExpenses = () => {
     };
 
     void fetchCategories();
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, t]);
+
+  useEffect(() => {
+    const state = location.state as
+      | { prefillCategoryIds?: string[] }
+      | undefined;
+    if (prefillAppliedRef.current) return;
+    if (!state?.prefillCategoryIds?.length) return;
+    setCategoryFilter(state.prefillCategoryIds);
+    setPaginationModel(prev => ({ ...prev, page: 0 }));
+    prefillAppliedRef.current = true;
+  }, [location.state]);
 
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -96,14 +117,14 @@ const NKExpenses = () => {
               size: paginationModel.pageSize,
               sort: sortParams || "date,desc",
             },
-          }
+          },
         );
 
         setRows(response.data.content);
         setRowCount(response.data.totalElements);
       } catch (error) {
         console.error("Błąd podczas pobierania wydatków:", error);
-        enqueueSnackbar("Nie udało się pobrać danych o wydatkach", {
+        enqueueSnackbar(t("snackbar.expensesFetchError"), {
           variant: "error",
         });
       } finally {
@@ -124,6 +145,7 @@ const NKExpenses = () => {
     sortModel,
     refreshTrigger,
     enqueueSnackbar,
+    t,
   ]);
 
   const handleFormSuccess = () => {
@@ -134,14 +156,46 @@ const NKExpenses = () => {
   const columns = getExpensesColumns(handleFormSuccess);
 
   const handleDelete = (selectedIds: string[]) => {
-    console.log(selectedIds);
+    if (selectedIds.length === 0) return;
+    const formId = "delete-expenses-form";
     openDialog(
       {
-        title: "Usuń wiele wydatków",
-        saveButtonTitle: "Potwierdź usunięcie",
-        cancelButtonTitle: "Anuluj",
+        title: t("delete.bulkTitle"),
+        saveButtonTitle: t("delete.saveBulk"),
+        cancelButtonTitle: t("page.cancel"),
+        formId,
       },
-      <ConfirmDelete translation="wydatków"></ConfirmDelete>
+      <ConfirmDelete
+        translation={t("delete.expensesAcc")}
+        formId={formId}
+        onConfirm={async () => {
+          const results = await Promise.allSettled(
+            selectedIds.map(id => apiClient.delete(`/api/bff/expenses/${id}`)),
+          );
+          const successCount = results.filter(
+            r => r.status === "fulfilled",
+          ).length;
+          const failCount = results.length - successCount;
+
+          if (successCount > 0) {
+            enqueueSnackbar(
+              t("snackbar.bulkDeleteSuccess", { count: successCount }),
+              {
+                variant: "success",
+              },
+            );
+          }
+          if (failCount > 0) {
+            enqueueSnackbar(
+              t("snackbar.bulkDeleteError", { count: failCount }),
+              {
+                variant: "error",
+              },
+            );
+            throw new Error("Nie wszystkie wydatki zostały usunięte");
+          }
+        }}
+        onSuccess={handleFormSuccess}></ConfirmDelete>,
     );
   };
 
@@ -152,27 +206,27 @@ const NKExpenses = () => {
       sx={{ padding: 3, marginTop: 5 }}>
       <Grid>
         <NKButton
-          title="Dodaj wydatek"
+          title={t("page.addExpense")}
           onClick={() =>
             openDialog(
               {
-                title: "Dodaj nowy wydatek",
-                saveButtonTitle: "Dodaj",
-                cancelButtonTitle: "Anuluj",
+                title: t("page.addNewExpenseTitle"),
+                saveButtonTitle: t("page.add"),
+                cancelButtonTitle: t("page.cancel"),
                 formId: "expense-form",
               },
               <AddExpanseForm
                 formId="expense-form"
                 onSuccess={handleFormSuccess}
-              />
+              />,
             )
           }></NKButton>
       </Grid>
       <Grid>
         {/* <NKButton
-          title="Wczytaj wydatek z pliku"
+          title={t("page.loadFromFile")}
           onClick={() =>
-            enqueueSnackbar("Funkcjonalność wkrótce!", { variant: "info" })
+            enqueueSnackbar(t("snackbar.comingSoon"), { variant: "info" })
           }
         ></NKButton> */}
       </Grid>

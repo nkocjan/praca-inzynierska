@@ -24,6 +24,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import NKDarkLightSwitch from "./dark-light-switch/NKDarkLightSwitch.tsx";
 import NKLanguageSelect from "./language-select/NKLanguageSelect.tsx";
 import { useSnackbar } from "notistack";
+import { useTranslation } from "react-i18next";
 
 const drawerWidth = 240;
 
@@ -31,20 +32,22 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
 
+  const { t } = useTranslation("nav");
+
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
   const menuItems = [
-    { text: "Strona główna", path: "/" },
-    { text: "Wydatki", path: "/expenses" },
-    { text: "Budżet", path: "/budget" },
-    { text: "Kategorie", path: "/categories" },
+    { text: t("menu.home"), path: "/" },
+    { text: t("menu.expenses"), path: "/expenses" },
+    { text: t("menu.budget"), path: "/budget" },
+    { text: t("menu.categories"), path: "/categories" },
   ];
 
   const secondaryItems = [
-    { text: "Informacje", path: "/information" },
-    { text: "Ustawienia", path: "/settings" },
-    { text: "Wyloguj się", path: "/logout" },
+    { text: t("secondary.information"), path: "/information" },
+    { text: t("secondary.settings"), path: "/settings" },
+    { text: t("secondary.logout"), path: "/logout" },
   ];
 
   const handleDrawerClose = () => {
@@ -89,7 +92,7 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("jwtToken");
 
-    enqueueSnackbar("Wylogowano pomyślnie", { variant: "success" });
+    enqueueSnackbar(t("snackbar.logoutSuccess"), { variant: "success" });
 
     navigate("/login", { replace: true });
   };
@@ -185,7 +188,7 @@ export default function Navbar() {
             variant="h6"
             noWrap
             component="div">
-            Strona główna
+            {t("appBarTitle")}
           </Typography>
           <Box
             sx={{

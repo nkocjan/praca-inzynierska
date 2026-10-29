@@ -8,12 +8,14 @@ import { useSnackbar } from "notistack";
 import { apiClient } from "../../../api/apiClient"; // Upewnij się, że ścieżka jest poprawna
 import { useState } from "react";
 import { AuthRequestDTO } from "../../../api/generated/api.ts";
+import { useTranslation } from "react-i18next";
 import DemoAccountsPanel from "./DemoAccountsPanel.tsx";
 
 const Login = () => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation("auth");
 
   const login = async (values: AuthRequestDTO) => {
     setLoading(true);
@@ -23,17 +25,17 @@ const Login = () => {
       const token = response.data.token;
 
       if (!token) {
-        throw new Error("Nie otrzymano tokena z serwera.");
+        throw new Error(t("login.noToken"));
       }
 
       localStorage.setItem("jwtToken", token);
 
-      enqueueSnackbar("Zalogowano pomyślnie!", { variant: "success" });
+      enqueueSnackbar(t("login.success"), { variant: "success" });
 
       navigate("/");
     } catch (error) {
       console.error("Błąd logowania:", error);
-      enqueueSnackbar("Nieprawidłowy login lub hasło.", { variant: "error" });
+      enqueueSnackbar(t("login.invalidCredentials"), { variant: "error" });
     } finally {
       setLoading(false);
     }
@@ -62,11 +64,11 @@ const Login = () => {
             <Typography
               variant="h4"
               component="h1">
-              Logowanie
+              {t("login.title")}
             </Typography>
 
             <NKTextInput
-              label="Login"
+              label={t("login.username")}
               required={true}
               name="username"
               value={formik.values.username}
@@ -75,7 +77,7 @@ const Login = () => {
             />
 
             <NKTextInput
-              label="Hasło"
+              label={t("login.password")}
               required={true}
               type="password"
               name="password"
@@ -90,13 +92,13 @@ const Login = () => {
               direction="row"
               spacing={2}>
               <NKButton
-                title={loading ? "Logowanie..." : "Zaloguj się"}
+                title={loading ? t("login.submitting") : t("login.submit")}
                 type="submit"
                 disabled={loading}
               />
               <NKButton
                 type="button"
-                title={"Zarejestruj się"}
+                title={t("login.register")}
                 onClick={() => navigate("/register")}
               />
             </Stack>

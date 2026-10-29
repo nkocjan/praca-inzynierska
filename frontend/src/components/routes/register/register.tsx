@@ -11,6 +11,8 @@ import { useSnackbar } from "notistack";
 import { apiClient } from "../../../api/apiClient.ts";
 import { useState } from "react";
 import { UserCreateRequestDTO } from "../../../api/generated/api.ts";
+import { useTranslation } from "react-i18next";
+import { useMemo } from "react";
 
 const darkTheme = createTheme({
   palette: {
@@ -18,39 +20,42 @@ const darkTheme = createTheme({
   },
 });
 
-// Schemat walidacji Yup pasujący do DTO i tooltipów
-const validationSchema = yup.object({
-  name: yup.string().required("Imię jest wymagane"),
-  surname: yup.string().required("Nazwisko jest wymagane"),
-  username: yup
-    .string()
-    .min(3, "Login musi zawierać minimum 3 znaki")
-    .required("Login jest wymagany"),
-  password: yup
-    .string()
-    .min(8, "Hasło musi zawierać minimum 8 znaków")
-    .matches(/[A-Z]/, "Musi zawierać co najmniej jedną dużą literę")
-    .matches(/[0-9]/, "Musi zawierać co najmniej jedną cyfrę")
-    .required("Hasło jest wymagane"),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref("password")], "Hasła muszą być identyczne")
-    .required("Proszę powtórzyć hasło"),
-  email: yup
-    .string()
-    .email("Niepoprawny format email")
-    .required("Email jest wymagany"),
-  confirmEmail: yup
-    .string()
-    .oneOf([yup.ref("email")], "Adresy email muszą być identyczne")
-    .required("Proszę powtórzyć email"),
-  phoneNumber: yup.string().required("Numer telefonu jest wymagany"),
-});
-
 const NKRegister = () => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
+  const { t, i18n } = useTranslation(["auth", "validation"]);
+
+  const validationSchema = useMemo(() => {
+    return yup.object({
+      name: yup.string().required(t("validation:nameRequired")),
+      surname: yup.string().required(t("validation:surnameRequired")),
+      username: yup
+        .string()
+        .min(3, t("validation:usernameMin", { min: 3 }))
+        .required(t("validation:usernameRequired")),
+      password: yup
+        .string()
+        .min(8, t("validation:passwordMin", { min: 8 }))
+        .matches(/[A-Z]/, t("validation:passwordUppercase"))
+        .matches(/[0-9]/, t("validation:passwordNumber"))
+        .required(t("validation:passwordRequired")),
+      confirmPassword: yup
+        .string()
+        .oneOf([yup.ref("password")], t("validation:confirmPasswordMatch"))
+        .required(t("validation:confirmPasswordRequired")),
+      email: yup
+        .string()
+        .email(t("validation:emailInvalid"))
+        .required(t("validation:emailRequired")),
+      confirmEmail: yup
+        .string()
+        .oneOf([yup.ref("email")], t("validation:confirmEmailMatch"))
+        .required(t("validation:confirmEmailRequired")),
+      phoneNumber: yup.string().required(t("validation:phoneRequired")),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language]);
 
   const formik = useFormik({
     // Typy dla initialValues (w tym pola potwierdzające)
@@ -64,7 +69,7 @@ const NKRegister = () => {
       confirmEmail: "",
       phoneNumber: "",
     },
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: async values => {
       setLoading(true);
       try {
@@ -81,18 +86,15 @@ const NKRegister = () => {
         // 2. Wywołaj publiczny endpoint rejestracji
         await apiClient.post("/api/bff/users", request);
 
-        enqueueSnackbar(
-          "Konto utworzone pomyślnie! Możesz się teraz zalogować.",
-          {
-            variant: "success",
-          }
-        );
+        enqueueSnackbar(t("auth:register.success"), {
+          variant: "success",
+        });
 
         // 3. Przekieruj na stronę logowania
         navigate("/login");
       } catch (error) {
         console.error("Błąd rejestracji:", error);
-        enqueueSnackbar("Wystąpił błąd podczas rejestracji.", {
+        enqueueSnackbar(t("auth:register.error"), {
           variant: "error",
         });
       } finally {
@@ -122,7 +124,7 @@ const NKRegister = () => {
             <Typography
               variant="h4"
               gutterBottom>
-              Utwórz nowe konto
+              {t("auth:register.title")}
             </Typography>
 
             {/* --- IMIĘ --- */}
@@ -132,7 +134,7 @@ const NKRegister = () => {
               {" "}
               {/* Dodano margines dolny */}
               <NKTextInput
-                label="Imię"
+                label={t("auth:register.name")}
                 required={true}
                 name="name"
                 value={formik.values.name}
@@ -148,7 +150,7 @@ const NKRegister = () => {
               size={5}
               sx={{ mb: 2.5 }}>
               <NKTextInput
-                label="Nazwisko"
+                label={t("auth:register.surname")}
                 required={true}
                 name="surname"
                 value={formik.values.surname}
@@ -164,9 +166,9 @@ const NKRegister = () => {
               size={5}
               sx={{ mb: 2.5 }}>
               <NKTextInput
-                label="Login"
+                label={t("auth:register.username")}
                 required={true}
-                tooltip="Login musi zawierać minimum 3 znaki"
+                tooltip={t("auth:register.tooltip.username")}
                 name="username"
                 value={formik.values.username}
                 onChange={formik.handleChange}
@@ -183,10 +185,10 @@ const NKRegister = () => {
               size={5}
               sx={{ mb: 2.5 }}>
               <NKTextInput
-                label="Hasło"
+                label={t("auth:register.password")}
                 type="password"
                 required={true}
-                tooltip="Hasło musi zawierać minimum 8 znaków, jedną cyfrę i jedną dużą literę"
+                tooltip={t("auth:register.tooltip.password")}
                 name="password"
                 value={formik.values.password}
                 onChange={formik.handleChange}
@@ -203,10 +205,10 @@ const NKRegister = () => {
               size={5}
               sx={{ mb: 2.5 }}>
               <NKTextInput
-                label="Powtórz hasło"
+                label={t("auth:register.confirmPassword")}
                 type="password"
                 required={true}
-                tooltip="Hasła muszą być identyczne"
+                tooltip={t("auth:register.tooltip.confirmPassword")}
                 name="confirmPassword"
                 value={formik.values.confirmPassword}
                 onChange={formik.handleChange}
@@ -227,7 +229,7 @@ const NKRegister = () => {
               size={5}
               sx={{ mb: 2.5 }}>
               <NKTextInput
-                label="Email"
+                label={t("auth:register.email")}
                 type="email"
                 required={true}
                 name="email"
@@ -244,7 +246,7 @@ const NKRegister = () => {
               size={5}
               sx={{ mb: 2.5 }}>
               <NKTextInput
-                label="Powtórz email"
+                label={t("auth:register.confirmEmail")}
                 type="email"
                 required={true}
                 name="confirmEmail"
@@ -266,7 +268,7 @@ const NKRegister = () => {
               size={5}
               sx={{ mb: 2.5 }}>
               <NKTextInput
-                label="Numer telefonu"
+                label={t("auth:register.phoneNumber")}
                 required={true}
                 name="phoneNumber"
                 value={formik.values.phoneNumber}
@@ -291,14 +293,18 @@ const NKRegister = () => {
               sx={{ mt: 2 }}>
               <Grid size={6}>
                 <NKButton
-                  title={loading ? "Rejestrowanie..." : "Zarejestruj się"}
+                  title={
+                    loading
+                      ? t("auth:register.submitting")
+                      : t("auth:register.submit")
+                  }
                   type="submit"
                   disabled={loading}
                 />
               </Grid>
               <Grid size={6}>
                 <NKButton
-                  title="Powrót do logowania"
+                  title={t("auth:register.backToLogin")}
                   onClick={() => navigate("/login")}
                 />
               </Grid>

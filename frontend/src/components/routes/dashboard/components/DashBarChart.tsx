@@ -1,4 +1,5 @@
-import { Paper } from "@mui/material";
+import { Paper, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -7,8 +8,15 @@ import {
   Title,
   Tooltip,
   Legend,
+  TooltipItem,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+import { useTranslation } from "react-i18next";
+import { normalizeLanguage } from "../../../../i18n/i18n";
+import { getCurrencySymbol } from "../../../../i18n/locale";
+import dayjs from "dayjs";
+import type { AppLanguage } from "../../../../i18n/i18n";
 
 interface DashBarChartProperties {
   height?: number | string;
@@ -17,24 +25,6 @@ interface DashBarChartProperties {
   budgetData: number[];
 }
 
-const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "top" as const,
-    },
-    tooltip: {
-      callbacks: {
-        label: (tooltipItem: any) => {
-          const label = tooltipItem.dataset.label || "";
-          const value = tooltipItem.raw || 0;
-          return `${label}: ${value} zł`;
-        },
-      },
-    },
-  },
-};
-
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -42,48 +32,85 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
+  ChartDataLabels,
 );
 
-const polishMonthMap: { [key: string]: string } = {
-  "01": "sty",
-  "02": "lut",
-  "03": "mar",
-  "04": "kwi",
-  "05": "maj",
-  "06": "cze",
-  "07": "lip",
-  "08": "sie",
-  "09": "wrz",
-  "10": "paź",
-  "11": "lis",
-  "12": "gru",
-};
-
-const formatLabels = (labels: string[]): string[] => {
-  return labels.map((label) => {
+const formatLabels = (labels: string[], language: AppLanguage): string[] => {
+  return labels.map(label => {
     const parts = label.split("-");
     if (parts.length === 2) {
-      const monthNumber = parts[1];
-      const shortYear = parts[0].substring(2);
-      const monthName = polishMonthMap[monthNumber];
-
-      return `${monthName} '${shortYear}`;
+      const [year, month] = parts;
+      const date = dayjs(`${year}-${month}-01`).locale(language);
+      if (!date.isValid()) return label;
+      return date.format("MMM 'YY");
     }
     return label;
   });
 };
 
 const DashBarChart = (props: DashBarChartProperties) => {
+  const theme = useTheme();
+  const { t, i18n } = useTranslation(["dashboard", "common"]);
+  const language = normalizeLanguage(i18n.language);
+  const currencySymbol = getCurrencySymbol(language);
+
+  const hasData =
+    (props.labels?.length || 0) > 0 &&
+    ((props.expensesData?.length || 0) > 0 ||
+      (props.budgetData?.length || 0) > 0);
+
+  const options = {
+    responsive: true,
+    layout: {
+      padding: {
+        top: 8,
+      },
+    },
+    plugins: {
+      legend: {
+        position: "top" as const,
+        labels: {
+          color: theme.palette.text.primary,
+        },
+      },
+      datalabels: {
+        color: theme.palette.text.primary,
+        font: {
+          weight: "bold" as const,
+        },
+        anchor: "end" as const,
+        align: "end" as const,
+        offset: 4,
+        clamp: true,
+        clip: true,
+        formatter: (value: unknown) => {
+          const numberValue = Number(value);
+          if (!Number.isFinite(numberValue) || numberValue === 0) return "";
+          return numberValue;
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: (tooltipItem: TooltipItem<"bar">) => {
+            const label = tooltipItem.dataset.label ?? "";
+            const value = Number(tooltipItem.raw) || 0;
+            return `${label}: ${value} ${currencySymbol}`;
+          },
+        },
+      },
+    },
+  };
+
   const data = {
-    labels: formatLabels(props.labels),
+    labels: formatLabels(props.labels, language),
     datasets: [
       {
-        label: "Wydatki",
+        label: t("dashboard:expenses"),
         data: props.expensesData,
         backgroundColor: "rgba(255, 99, 132, 0.5)",
       },
       {
-        label: "Budżet",
+        label: t("dashboard:budget"),
         data: props.budgetData,
         backgroundColor: "rgba(53, 162, 235, 0.5)",
       },
@@ -92,7 +119,18 @@ const DashBarChart = (props: DashBarChartProperties) => {
 
   return (
     <Paper sx={{ height: props.height, padding: 2 }}>
-      <Bar options={options} data={data} />
+      {hasData ? (
+        <Bar
+          options={options}
+          data={data}
+        />
+      ) : (
+        <Typography
+          variant="body2"
+          sx={{ opacity: 0.9 }}>
+          {t("common:noData")}
+        </Typography>
+      )}
     </Paper>
   );
 };

@@ -1,0 +1,153 @@
+{
+  "title": "Informacje o aplikacji",
+  "description": "Aplikacja do zarządzania budżetami i wydatkami w kategoriach — zaprojektowana jako projekt portfolio oraz przykład rozwiązania opartego o mikroserwisy.",
+  "usage": {
+    "title": "1) Instrukcja korzystania (dla nietechnicznych)",
+    "items": {
+      "register": {
+        "primary": "1. Zarejestruj konto i zaloguj się",
+        "secondary": "Po zalogowaniu aplikacja zapamięta Twoją sesję i pokaże panel główny."
+      },
+      "categories": {
+        "primary": "2. Dodaj kategorie",
+        "secondary": "Kategorie to np. Jedzenie, Transport, Rozrywka — w nich grupujesz wydatki i budżety."
+      },
+      "budgets": {
+        "primary": "3. Ustaw budżety",
+        "secondary": "Dla każdej kategorii możesz ustawić budżet tygodniowy, miesięczny i roczny."
+      },
+      "expenses": {
+        "primary": "4. Dodawaj wydatki",
+        "secondary": "Wydatki przypisujesz do kategorii, z datą i kwotą. Aplikacja zestawia je z budżetem."
+      },
+      "dashboard": {
+        "primary": "5. Sprawdzaj dashboard",
+        "secondary": "W panelu głównym zobaczysz podsumowania, wykresy oraz informację czy mieścisz się w budżecie."
+      },
+      "settings": {
+        "primary": "6. Zarządzaj danymi w ustawieniach",
+        "secondary": "Możesz zmienić dane konta, zresetować dane lub usunąć konto."
+      }
+    }
+  },
+  "technical": {
+    "title": "2) Opis techniczny (dla technicznych)",
+    "intro": "Rozwiązanie jest oparte o architekturę rozproszoną: frontend komunikuje się z warstwą BFF (Backend For Frontend), a BFF orkiestruje wywołania do niezależnych mikroserwisów.",
+    "systemPartsTitle": "Skład systemu:",
+    "parts": {
+      "frontend": {
+        "primary": "Frontend (React + TypeScript)",
+        "secondary": "Aplikacja SPA: widoki, formularze, wykresy, walidacja, komunikacja HTTP."
+      },
+      "bff": {
+        "primary": "BFF (Spring Boot)",
+        "secondary": "Jedno wejście z frontu, autoryzacja JWT, agregacja danych, wywołania OpenFeign do serwisów."
+      },
+      "userService": {
+        "primary": "user-service",
+        "secondary": "Operacje konta użytkownika (np. rejestracja, logowanie, dane profilu)."
+      },
+      "budgetService": {
+        "primary": "budget-service",
+        "secondary": "Kategorie oraz budżety (np. tygodniowy/miesięczny/roczny), logika resetowania budżetów."
+      },
+      "expenseService": {
+        "primary": "expense-service",
+        "secondary": "Wydatki oraz operacje bulk (np. reset danych), przygotowanie danych do dashboardu."
+      },
+      "databases": {
+        "primary": "Bazy danych (PostgreSQL)",
+        "secondary": "Oddzielne bazy dla serwisów; część środowiska zakłada replikację instancji expense DB."
+      }
+    },
+    "security": "Bezpieczeństwo: komunikacja front→BFF używa tokenu JWT (Bearer), a BFF przekazuje kontekst użytkownika do mikroserwisów."
+  },
+  "technologies": {
+    "title": "3) Wykorzystane technologie",
+    "frontendTitle": "Frontend",
+    "backendTitle": "Backend",
+    "infraTitle": "Infrastruktura / narzędzia",
+    "frontend": {
+      "react": {
+        "primary": "React + TypeScript",
+        "secondary": "SPA, komponenty, routing"
+      },
+      "vite": {
+        "primary": "Vite",
+        "secondary": "Dev server i build"
+      },
+      "mui": {
+        "primary": "Material UI",
+        "secondary": "Komponenty UI"
+      },
+      "axios": {
+        "primary": "Axios",
+        "secondary": "Komunikacja HTTP + interceptory"
+      },
+      "formikYup": {
+        "primary": "Formik + Yup",
+        "secondary": "Formularze + walidacja"
+      },
+      "notistack": {
+        "primary": "notistack",
+        "secondary": "Powiadomienia (snackbars)"
+      },
+      "chart": {
+        "primary": "Chart.js",
+        "secondary": "Wizualizacje na dashboardzie"
+      }
+    },
+    "backend": {
+      "java": {
+        "primary": "Java 21",
+        "secondary": "Język/Platforma"
+      },
+      "spring": {
+        "primary": "Spring Boot 3",
+        "secondary": "REST, konfiguracja, Actuator"
+      },
+      "security": {
+        "primary": "Spring Security + JWT",
+        "secondary": "Autoryzacja i ochrona endpointów"
+      },
+      "jpa": {
+        "primary": "Spring Data JPA / Hibernate",
+        "secondary": "Warstwa danych"
+      },
+      "feign": {
+        "primary": "OpenFeign",
+        "secondary": "Komunikacja BFF→mikroserwisy"
+      },
+      "kafka": {
+        "primary": "Kafka",
+        "secondary": "Komunikacja asynchroniczna (eventy)"
+      },
+      "mapstruct": {
+        "primary": "MapStruct + Lombok",
+        "secondary": "Mapowania DTO i redukcja boilerplate"
+      },
+      "openapi": {
+        "primary": "OpenAPI / springdoc",
+        "secondary": "Dokumentacja API"
+      }
+    },
+    "infra": {
+      "postgres": {
+        "primary": "PostgreSQL 16",
+        "secondary": "Bazy danych dla mikroserwisów"
+      },
+      "docker": {
+        "primary": "Docker + Docker Compose",
+        "secondary": "Uruchamianie środowiska lokalnie"
+      },
+      "maven": {
+        "primary": "Maven",
+        "secondary": "Budowanie backendu"
+      },
+      "generator": {
+        "primary": "OpenAPI Generator",
+        "secondary": "Generowanie klienta API dla frontendu"
+      }
+    }
+  }
+}

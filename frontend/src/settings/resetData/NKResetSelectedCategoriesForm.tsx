@@ -13,22 +13,24 @@ import * as Yup from "yup";
 import { apiClient } from "../../api/apiClient";
 import { CategoryUiDTO } from "../../api/generated";
 import { useSnackbar } from "notistack";
-import { useDialog } from "../../lib/dialog/NKDialogContext";
+import { useDialog } from "../../lib/dialog/useDialog";
 import type { AxiosResponse } from "axios";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   formId?: string;
 }
 
-const validationSchema = Yup.object({
-  categoryIds: Yup.array()
-    .of(Yup.string().required())
-    .min(1, "Wybierz przynajmniej jedną kategorię"),
-});
-
 const NKResetSelectedCategoriesForm = (props: Props) => {
   const { enqueueSnackbar } = useSnackbar();
   const { closeDialog } = useDialog();
+  const { t } = useTranslation("settings");
+
+  const validationSchema = Yup.object({
+    categoryIds: Yup.array()
+      .of(Yup.string().required())
+      .min(1, t("resetSelectedCategories.validation.minOne")),
+  });
 
   const [categories, setCategories] = useState<CategoryUiDTO[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,15 +38,17 @@ const NKResetSelectedCategoriesForm = (props: Props) => {
   useEffect(() => {
     apiClient
       .get<CategoryUiDTO[]>("/api/bff/categories/combo")
-      .then((response: AxiosResponse<CategoryUiDTO[]>) => setCategories(response.data))
+      .then((response: AxiosResponse<CategoryUiDTO[]>) =>
+        setCategories(response.data),
+      )
       .catch((error: unknown) => {
         console.error("Błąd pobierania kategorii:", error);
-        enqueueSnackbar("Nie udało się pobrać listy kategorii", {
+        enqueueSnackbar(t("resetSelectedCategories.snackbar.fetchError"), {
           variant: "error",
         });
       })
       .finally(() => setLoading(false));
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, t]);
 
   type FormValues = { categoryIds: string[] };
 
@@ -53,21 +57,29 @@ const NKResetSelectedCategoriesForm = (props: Props) => {
     validationSchema,
     onSubmit: async (
       values: FormValues,
-      { setSubmitting, resetForm }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
+      {
+        setSubmitting,
+        resetForm,
+      }: {
+        setSubmitting: (isSubmitting: boolean) => void;
+        resetForm: () => void;
+      },
     ) => {
       try {
         await apiClient.post("/api/bff/users/me/categories/reset", {
           categoryIds: values.categoryIds,
         });
 
-        enqueueSnackbar("Zresetowano dane w wybranych kategoriach", {
+        enqueueSnackbar(t("resetSelectedCategories.snackbar.resetSuccess"), {
           variant: "success",
         });
         resetForm();
         closeDialog();
       } catch (error) {
         console.error("Błąd resetu kategorii:", error);
-        enqueueSnackbar("Nie udało się zresetować danych", { variant: "error" });
+        enqueueSnackbar(t("resetSelectedCategories.snackbar.resetError"), {
+          variant: "error",
+        });
       } finally {
         setSubmitting(false);
       }
@@ -87,9 +99,13 @@ const NKResetSelectedCategoriesForm = (props: Props) => {
   };
 
   return (
-    <form id={props.formId} onSubmit={formik.handleSubmit}>
-      <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Wybierz kategorie do resetu:
+    <form
+      id={props.formId}
+      onSubmit={formik.handleSubmit}>
+      <Typography
+        variant="subtitle2"
+        sx={{ mb: 1 }}>
+        {t("resetSelectedCategories.title")}
       </Typography>
 
       {loading ? (
@@ -115,7 +131,9 @@ const NKResetSelectedCategoriesForm = (props: Props) => {
       )}
 
       {formik.touched.categoryIds && formik.errors.categoryIds ? (
-        <FormHelperText error sx={{ mt: 1 }}>
+        <FormHelperText
+          error
+          sx={{ mt: 1 }}>
           {String(formik.errors.categoryIds)}
         </FormHelperText>
       ) : null}

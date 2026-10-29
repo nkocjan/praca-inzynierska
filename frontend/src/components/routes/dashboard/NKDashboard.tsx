@@ -5,6 +5,7 @@ import DashBarChart from "./components/DashBarChart";
 import ConfigurationBox from "./components/ConfigurationBox";
 import { useEffect, useMemo, useState } from "react";
 import {
+  BarChartDataPairUiDTO,
   BarChartDataUiDTO,
   CategoryRepDTO,
   DashboardDataResponseUiDTO,
@@ -12,6 +13,7 @@ import {
   PieChartDataUiDTO,
 } from "../../../api/generated";
 import { apiClient } from "../../../api/apiClient.ts";
+import { useTranslation } from "react-i18next";
 
 const height = 250;
 const height2 = "42vh";
@@ -21,6 +23,7 @@ type TransformedBarChartData = {
 };
 
 const NKDashboard = () => {
+  const { t } = useTranslation("dashboard");
   const [dashboardData, setDashboardData] =
     useState<DashboardDataResponseUiDTO | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -35,9 +38,8 @@ const NKDashboard = () => {
         );
 
         setDashboardData(response.data);
-        if (response.data.categories && response.data.categories.length > 0) {
-          setSelectedCategory(response.data.categories[0].id as string);
-        }
+        const firstCategoryId = response.data.categories?.[0]?.id;
+        setSelectedCategory((firstCategoryId as string) || "");
       } catch (error) {
         console.error("Błąd pobierania danych z dashboardu:", error);
       } finally {
@@ -48,17 +50,32 @@ const NKDashboard = () => {
     void fetchDashboardData();
   }, []);
 
+  useEffect(() => {
+    const categories = dashboardData?.categories ?? [];
+    if (categories.length === 0) {
+      if (selectedCategory !== "") setSelectedCategory("");
+      return;
+    }
+
+    const exists = categories.some(c => (c.id as string) === selectedCategory);
+    if (!exists) {
+      setSelectedCategory((categories[0].id as string) || "");
+    }
+  }, [dashboardData?.categories, selectedCategory]);
+
   const transformedBarData = useMemo((): TransformedBarChartData => {
     if (!dashboardData?.barChartData) return {};
 
-    return dashboardData.barChartData.reduce((acc, pair) => {
-      if (pair.data) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        acc[pair.categoryId] = pair.data;
-      }
-      return acc;
-    }, {} as TransformedBarChartData);
+    return (dashboardData.barChartData as BarChartDataPairUiDTO[]).reduce(
+      (acc, pair) => {
+        const categoryId = pair.categoryId as string | undefined;
+        if (categoryId && pair.data) {
+          acc[categoryId] = pair.data;
+        }
+        return acc;
+      },
+      {} as TransformedBarChartData,
+    );
   }, [dashboardData?.barChartData]);
 
   const chartData = transformedBarData[selectedCategory] || {
@@ -68,23 +85,31 @@ const NKDashboard = () => {
   };
 
   if (isLoading) {
-    return <div>Ładowanie danych...</div>;
+    return <div>{t("loading")}</div>;
   }
 
   if (!dashboardData) {
-    return <div>Wystąpił błąd podczas ładowania danych.</div>;
+    return <div>{t("loadError")}</div>;
   }
 
   return (
-    <Grid container spacing={2} sx={{ padding: 3, marginTop: 5 }}>
-      <Grid container spacing={2} size={12}>
+    <Grid
+      container
+      spacing={2}
+      sx={{ padding: 3, marginTop: 5 }}>
+      <Grid
+        container
+        spacing={2}
+        size={12}>
         <Grid size={3}>
           <ExpanseList
             height={height}
-            expenses={dashboardData.expenses as ExpenseUiDTO[]}
+            expenses={(dashboardData.expenses as ExpenseUiDTO[]) ?? []}
           />
         </Grid>
-        <Grid size={9} container>
+        <Grid
+          size={9}
+          container>
           <Grid size={4}>
             <PieChart
               height={height}
@@ -109,7 +134,10 @@ const NKDashboard = () => {
         </Grid>
       </Grid>
 
-      <Grid container spacing={2} size={12}>
+      <Grid
+        container
+        spacing={2}
+        size={12}>
         <Grid size={7}>
           <DashBarChart
             height={height2}
@@ -121,7 +149,7 @@ const NKDashboard = () => {
         <Grid size={5}>
           <ConfigurationBox
             height={height2}
-            categories={dashboardData.categories as CategoryRepDTO[]}
+            categories={(dashboardData.categories as CategoryRepDTO[]) ?? []}
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
           />

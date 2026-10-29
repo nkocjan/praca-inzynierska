@@ -1,0 +1,13 @@
+{
+  "language": {
+    "label": "Language",
+    "pl": "Polish",
+    "en": "English"
+  },
+  "common": {
+    "noData": "No data"
+  },
+  "dialog": {
+    "confirmDelete": "Do you confirm deleting {{item}}?"
+  }
+}
