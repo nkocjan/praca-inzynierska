@@ -12,7 +12,8 @@
     "noData": "Brak danych"
   },
   "dialog": {
-    "confirmDelete": "Czy potwierdzasz usunięcie {{item}}?"
+    "confirmDelete": "Czy potwierdzasz usunięcie {{item}}?",
+    "close": "Zamknij"
   },
   "appName": "Budżet domowy",
   "theme": {

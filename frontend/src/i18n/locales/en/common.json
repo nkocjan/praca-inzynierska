@@ -12,7 +12,8 @@
     "noData": "No data"
   },
   "dialog": {
-    "confirmDelete": "Do you confirm deleting {{item}}?"
+    "confirmDelete": "Do you confirm deleting {{item}}?",
+    "close": "Close"
   },
   "appName": "Home Budget",
   "theme": {

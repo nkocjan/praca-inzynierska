@@ -1,9 +1,12 @@
-import { Box } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface properties {
-  translation: string;
+  // Either a ready message, or the noun for the generic "Do you confirm deleting ...?".
+  message?: string;
+  translation?: string;
+  hint?: string;
   formId?: string;
   onConfirm?: () => void | Promise<void>;
   onSuccess?: () => void;
@@ -15,7 +18,17 @@ const ConfirmDelete = (props: properties) => {
   const { t } = useTranslation("common");
 
   const content = (
-    <Box>{t("dialog.confirmDelete", { item: props.translation })}</Box>
+    <>
+      <Typography>{props.message ?? t("dialog.confirmDelete", { item: props.translation })}</Typography>
+      {props.hint && (
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ mt: 1 }}>
+          {props.hint}
+        </Typography>
+      )}
+    </>
   );
 
   if (!props.formId) {

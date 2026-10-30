@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from "react";
 import { useTheme } from "@mui/material/styles";
 import { Chart as ChartJS } from "chart.js";
 
@@ -39,4 +40,19 @@ export const buildCategoryColors = (
   const map = new Map<string, string>();
   categoryIds.forEach((id, index) => map.set(id, palette[index] ?? other));
   return map;
+};
+
+// Slots go to categories in alphabetical order, so a category has the same colour on every screen.
+export const useCategoryColors = (categories: { id?: string; name?: string }[], language: string) => {
+  const { categorical, other } = useChartColors();
+  const colorById = useMemo(() => {
+    const sorted = [...categories].sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "", language));
+    return buildCategoryColors(
+      sorted.map(category => category.id ?? ""),
+      categorical,
+      other,
+    );
+  }, [categories, language, categorical, other]);
+  const colorFor = useCallback((id?: string) => colorById.get(id ?? "") ?? other, [colorById, other]);
+  return { colorById, colorFor, other };
 };
