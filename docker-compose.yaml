@@ -1,3 +1,8 @@
+# Całe demo (bazy, mikroserwisy, frontend). Na serwerze za bramą Caddy z repo my_own_page:
+# sieć `web-gateway`, kontenery `inz-frontend` (SPA) i `inz-bff` (/api). JWT_SECRET w .env
+# (na serwerze symlink do my_own_page/env/praca-inzynierska.env; to repo jest publiczne).
+# Lokalnie same bazy: `docker compose up -d userdb budgetdb expense-A1 expense-A2 expense-B1 expense-B2`;
+# całość wymaga `docker network create web-gateway` (raz).
 services:
   userdb:
     image: postgres:16
@@ -10,6 +15,11 @@ services:
       - userdb_data:/var/lib/postgresql/data
     ports:
       - "127.0.0.1:15432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d userdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
     restart: unless-stopped
 
   budgetdb:
@@ -23,6 +33,11 @@ services:
       - budgetdb_data:/var/lib/postgresql/data
     ports:
       - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d budgetdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
     restart: unless-stopped
 
   expense-A1:
@@ -101,6 +116,71 @@ services:
       - "127.0.0.1:5437:5432"
     restart: unless-stopped
 
+  # ============================================================
+  #  Mikroserwisy (Spring Boot, profil `docker`: adresy baz i serwisów po nazwach kontenerów)
+  # ============================================================
+
+  inz-user-service:
+    build:
+      context: ./user-service
+    container_name: inz-user-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      JWT_SECRET: ${JWT_SECRET:-}
+    depends_on:
+      userdb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  inz-budget-service:
+    build:
+      context: ./budget-service
+    container_name: inz-budget-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      budgetdb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  inz-expense-service:
+    build:
+      context: ./expense-service
+    container_name: inz-expense-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      expense-A1:
+        condition: service_healthy
+      expense-B1:
+        condition: service_healthy
+    restart: unless-stopped
+
+  inz-bff:
+    build:
+      context: ./bff
+    container_name: inz-bff
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      JWT_SECRET: ${JWT_SECRET:-}
+    depends_on:
+      - inz-user-service
+      - inz-expense-service
+      - inz-budget-service
+    networks:
+      - default
+      - web-gateway
+    restart: unless-stopped
+
+  # Zbudowany frontend (Vite, VITE_API_URL=/api z frontend/.env.production).
+  inz-frontend:
+    build:
+      context: ./frontend
+    container_name: inz-frontend
+    networks:
+      - web-gateway
+    restart: unless-stopped
+
 volumes:
   userdb_data:
   budgetdb_data:
@@ -108,3 +188,7 @@ volumes:
   expenseA2_data:
   expenseB1_data:
   expenseB2_data:
+
+networks:
+  web-gateway:
+    external: true

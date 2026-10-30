@@ -73,3 +73,6 @@ Thumbs.db
 openapi/target/
 openapi/paths/
 openapi/components/user-service/
+
+# Sekrety serwera (symlink do my_own_page/env/praca-inzynierska.env)
+.env
