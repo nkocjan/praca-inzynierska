@@ -56,4 +56,7 @@ public interface BudgetServiceClient {
 
     @PostMapping("/api/v1/categories/user/{userId}/reset")
     void resetSelectedCategories(@PathVariable("userId") UUID userId, @RequestBody ResetCategoriesRequestDTO request);
+
+    @DeleteMapping("/api/v1/categories/user/{userId}")
+    void deleteUserData(@PathVariable("userId") UUID userId);
 }

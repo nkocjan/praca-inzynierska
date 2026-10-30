@@ -28,7 +28,7 @@ public class UserCommandController {
     private void assertNotDemoAccount(UUID userId) {
         if (Boolean.TRUE.equals(userServiceClient.getUserById(userId).getIsDemo())) {
             throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN, "Demo account data cannot be reset");
+                    HttpStatus.FORBIDDEN, "Demo account data cannot be changed");
         }
     }
 
@@ -166,7 +166,13 @@ public class UserCommandController {
     public ResponseEntity<Void> deleteMe(
             @AuthenticationPrincipal UUID userId,
             @RequestBody ConfirmCredentialsRequestDTO confirm) {
+        assertNotDemoAccount(userId);
         assertCredentials(userId, confirm);
+        // The data goes first and the account last: if a step fails, the user can still log in and
+        // try again (every step can be repeated), instead of leaving data nobody can reach.
+        // Expenses before categories, so a half-done attempt never leaves expenses without them.
+        expenseServiceClient.resetData(userId);
+        budgetServiceClient.deleteUserData(userId);
         userServiceClient.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }

@@ -53,4 +53,12 @@ public class CategoryCommandController {
         assertSameUser(headerUserId, userId);
         categoryCommandService.resetSelectedCategories(userId, request);
     }
+
+    // Deletes all categories of the user with their budgets and limit history (account deletion).
+    @DeleteMapping("/user/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAllForUser(@PathVariable UUID userId, @RequestHeader("X-User-Id") UUID headerUserId) {
+        assertSameUser(headerUserId, userId);
+        categoryCommandService.deleteAllForUser(userId);
+    }
 }

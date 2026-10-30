@@ -156,15 +156,34 @@ class UserCommandControllerTest {
         verify(budgetServiceClient, never()).resetData(any());
     }
 
+    private void verifyNothingDeleted() {
+        verify(expenseServiceClient, never()).resetData(any());
+        verify(budgetServiceClient, never()).deleteUserData(any());
+        verify(userServiceClient, never()).deleteUser(any());
+    }
+
     @Test
-    void deleteWithMatchingCredentialsDeletesTheAccount() {
+    void deleteRemovesTheDataBeforeTheAccount() {
         when(userServiceClient.getUserById(USER_ID)).thenReturn(user);
 
         controller.deleteMe(USER_ID, confirm(EMAIL, PASSWORD));
 
-        var order = inOrder(userServiceClient);
+        var order = inOrder(userServiceClient, expenseServiceClient, budgetServiceClient);
         order.verify(userServiceClient).verifyPassword(eq(USER_ID), any());
+        order.verify(expenseServiceClient).resetData(USER_ID);
+        order.verify(budgetServiceClient).deleteUserData(USER_ID);
         order.verify(userServiceClient).deleteUser(USER_ID);
+    }
+
+    @Test
+    void deleteKeepsTheAccountWhenTheDataCannotBeDeleted() {
+        when(userServiceClient.getUserById(USER_ID)).thenReturn(user);
+        doThrow(new IllegalStateException("budget-service is down"))
+                .when(budgetServiceClient)
+                .deleteUserData(USER_ID);
+
+        assertThrows(IllegalStateException.class, () -> controller.deleteMe(USER_ID, confirm(EMAIL, PASSWORD)));
+        verify(userServiceClient, never()).deleteUser(any());
     }
 
     @Test
@@ -173,17 +192,34 @@ class UserCommandControllerTest {
         rejectPassword();
 
         assertThrows(IllegalStateException.class, () -> controller.deleteMe(USER_ID, confirm(EMAIL, "wrong")));
-        verify(userServiceClient, never()).deleteUser(any());
+        verifyNothingDeleted();
     }
 
     @Test
     void deleteWithoutEmailIsRejected() {
+        when(userServiceClient.getUserById(USER_ID)).thenReturn(user);
+
         var ex =
                 assertThrows(
                         ResponseStatusException.class,
                         () -> controller.deleteMe(USER_ID, confirm(null, PASSWORD)));
 
         assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
-        verify(userServiceClient, never()).deleteUser(any());
+        verifyNothingDeleted();
+    }
+
+    @Test
+    void deleteOfDemoAccountIsForbidden() {
+        user.setIsDemo(true);
+        when(userServiceClient.getUserById(USER_ID)).thenReturn(user);
+
+        var ex =
+                assertThrows(
+                        ResponseStatusException.class,
+                        () -> controller.deleteMe(USER_ID, confirm(EMAIL, PASSWORD)));
+
+        assertEquals(HttpStatus.FORBIDDEN, ex.getStatusCode());
+        verify(userServiceClient, never()).verifyPassword(any(), any());
+        verifyNothingDeleted();
     }
 }
