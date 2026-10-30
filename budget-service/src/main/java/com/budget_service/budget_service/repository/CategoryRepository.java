@@ -14,6 +14,8 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, UUID> 
 
     boolean existsByIdAndUserId(UUID id, UUID userId);
 
+    void deleteByUser_Id(UUID userId);
+
     @Query("SELECT c FROM CategoryEntity c LEFT JOIN FETCH c.budgets WHERE c.user.id = :userId")
     List<CategoryEntity> findAllByUserIdWithBudgets(@Param("userId") UUID userId);
 

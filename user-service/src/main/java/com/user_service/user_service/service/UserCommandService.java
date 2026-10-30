@@ -68,6 +68,12 @@ public class UserCommandService {
         userRepository.save(user);
     }
 
+    public void verifyPassword(UUID userId, VerifyPasswordRequestDTO request) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        userValidator.validatePassword(user, request.getPassword());
+    }
+
     public void deleteUser(UUID userId) {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));

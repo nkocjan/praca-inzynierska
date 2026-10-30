@@ -76,6 +76,17 @@ public class UserCommandController {
         service.changePassword(id, request);
     }
 
+    // Lets the bff confirm the current password before changes that the settings screen guards with it.
+    @PostMapping("/{id}/verify-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void verifyPassword(
+            @AuthenticationPrincipal UUID authenticatedUserId,
+            @PathVariable UUID id,
+            @RequestBody VerifyPasswordRequestDTO request) {
+        assertSameUser(authenticatedUserId, id);
+        service.verifyPassword(id, request);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteUser(@AuthenticationPrincipal UUID authenticatedUserId, @PathVariable UUID id) {
         assertSameUser(authenticatedUserId, id);

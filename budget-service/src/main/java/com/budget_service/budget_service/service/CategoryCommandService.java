@@ -95,6 +95,14 @@ public class CategoryCommandService {
         categoryRepository.deleteById(id);
     }
 
+    // Everything the user has here, for account deletion. Safe to repeat when an earlier attempt stopped halfway.
+    @Transactional
+    public void deleteAllForUser(UUID userId) {
+        budgetRepository.deleteByCategory_User_Id(userId);
+        budgetConfigHistoryRepository.deleteByCategory_User_Id(userId);
+        categoryRepository.deleteByUser_Id(userId);
+    }
+
     @Transactional
     public void initDefaultCategoriesForUser(UUID userId) {
         UserRepEntity user = userRepRepository.getReferenceById(userId);

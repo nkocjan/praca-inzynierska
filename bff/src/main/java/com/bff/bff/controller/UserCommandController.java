@@ -6,6 +6,9 @@ import com.bff.bff.client.UserServiceClient;
 import com.bff.bff.dto.api.*;
 import com.bff.bff.dto.ui.UserUiDTO;
 import com.bff.bff.mapper.MapperExtension;
+import com.bff.bff.security.FailedAttemptLimiter;
+import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,13 +26,44 @@ public class UserCommandController {
     private final BudgetServiceClient budgetServiceClient;
     private final ExpenseServiceClient expenseServiceClient;
     private final MapperExtension mapperExtension;
+    private final FailedAttemptLimiter failedAttemptLimiter;
+    private final HttpServletRequest httpRequest;
 
     // Demo accounts are shared by all visitors, so wiping their data is not allowed.
     private void assertNotDemoAccount(UUID userId) {
         if (Boolean.TRUE.equals(userServiceClient.getUserById(userId).getIsDemo())) {
             throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN, "Demo account data cannot be reset");
+                    HttpStatus.FORBIDDEN, "Demo account data cannot be changed");
         }
+    }
+
+    // Settings changes are confirmed with the current password, so a stolen token alone cannot
+    // change the login, e-mail or password, wipe the data or delete the account. A wrong password
+    // is a 400 from user-service (the UI reads 403 as "this is a demo account"); after too many of
+    // them the address gets 429 for a while.
+    private void assertPassword(UUID userId, String password) {
+        var key = "password:" + httpRequest.getRemoteAddr() + ":" + userId;
+        failedAttemptLimiter.assertNotBlocked(key, FailedAttemptLimiter.MAX_WRONG_PASSWORDS);
+        var verifyRequest = new VerifyPasswordRequestDTO();
+        verifyRequest.setPassword(password);
+        try {
+            userServiceClient.verifyPassword(userId, verifyRequest);
+        } catch (FeignException.BadRequest e) {
+            failedAttemptLimiter.recordFailure(key);
+            throw e;
+        }
+        failedAttemptLimiter.reset(key);
+    }
+
+    // Resetting the data and deleting the account also ask for the account's e-mail.
+    private void assertCredentials(UUID userId, ConfirmCredentialsRequestDTO confirm) {
+        var email = confirm.getEmail();
+        if (email == null
+                || !email.trim().equalsIgnoreCase(userServiceClient.getUserById(userId).getEmail())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "E-mail does not match the account");
+        }
+        assertPassword(userId, confirm.getPassword());
     }
 
     @PostMapping
@@ -40,53 +74,9 @@ public class UserCommandController {
         return ResponseEntity.ok(userUiDTO);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserUiDTO> updateUser(
-            @PathVariable UUID id, @RequestBody UserUpdateRequestDTO request) {
-        var userDTO = userServiceClient.updateUser(id, request);
-        var userUiDTO = mapperExtension.toUserUiDTO(userDTO);
-        return ResponseEntity.ok(userUiDTO);
-    }
-
-    @PutMapping("/{id}/activate")
-    public ResponseEntity<UserUiDTO> activateAccount(
-            @PathVariable UUID id, @RequestBody ActivateAccountRequestDTO request) {
-        var userDTO = userServiceClient.activateAccount(id, request);
-        var userUiDTO = mapperExtension.toUserUiDTO(userDTO);
-        return ResponseEntity.ok(userUiDTO);
-    }
-
-    @PutMapping("/{id}/premium")
-    public ResponseEntity<UserUiDTO> setPremium(
-            @PathVariable UUID id, @RequestBody SetPremiumRequestDTO request) {
-        var userDTO = userServiceClient.setPremium(id, request);
-        var userUiDTO = mapperExtension.toUserUiDTO(userDTO);
-        return ResponseEntity.ok(userUiDTO);
-    }
-
-    @PutMapping("/{id}/password")
-    public ResponseEntity<Void> changePassword(
-            @PathVariable UUID id, @RequestBody ChangePasswordRequestDTO request) {
-        userServiceClient.changePassword(id, request);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
-        userServiceClient.deleteUser(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    // 1. Zmiana nicku
-    @PutMapping("/{id}/nickname")
-    public ResponseEntity<UserUiDTO> changeNickname(
-            @PathVariable UUID id, @RequestBody ChangeNicknameRequestDTO request) {
-        var userDTO = userServiceClient.changeNickname(id, request);
-        var userUiDTO = mapperExtension.toUserUiDTO(userDTO);
-        return ResponseEntity.ok(userUiDTO);
-    }
-
     // --- SETTINGS: endpoints bez jawnego {id} (userId z JWT) ---
+    // Login, e-mail, password, data reset and account deletion have no {id} variants on purpose:
+    // they would skip the password check and its attempt limit.
 
     @PutMapping("/me/nickname")
     public ResponseEntity<UserUiDTO> changeNicknameMe(
@@ -98,21 +88,13 @@ public class UserCommandController {
                 && !request.getPassword().equals(request.getConfirmPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Hasła nie są takie same");
         }
+        assertPassword(userId, request.getPassword());
 
         var apiRequest = new ChangeNicknameRequestDTO();
         apiRequest.setNewNickname(request.getNewNickname());
 
         var userDTO = userServiceClient.changeNickname(userId, apiRequest);
         return ResponseEntity.ok(mapperExtension.toUserUiDTO(userDTO));
-    }
-
-    // 2. Zmiana emaila
-    @PutMapping("/{id}/email")
-    public ResponseEntity<UserUiDTO> changeEmail(
-            @PathVariable UUID id, @RequestBody ChangeEmailRequestDTO request) {
-        var userDTO = userServiceClient.changeEmail(id, request);
-        var userUiDTO = mapperExtension.toUserUiDTO(userDTO);
-        return ResponseEntity.ok(userUiDTO);
     }
 
     @PutMapping("/me/email")
@@ -125,6 +107,7 @@ public class UserCommandController {
                 && !request.getNewEmail().equals(request.getConfirmNewEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Adresy e-mail nie są takie same");
         }
+        assertPassword(userId, request.getPassword());
 
         var apiRequest = new ChangeEmailRequestDTO();
         apiRequest.setNewEmail(request.getNewEmail());
@@ -137,30 +120,24 @@ public class UserCommandController {
     public ResponseEntity<Void> changePasswordMe(
             @AuthenticationPrincipal UUID userId,
             @RequestBody ChangePasswordRequestDTO request) {
+        assertPassword(userId, request.getOldPassword());
         userServiceClient.changePassword(userId, request);
         return ResponseEntity.noContent().build();
     }
 
-    // 3. Reset danych konta (np. wyczyszczenie wszystkich transakcji i budżetów)
-    @PostMapping("/{id}/reset-data")
-    public ResponseEntity<Void> resetAccountData(@PathVariable UUID id) {
-        assertNotDemoAccount(id);
-        budgetServiceClient.resetData(id);
-        expenseServiceClient.resetData(id);
-        return ResponseEntity.noContent().build();
-    }
-
+    // Reset danych konta (np. wyczyszczenie wszystkich transakcji i budżetów)
     @PostMapping("/me/reset-data")
     public ResponseEntity<Void> resetAccountDataMe(
             @AuthenticationPrincipal UUID userId,
-            @RequestBody(required = false) ConfirmCredentialsRequestDTO _confirm) {
+            @RequestBody ConfirmCredentialsRequestDTO confirm) {
         assertNotDemoAccount(userId);
+        assertCredentials(userId, confirm);
         budgetServiceClient.resetData(userId);
         expenseServiceClient.resetData(userId);
         return ResponseEntity.noContent().build();
     }
 
-    // 4. Reset wybranych kategorii (przywrócenie do domyślnych lub usunięcie customowych)
+    // Reset wybranych kategorii (przywrócenie do domyślnych lub usunięcie customowych)
     @PostMapping("/{id}/categories/reset")
     public ResponseEntity<Void> resetSelectedCategories(
             @PathVariable UUID id, @RequestBody ResetCategoriesRequestDTO request) {
@@ -180,7 +157,14 @@ public class UserCommandController {
     @PostMapping("/me/delete")
     public ResponseEntity<Void> deleteMe(
             @AuthenticationPrincipal UUID userId,
-            @RequestBody(required = false) ConfirmCredentialsRequestDTO _confirm) {
+            @RequestBody ConfirmCredentialsRequestDTO confirm) {
+        assertNotDemoAccount(userId);
+        assertCredentials(userId, confirm);
+        // The data goes first and the account last: if a step fails, the user can still log in and
+        // try again (every step can be repeated), instead of leaving data nobody can reach.
+        // Expenses before categories, so a half-done attempt never leaves expenses without them.
+        expenseServiceClient.resetData(userId);
+        budgetServiceClient.deleteUserData(userId);
         userServiceClient.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }

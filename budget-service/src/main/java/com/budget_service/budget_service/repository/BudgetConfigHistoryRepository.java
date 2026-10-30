@@ -25,4 +25,6 @@ public interface BudgetConfigHistoryRepository extends JpaRepository<BudgetConfi
     List<BudgetConfigHistoryEntity> findByCategory_IdAndIsActiveTrue(UUID categoryId);
 
     void deleteByCategory_Id(UUID categoryId);
+
+    void deleteByCategory_User_Id(UUID userId);
 }
