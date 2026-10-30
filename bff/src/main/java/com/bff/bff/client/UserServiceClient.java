@@ -25,6 +25,9 @@ public interface UserServiceClient {
     @PutMapping("/api/v1/users/{id}/password")
     void changePassword(@PathVariable UUID id, @RequestBody ChangePasswordRequestDTO request);
 
+    @PostMapping("/api/v1/users/{id}/verify-password")
+    void verifyPassword(@PathVariable UUID id, @RequestBody VerifyPasswordRequestDTO request);
+
     @DeleteMapping("/api/v1/users/{id}")
     void deleteUser(@PathVariable UUID id);
 

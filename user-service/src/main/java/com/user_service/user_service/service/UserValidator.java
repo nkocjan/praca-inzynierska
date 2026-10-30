@@ -71,6 +71,12 @@ public class UserValidator {
         }
     }
 
+    // 400, not 403: the UI reads 403 as "this is a demo account".
+    public void validatePassword(UserEntity user, String password) {
+        if (password == null || !passwordEncoder.matches(password, user.getPassword()))
+            throw new IllegalArgumentException("Password is incorrect");
+    }
+
     public void validateForDelete(UserEntity user) {
         if (user == null) throw new IllegalArgumentException("User not found");
     }
