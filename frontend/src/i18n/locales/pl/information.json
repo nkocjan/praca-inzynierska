@@ -1,152 +1,167 @@
 {
-  "title": "Informacje o aplikacji",
-  "description": "Aplikacja do zarządzania budżetami i wydatkami w kategoriach - zaprojektowana jako projekt portfolio oraz przykład rozwiązania opartego o mikroserwisy.",
-  "usage": {
-    "title": "1) Instrukcja korzystania (dla nietechnicznych)",
+  "page": {
+    "heading": "O aplikacji",
+    "subtitle": "Budżet domowy pomaga planować wydatki: każda kategoria ma limit na tydzień, miesiąc i rok, a aplikacja na bieżąco pokazuje, ile z niego już wydano. Projekt powstał jako praca inżynierska i pokazuje aplikację zbudowaną z mikroserwisów."
+  },
+  "steps": {
+    "title": "Jak zacząć",
+    "subtitle": "Sześć kroków od założenia konta do pierwszych podsumowań.",
+    "step": "Krok {{number}}",
     "items": {
-      "register": {
-        "primary": "1. Zarejestruj konto i zaloguj się",
-        "secondary": "Po zalogowaniu aplikacja zapamięta Twoją sesję i pokaże panel główny."
+      "account": {
+        "title": "Załóż konto albo użyj konta demo",
+        "text": "Konta demo mają gotowe dane z ostatnich miesięcy, które co 2 godziny wracają do stanu początkowego."
       },
       "categories": {
-        "primary": "2. Dodaj kategorie",
-        "secondary": "Kategorie to np. Jedzenie, Transport, Rozrywka - w nich grupujesz wydatki i budżety."
-      },
-      "budgets": {
-        "primary": "3. Ustaw budżety",
-        "secondary": "Dla każdej kategorii możesz ustawić budżet tygodniowy, miesięczny i roczny."
+        "title": "Dodaj kategorie i limity",
+        "text": "Na przykład Jedzenie albo Transport. Każda kategoria ma limit na tydzień, miesiąc i rok.",
+        "link": "Kategorie"
       },
       "expenses": {
-        "primary": "4. Dodawaj wydatki",
-        "secondary": "Wydatki przypisujesz do kategorii, z datą i kwotą. Aplikacja zestawia je z budżetem."
+        "title": "Zapisuj wydatki",
+        "text": "Wydatek ma nazwę, kwotę, datę i kategorię. Płatności, które dopiero nastąpią, oznaczasz jako zaplanowane.",
+        "link": "Wydatki"
+      },
+      "budgets": {
+        "title": "Pilnuj budżetów",
+        "text": "Budżety na kolejne okresy tworzą się same z limitów kategorii, a kwotę wybranego okresu możesz zmienić.",
+        "link": "Budżety"
       },
       "dashboard": {
-        "primary": "5. Sprawdzaj dashboard",
-        "secondary": "W panelu głównym zobaczysz podsumowania, wykresy oraz informację czy mieścisz się w budżecie."
+        "title": "Sprawdzaj Pulpit",
+        "text": "Podsumowanie tygodnia, miesiąca i roku, wydatki według kategorii i ostatnie transakcje w jednym miejscu.",
+        "link": "Pulpit"
       },
       "settings": {
-        "primary": "6. Zarządzaj danymi w ustawieniach",
-        "secondary": "Możesz zmienić dane konta, zresetować dane lub usunąć konto."
+        "title": "Dostosuj konto",
+        "text": "Zmień dane logowania, motyw i język albo wyczyść dane, żeby zacząć od nowa.",
+        "link": "Ustawienia"
       }
     }
   },
-  "technical": {
-    "title": "2) Opis techniczny (dla technicznych)",
-    "intro": "Rozwiązanie jest oparte o architekturę rozproszoną: frontend komunikuje się z warstwą BFF (Backend For Frontend), a BFF orkiestruje wywołania do niezależnych mikroserwisów.",
-    "systemPartsTitle": "Skład systemu:",
-    "parts": {
+  "architecture": {
+    "title": "Jak to działa",
+    "subtitle": "Frontend łączy się z jedną warstwą BFF, a ta z niezależnymi mikroserwisami, z których każdy ma własną bazę danych.",
+    "diagramLabel": "Schemat systemu: przeglądarka, BFF, trzy mikroserwisy i ich bazy danych",
+    "nodes": {
       "frontend": {
-        "primary": "Frontend (React + TypeScript)",
-        "secondary": "Aplikacja SPA: widoki, formularze, wykresy, walidacja, komunikacja HTTP."
+        "title": "Frontend",
+        "caption": "React, TypeScript i Material UI w przeglądarce"
       },
       "bff": {
-        "primary": "BFF (Spring Boot)",
-        "secondary": "Jedno wejście z frontu, autoryzacja JWT, agregacja danych, wywołania OpenFeign do serwisów."
+        "title": "BFF (Backend for Frontend)",
+        "caption": "Spring Boot: logowanie JWT i łączenie danych z serwisów"
       },
       "userService": {
-        "primary": "user-service",
-        "secondary": "Operacje konta użytkownika (np. rejestracja, logowanie, dane profilu)."
+        "title": "user-service",
+        "caption": "Konta i logowanie"
       },
       "budgetService": {
-        "primary": "budget-service",
-        "secondary": "Kategorie oraz budżety (np. tygodniowy/miesięczny/roczny), logika resetowania budżetów."
+        "title": "budget-service",
+        "caption": "Kategorie, limity i budżety"
       },
       "expenseService": {
-        "primary": "expense-service",
-        "secondary": "Wydatki oraz operacje bulk (np. reset danych), przygotowanie danych do dashboardu."
-      },
-      "databases": {
-        "primary": "Bazy danych (PostgreSQL)",
-        "secondary": "Oddzielne bazy dla serwisów; część środowiska zakłada replikację instancji expense DB."
+        "title": "expense-service",
+        "caption": "Wydatki i podsumowania"
       }
     },
-    "security": "Bezpieczeństwo: komunikacja front→BFF używa tokenu JWT (Bearer), a BFF przekazuje kontekst użytkownika do mikroserwisów."
-  },
-  "technologies": {
-    "title": "3) Wykorzystane technologie",
-    "frontendTitle": "Frontend",
-    "backendTitle": "Backend",
-    "infraTitle": "Infrastruktura / narzędzia",
-    "frontend": {
-      "react": {
-        "primary": "React + TypeScript",
-        "secondary": "SPA, komponenty, routing"
-      },
-      "vite": {
-        "primary": "Vite",
-        "secondary": "Dev server i build"
-      },
-      "mui": {
-        "primary": "Material UI",
-        "secondary": "Komponenty UI"
-      },
-      "axios": {
-        "primary": "Axios",
-        "secondary": "Komunikacja HTTP + interceptory"
-      },
-      "formikYup": {
-        "primary": "Formik + Yup",
-        "secondary": "Formularze + walidacja"
-      },
-      "notistack": {
-        "primary": "notistack",
-        "secondary": "Powiadomienia (snackbars)"
-      },
-      "chart": {
-        "primary": "Chart.js",
-        "secondary": "Wizualizacje na dashboardzie"
-      }
+    "databases": {
+      "userdb": "PostgreSQL",
+      "budgetdb": "PostgreSQL",
+      "expenseA": "Shard A + replika",
+      "expenseB": "Shard B + replika"
     },
-    "backend": {
-      "java": {
-        "primary": "Java 21",
-        "secondary": "Język/Platforma"
+    "points": {
+      "gateway": {
+        "title": "Jedno wejście",
+        "text": "Przeglądarka zna tylko BFF. Ten sprawdza token JWT, przekazuje identyfikator użytkownika do serwisów przez OpenFeign i łączy ich odpowiedzi, np. budżety z sumą wydatków."
       },
-      "spring": {
-        "primary": "Spring Boot 3",
-        "secondary": "REST, konfiguracja, Actuator"
+      "data": {
+        "title": "Rozproszone dane",
+        "text": "Wydatki są podzielone na dwa shardy według użytkownika. Zapisy trafiają do instancji głównej, odczyty do repliki. Tabele innych baz serwisy widzą przez postgres_fdw."
       },
       "security": {
-        "primary": "Spring Security + JWT",
-        "secondary": "Autoryzacja i ochrona endpointów"
+        "title": "Bezpieczeństwo",
+        "text": "Hasła są przechowywane jako skróty BCrypt, a serwisy sprawdzają, czy operacja dotyczy zalogowanego użytkownika. Na kontach demo zmiana danych logowania i usunięcie konta są zablokowane."
+      }
+    }
+  },
+  "technologies": {
+    "title": "Technologie",
+    "subtitle": "Najważniejsze biblioteki i narzędzia użyte w projekcie.",
+    "groups": {
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "infra": "Dane i infrastruktura"
+    },
+    "items": {
+      "react": {
+        "name": "React 19 + TypeScript",
+        "text": "Aplikacja jednostronicowa z routingiem (React Router)."
+      },
+      "mui": {
+        "name": "Material UI",
+        "text": "Komponenty, motyw jasny i ciemny, tabele (MUI X DataGrid) i kalendarze."
+      },
+      "forms": {
+        "name": "Formik + Yup",
+        "text": "Formularze z walidacją."
+      },
+      "charts": {
+        "name": "Chart.js",
+        "text": "Wykresy na Pulpicie, z kolorami czytelnymi także przy daltonizmie."
+      },
+      "i18n": {
+        "name": "react-i18next",
+        "text": "Interfejs po polsku i po angielsku."
+      },
+      "vite": {
+        "name": "Vite",
+        "text": "Serwer deweloperski i budowanie aplikacji."
+      },
+      "spring": {
+        "name": "Java 21 + Spring Boot 3",
+        "text": "Cztery serwisy REST: BFF, użytkownicy, budżety i wydatki."
+      },
+      "security": {
+        "name": "Spring Security + JWT",
+        "text": "Logowanie i ochrona endpointów."
       },
       "jpa": {
-        "primary": "Spring Data JPA / Hibernate",
-        "secondary": "Warstwa danych"
+        "name": "Spring Data JPA / Hibernate",
+        "text": "Dostęp do danych i wyszukiwanie z filtrami (Criteria API)."
       },
       "feign": {
-        "primary": "OpenFeign",
-        "secondary": "Komunikacja BFF→mikroserwisy"
-      },
-      "kafka": {
-        "primary": "Kafka",
-        "secondary": "Komunikacja asynchroniczna (eventy)"
+        "name": "OpenFeign",
+        "text": "Wywołania z BFF do mikroserwisów."
       },
       "mapstruct": {
-        "primary": "MapStruct + Lombok",
-        "secondary": "Mapowania DTO i redukcja boilerplate"
+        "name": "MapStruct + Lombok",
+        "text": "Mapowanie DTO bez powtarzalnego kodu."
       },
       "openapi": {
-        "primary": "OpenAPI / springdoc",
-        "secondary": "Dokumentacja API"
-      }
-    },
-    "infra": {
+        "name": "OpenAPI (springdoc)",
+        "text": "Dokumentacja API i wygenerowany z niej klient TypeScript."
+      },
       "postgres": {
-        "primary": "PostgreSQL 16",
-        "secondary": "Bazy danych dla mikroserwisów"
+        "name": "PostgreSQL 16",
+        "text": "Osobna baza dla każdego serwisu."
+      },
+      "sharding": {
+        "name": "Sharding i replikacja",
+        "text": "Dwa shardy wydatków, każdy z repliką strumieniową do odczytów."
+      },
+      "fdw": {
+        "name": "postgres_fdw",
+        "text": "Tabele innych baz widoczne lokalnie, bez kopiowania danych."
       },
       "docker": {
-        "primary": "Docker + Docker Compose",
-        "secondary": "Uruchamianie środowiska lokalnie"
+        "name": "Docker Compose",
+        "text": "Całe środowisko: sześć baz danych, cztery serwisy i frontend."
       },
-      "maven": {
-        "primary": "Maven",
-        "secondary": "Budowanie backendu"
-      },
-      "generator": {
-        "primary": "OpenAPI Generator",
-        "secondary": "Generowanie klienta API dla frontendu"
+      "deploy": {
+        "name": "GitHub Actions",
+        "text": "Automatyczne wdrożenie po każdej zmianie w gałęzi głównej."
       }
     }
   }
