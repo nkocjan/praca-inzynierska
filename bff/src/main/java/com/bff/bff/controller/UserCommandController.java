@@ -6,6 +6,9 @@ import com.bff.bff.client.UserServiceClient;
 import com.bff.bff.dto.api.*;
 import com.bff.bff.dto.ui.UserUiDTO;
 import com.bff.bff.mapper.MapperExtension;
+import com.bff.bff.security.FailedAttemptLimiter;
+import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,8 @@ public class UserCommandController {
     private final BudgetServiceClient budgetServiceClient;
     private final ExpenseServiceClient expenseServiceClient;
     private final MapperExtension mapperExtension;
+    private final FailedAttemptLimiter failedAttemptLimiter;
+    private final HttpServletRequest httpRequest;
 
     // Demo accounts are shared by all visitors, so wiping their data is not allowed.
     private void assertNotDemoAccount(UUID userId) {
@@ -33,12 +38,21 @@ public class UserCommandController {
     }
 
     // Settings changes are confirmed with the current password, so a stolen token alone cannot
-    // change the login or e-mail, wipe the data or delete the account. A wrong password is a 400
-    // from user-service: the UI reads 403 as "this is a demo account".
+    // change the login, e-mail or password, wipe the data or delete the account. A wrong password
+    // is a 400 from user-service (the UI reads 403 as "this is a demo account"); after too many of
+    // them the address gets 429 for a while.
     private void assertPassword(UUID userId, String password) {
-        var request = new VerifyPasswordRequestDTO();
-        request.setPassword(password);
-        userServiceClient.verifyPassword(userId, request);
+        var key = "password:" + httpRequest.getRemoteAddr() + ":" + userId;
+        failedAttemptLimiter.assertNotBlocked(key, FailedAttemptLimiter.MAX_WRONG_PASSWORDS);
+        var verifyRequest = new VerifyPasswordRequestDTO();
+        verifyRequest.setPassword(password);
+        try {
+            userServiceClient.verifyPassword(userId, verifyRequest);
+        } catch (FeignException.BadRequest e) {
+            failedAttemptLimiter.recordFailure(key);
+            throw e;
+        }
+        failedAttemptLimiter.reset(key);
     }
 
     // Resetting the data and deleting the account also ask for the account's e-mail.
@@ -62,7 +76,7 @@ public class UserCommandController {
 
     // --- SETTINGS: endpoints bez jawnego {id} (userId z JWT) ---
     // Login, e-mail, password, data reset and account deletion have no {id} variants on purpose:
-    // they would skip the password check.
+    // they would skip the password check and its attempt limit.
 
     @PutMapping("/me/nickname")
     public ResponseEntity<UserUiDTO> changeNicknameMe(
@@ -106,6 +120,7 @@ public class UserCommandController {
     public ResponseEntity<Void> changePasswordMe(
             @AuthenticationPrincipal UUID userId,
             @RequestBody ChangePasswordRequestDTO request) {
+        assertPassword(userId, request.getOldPassword());
         userServiceClient.changePassword(userId, request);
         return ResponseEntity.noContent().build();
     }

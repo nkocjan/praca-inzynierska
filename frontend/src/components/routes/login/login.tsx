@@ -21,6 +21,7 @@ import { apiClient } from "../../../api/apiClient";
 import { AuthRequestDTO } from "../../../api/generated/api.ts";
 import AuthLayout from "../../auth/AuthLayout.tsx";
 import DemoAccountsPanel from "./DemoAccountsPanel.tsx";
+import { isTooManyAttemptsError } from "../../../lib/errors/tooManyAttemptsError.ts";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -47,7 +48,12 @@ const Login = () => {
       navigate("/");
     } catch (error) {
       console.error("Błąd logowania:", error);
-      enqueueSnackbar(t("login.invalidCredentials"), { variant: "error" });
+      enqueueSnackbar(
+        isTooManyAttemptsError(error)
+          ? t("login.tooManyAttempts")
+          : t("login.invalidCredentials"),
+        { variant: "error" },
+      );
     } finally {
       setLoading(false);
     }

@@ -7,7 +7,9 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -16,12 +18,19 @@ import com.bff.bff.client.ExpenseServiceClient;
 import com.bff.bff.client.UserServiceClient;
 import com.bff.bff.dto.api.*;
 import com.bff.bff.mapper.MapperExtension;
+import com.bff.bff.security.FailedAttemptLimiter;
+import feign.FeignException;
+import feign.Request;
+import jakarta.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,6 +46,8 @@ class UserCommandControllerTest {
     @Mock private BudgetServiceClient budgetServiceClient;
     @Mock private ExpenseServiceClient expenseServiceClient;
     @Mock private MapperExtension mapperExtension;
+    @Mock private HttpServletRequest httpRequest;
+    @Spy private FailedAttemptLimiter failedAttemptLimiter = new FailedAttemptLimiter();
 
     @InjectMocks private UserCommandController controller;
 
@@ -48,13 +59,19 @@ class UserCommandControllerTest {
         user.setId(USER_ID);
         user.setEmail(EMAIL);
         user.setIsDemo(false);
+        lenient().when(httpRequest.getRemoteAddr()).thenReturn("203.0.113.7");
     }
 
-    // Stands in for the 400 that user-service answers for a wrong password.
+    // The 400 that user-service answers for a wrong password, as Feign reports it.
+    private static FeignException.BadRequest wrongPassword() {
+        var request =
+                Request.create(
+                        Request.HttpMethod.POST, "/verify-password", Map.of(), null, StandardCharsets.UTF_8, null);
+        return new FeignException.BadRequest("Password is incorrect", request, null, Map.of());
+    }
+
     private void rejectPassword() {
-        doThrow(new IllegalStateException("Password is incorrect"))
-                .when(userServiceClient)
-                .verifyPassword(eq(USER_ID), any());
+        doThrow(wrongPassword()).when(userServiceClient).verifyPassword(eq(USER_ID), any());
     }
 
     private static ConfirmCredentialsRequestDTO confirm(String email, String password) {
@@ -87,8 +104,48 @@ class UserCommandControllerTest {
         request.setPassword("wrong");
         request.setConfirmPassword("wrong");
 
-        assertThrows(IllegalStateException.class, () -> controller.changeNicknameMe(USER_ID, request));
+        assertThrows(FeignException.BadRequest.class, () -> controller.changeNicknameMe(USER_ID, request));
         verify(userServiceClient, never()).changeNickname(any(), any());
+    }
+
+    private static ChangeNicknameUiRequestDTO nicknameChange(String password) {
+        var request = new ChangeNicknameUiRequestDTO();
+        request.setNewNickname("nowy");
+        request.setPassword(password);
+        request.setConfirmPassword(password);
+        return request;
+    }
+
+    @Test
+    void tooManyWrongPasswordsGet429WithoutAskingUserService() {
+        rejectPassword();
+        for (int i = 0; i < FailedAttemptLimiter.MAX_WRONG_PASSWORDS; i++) {
+            assertThrows(
+                    FeignException.BadRequest.class,
+                    () -> controller.changeNicknameMe(USER_ID, nicknameChange("wrong")));
+        }
+
+        var ex =
+                assertThrows(
+                        ResponseStatusException.class,
+                        () -> controller.changeNicknameMe(USER_ID, nicknameChange("wrong")));
+
+        assertEquals(HttpStatus.TOO_MANY_REQUESTS, ex.getStatusCode());
+        verify(userServiceClient, times(FailedAttemptLimiter.MAX_WRONG_PASSWORDS))
+                .verifyPassword(eq(USER_ID), any());
+        verify(userServiceClient, never()).changeNickname(any(), any());
+    }
+
+    @Test
+    void changePasswordChecksTheOldPasswordFirst() {
+        rejectPassword();
+        var request = new ChangePasswordRequestDTO();
+        request.setOldPassword("wrong");
+        request.setNewPassword("Nowe-haslo-1");
+        request.setConfirmNewPassword("Nowe-haslo-1");
+
+        assertThrows(FeignException.BadRequest.class, () -> controller.changePasswordMe(USER_ID, request));
+        verify(userServiceClient, never()).changePassword(any(), any());
     }
 
     @Test
@@ -99,7 +156,7 @@ class UserCommandControllerTest {
         request.setConfirmNewEmail("nowy@example.com");
         request.setPassword("wrong");
 
-        assertThrows(IllegalStateException.class, () -> controller.changeEmailMe(USER_ID, request));
+        assertThrows(FeignException.BadRequest.class, () -> controller.changeEmailMe(USER_ID, request));
         verify(userServiceClient, never()).changeEmail(any(), any());
     }
 
@@ -136,7 +193,7 @@ class UserCommandControllerTest {
         rejectPassword();
 
         assertThrows(
-                IllegalStateException.class,
+                FeignException.BadRequest.class,
                 () -> controller.resetAccountDataMe(USER_ID, confirm(EMAIL, "wrong")));
         verify(budgetServiceClient, never()).resetData(any());
         verify(expenseServiceClient, never()).resetData(any());
@@ -191,7 +248,7 @@ class UserCommandControllerTest {
         when(userServiceClient.getUserById(USER_ID)).thenReturn(user);
         rejectPassword();
 
-        assertThrows(IllegalStateException.class, () -> controller.deleteMe(USER_ID, confirm(EMAIL, "wrong")));
+        assertThrows(FeignException.BadRequest.class, () -> controller.deleteMe(USER_ID, confirm(EMAIL, "wrong")));
         verifyNothingDeleted();
     }
 
