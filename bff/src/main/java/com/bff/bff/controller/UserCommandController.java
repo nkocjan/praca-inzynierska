@@ -60,14 +60,6 @@ public class UserCommandController {
         return ResponseEntity.ok(userUiDTO);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserUiDTO> updateUser(
-            @PathVariable UUID id, @RequestBody UserUpdateRequestDTO request) {
-        var userDTO = userServiceClient.updateUser(id, request);
-        var userUiDTO = mapperExtension.toUserUiDTO(userDTO);
-        return ResponseEntity.ok(userUiDTO);
-    }
-
     @PutMapping("/{id}/activate")
     public ResponseEntity<UserUiDTO> activateAccount(
             @PathVariable UUID id, @RequestBody ActivateAccountRequestDTO request) {
@@ -91,22 +83,9 @@ public class UserCommandController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
-        userServiceClient.deleteUser(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    // 1. Zmiana nicku
-    @PutMapping("/{id}/nickname")
-    public ResponseEntity<UserUiDTO> changeNickname(
-            @PathVariable UUID id, @RequestBody ChangeNicknameRequestDTO request) {
-        var userDTO = userServiceClient.changeNickname(id, request);
-        var userUiDTO = mapperExtension.toUserUiDTO(userDTO);
-        return ResponseEntity.ok(userUiDTO);
-    }
-
     // --- SETTINGS: endpoints bez jawnego {id} (userId z JWT) ---
+    // Login, e-mail, data reset and account deletion have no {id} variants on purpose: they would
+    // skip the password check.
 
     @PutMapping("/me/nickname")
     public ResponseEntity<UserUiDTO> changeNicknameMe(
@@ -125,15 +104,6 @@ public class UserCommandController {
 
         var userDTO = userServiceClient.changeNickname(userId, apiRequest);
         return ResponseEntity.ok(mapperExtension.toUserUiDTO(userDTO));
-    }
-
-    // 2. Zmiana emaila
-    @PutMapping("/{id}/email")
-    public ResponseEntity<UserUiDTO> changeEmail(
-            @PathVariable UUID id, @RequestBody ChangeEmailRequestDTO request) {
-        var userDTO = userServiceClient.changeEmail(id, request);
-        var userUiDTO = mapperExtension.toUserUiDTO(userDTO);
-        return ResponseEntity.ok(userUiDTO);
     }
 
     @PutMapping("/me/email")
@@ -163,15 +133,7 @@ public class UserCommandController {
         return ResponseEntity.noContent().build();
     }
 
-    // 3. Reset danych konta (np. wyczyszczenie wszystkich transakcji i budżetów)
-    @PostMapping("/{id}/reset-data")
-    public ResponseEntity<Void> resetAccountData(@PathVariable UUID id) {
-        assertNotDemoAccount(id);
-        budgetServiceClient.resetData(id);
-        expenseServiceClient.resetData(id);
-        return ResponseEntity.noContent().build();
-    }
-
+    // Reset danych konta (np. wyczyszczenie wszystkich transakcji i budżetów)
     @PostMapping("/me/reset-data")
     public ResponseEntity<Void> resetAccountDataMe(
             @AuthenticationPrincipal UUID userId,
@@ -183,7 +145,7 @@ public class UserCommandController {
         return ResponseEntity.noContent().build();
     }
 
-    // 4. Reset wybranych kategorii (przywrócenie do domyślnych lub usunięcie customowych)
+    // Reset wybranych kategorii (przywrócenie do domyślnych lub usunięcie customowych)
     @PostMapping("/{id}/categories/reset")
     public ResponseEntity<Void> resetSelectedCategories(
             @PathVariable UUID id, @RequestBody ResetCategoriesRequestDTO request) {
