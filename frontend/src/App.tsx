@@ -30,7 +30,7 @@ const AppContent = () => {
   const language = normalizeLanguage(i18n.language);
 
   const { mode } = useColorMode();
-  const theme = useMemo(() => createAppTheme(mode), [mode]);
+  const theme = useMemo(() => createAppTheme(mode, language), [mode, language]);
 
   return (
     <ThemeProvider theme={theme}>

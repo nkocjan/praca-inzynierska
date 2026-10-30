@@ -39,6 +39,8 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({
         open={open}
         onClose={closeDialog}
         formId={dialogTitles.formId}
+        maxWidth={dialogTitles.maxWidth}
+        destructive={dialogTitles.destructive}
       />
     </DialogContext.Provider>
   );

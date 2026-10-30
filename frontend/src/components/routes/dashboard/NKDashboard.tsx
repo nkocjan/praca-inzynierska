@@ -21,7 +21,7 @@ import { useCurrentUser } from "../../../auth/useCurrentUser.ts";
 import { normalizeLanguage } from "../../../i18n/i18n";
 import { formatCurrencyPLN } from "../../../i18n/locale";
 import { useDialog } from "../../../lib/dialog/useDialog";
-import { buildCategoryColors, useChartColors } from "../../../theme/chartColors";
+import { useCategoryColors, useChartColors } from "../../../theme/chartColors";
 import AddExpanseForm from "../expenses/forms/AddEditExpanseForm.tsx";
 import { toneFor, usagePercent } from "../../../lib/budgetStatus";
 import CategoryBudgets from "./components/CategoryBudgets";
@@ -37,6 +37,8 @@ interface DashboardState {
 }
 
 type BudgetKey = "weeklyBudget" | "monthlyBudget" | "yearlyBudget";
+
+const NO_CATEGORIES: CategoryUiDTO[] = [];
 
 const sumBudgets = (categories: CategoryUiDTO[], key: BudgetKey) =>
   categories.reduce(
@@ -119,19 +121,11 @@ const NKDashboard = () => {
     reload();
   }, [reload]);
 
-  const sortedCategories = useMemo(
-    () => [...(state?.categories ?? [])].sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "", language)),
-    [state?.categories, language],
-  );
-
-  // Colour follows the category (alphabetical order), so it is the same in every widget.
-  const colorById = useMemo(
-    () => buildCategoryColors(sortedCategories.map(c => c.id ?? ""), colors.categorical, colors.other),
-    [sortedCategories, colors.categorical, colors.other],
-  );
+  // Colour follows the category, so it is the same in every widget and on the expenses page.
+  const { colorById, colorFor } = useCategoryColors(state?.categories ?? NO_CATEGORIES, language);
   const colorByName = useMemo(
-    () => new Map(sortedCategories.map(c => [c.name ?? "", colorById.get(c.id ?? "") ?? colors.other])),
-    [sortedCategories, colorById, colors.other],
+    () => new Map((state?.categories ?? []).map(c => [c.name ?? "", colorFor(c.id)])),
+    [state?.categories, colorFor],
   );
 
   const openAddExpense = () =>
@@ -141,6 +135,7 @@ const NKDashboard = () => {
         saveButtonTitle: t("expenses:page.add"),
         cancelButtonTitle: t("expenses:page.cancel"),
         formId: "expense-form",
+        maxWidth: "sm",
       },
       <AddExpanseForm
         formId="expense-form"

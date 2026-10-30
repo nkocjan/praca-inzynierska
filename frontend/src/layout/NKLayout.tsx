@@ -6,9 +6,7 @@ import { useTranslation } from "react-i18next";
 import Navbar from "./navbar/Navbar.tsx";
 import NKDarkLightSwitch from "./navbar/dark-light-switch/NKDarkLightSwitch.tsx";
 import NKLanguageSelect from "./navbar/language-select/NKLanguageSelect.tsx";
-import { findNavItem } from "./navigation.tsx";
-
-const DRAWER_WIDTH = 264;
+import { DRAWER_WIDTH, findNavItem } from "./navigation.tsx";
 
 const NKLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);

@@ -1,43 +1,36 @@
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import { useState } from "react";
+import { IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
+import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
+import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { apiClient } from "../../../../api/apiClient.ts";
+import type { ExpenseUiDTO } from "../../../../api/generated";
 import ConfirmDelete from "../../../../lib/dialog/templates/ConfirmDelete.tsx";
 import { useDialog } from "../../../../lib/dialog/useDialog";
-import type { ExpenseUiDTO } from "../../../../api/generated";
 import AddExpanseForm from "../forms/AddEditExpanseForm.tsx";
 
-const ExpenseActionMenu = ({
-  row,
-  onSuccess,
-}: {
-  row: ExpenseUiDTO;
-  onSuccess: () => void;
-}) => {
+const ExpenseActionMenu = ({ row, onSuccess }: { row: ExpenseUiDTO; onSuccess: () => void }) => {
   const { t } = useTranslation("expenses");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const { openDialog } = useDialog();
+  const { openDialog, closeDialog } = useDialog();
   const { enqueueSnackbar } = useSnackbar();
+  const menuId = `expense-actions-${row.id}`;
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const handleClose = () => setAnchorEl(null);
 
   const handleEdit = () => {
     handleClose();
     openDialog(
       {
         title: t("page.editExpenseTitle"),
-        saveButtonTitle: t("page.confirm"),
+        saveButtonTitle: t("page.save"),
         cancelButtonTitle: t("page.cancel"),
         formId: "expense-form",
       },
@@ -51,7 +44,10 @@ const ExpenseActionMenu = ({
         description={row.description}
         category={row.category}
         date={dayjs(row.date)}
-        onSuccess={onSuccess}
+        onSuccess={() => {
+          closeDialog();
+          onSuccess();
+        }}
       />,
     );
   };
@@ -62,40 +58,43 @@ const ExpenseActionMenu = ({
     openDialog(
       {
         title: t("delete.singleTitle"),
-        saveButtonTitle: t("delete.saveSingle"),
+        saveButtonTitle: t("delete.confirm"),
         cancelButtonTitle: t("page.cancel"),
         formId,
+        destructive: true,
       },
       <ConfirmDelete
-        translation={t("delete.expenseAcc")}
+        message={t("delete.singleText", { name: row.name })}
+        hint={t("delete.cannotUndo")}
         formId={formId}
         onConfirm={async () => {
           try {
             await apiClient.delete(`/api/bff/expenses/${row.id}`);
-            enqueueSnackbar(t("snackbar.expenseDeleted"), {
-              variant: "success",
-            });
+            enqueueSnackbar(t("snackbar.expenseDeleted"), { variant: "success" });
           } catch (error) {
             console.error("Błąd podczas usuwania wydatku:", error);
-            enqueueSnackbar(t("snackbar.expenseDeleteError"), {
-              variant: "error",
-            });
+            enqueueSnackbar(t("snackbar.expenseDeleteError"), { variant: "error" });
             throw error;
           }
         }}
-        onSuccess={onSuccess}
+        onSuccess={() => {
+          closeDialog();
+          onSuccess();
+        }}
       />,
     );
   };
 
   const handleTogglePlanned = async () => {
     handleClose();
+    const nextIsPlanned = !row.isPlanned;
     try {
-      const nextIsPlanned = !row.isPlanned;
       await apiClient.put(`/api/bff/expenses/${row.id}/planned`, null, {
         params: { isPlanned: nextIsPlanned },
       });
-      enqueueSnackbar(t("snackbar.plannedUpdated"), { variant: "success" });
+      enqueueSnackbar(nextIsPlanned ? t("snackbar.markedPlanned") : t("snackbar.markedPaid"), {
+        variant: "success",
+      });
       onSuccess();
     } catch (error) {
       console.error("Błąd podczas zmiany planowania wydatku:", error);
@@ -105,32 +104,46 @@ const ExpenseActionMenu = ({
 
   return (
     <>
-      <IconButton onClick={handleClick}>
-        <MoreVertIcon />
+      <IconButton
+        size="small"
+        aria-label={t("actions.menuFor", { name: row.name })}
+        aria-haspopup="true"
+        aria-controls={open ? menuId : undefined}
+        aria-expanded={open ? "true" : undefined}
+        onClick={event => setAnchorEl(event.currentTarget)}>
+        <MoreHorizRoundedIcon fontSize="small" />
       </IconButton>
       <Menu
+        id={menuId}
         anchorEl={anchorEl}
         open={open}
-        onClose={handleClose}>
-        <MenuItem
-          onClick={() => {
-            handleEdit();
-          }}>
-          {t("actions.edit")}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        slotProps={{ paper: { sx: { minWidth: 230, mt: 0.5 } } }}>
+        <MenuItem onClick={handleEdit}>
+          <ListItemIcon>
+            <EditOutlinedIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{t("actions.edit")}</ListItemText>
         </MenuItem>
-
         <MenuItem onClick={handleTogglePlanned}>
-          {row.isPlanned
-            ? t("actions.unsetPlanned")
-            : t("actions.setAsPlanned")}
+          <ListItemIcon>
+            {row.isPlanned ? (
+              <CheckCircleOutlineRoundedIcon fontSize="small" />
+            ) : (
+              <ScheduleRoundedIcon fontSize="small" />
+            )}
+          </ListItemIcon>
+          <ListItemText>{row.isPlanned ? t("actions.unsetPlanned") : t("actions.setAsPlanned")}</ListItemText>
         </MenuItem>
-
         <MenuItem
-          onClick={() => {
-            handleDelete();
-          }}
-          style={{ color: "red" }}>
-          {t("actions.delete")}
+          onClick={handleDelete}
+          sx={{ color: "error.main" }}>
+          <ListItemIcon sx={{ color: "inherit" }}>
+            <DeleteOutlineRoundedIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{t("actions.delete")}</ListItemText>
         </MenuItem>
       </Menu>
     </>

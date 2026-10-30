@@ -1,75 +1,112 @@
 {
   "page": {
+    "heading": "Expense history",
+    "subtitle": "Browse, filter and edit your expenses.",
     "addExpense": "Add expense",
-    "addNewExpenseTitle": "Add new expense",
-    "add": "Add",
-    "cancel": "Cancel",
+    "addNewExpenseTitle": "New expense",
     "editExpenseTitle": "Edit expense",
-    "approveExpenseTitle": "Approve expense",
-    "withdrawApproveTitle": "Withdraw expense approval",
-    "setAsPlannedTitle": "Set as planned",
-    "confirm": "Confirm",
-    "confirmWithdrawal": "Confirm withdrawal"
+    "add": "Add",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "results_one": "{{total}} expense",
+    "results_other": "{{total}} expenses"
   },
-  "snackbar": {
-    "categoriesFetchError": "Couldn't load categories list",
-    "expensesFetchError": "Couldn't load expenses",
-    "loadFromFile": "Load expense from file",
-    "expenseAdded": "Expense added successfully",
-    "expenseUpdated": "Expense updated successfully",
-    "expenseSaveError": "Something went wrong. Please try again.",
-    "expenseDeleted": "Expense deleted successfully",
-    "expenseDeleteError": "Couldn't delete the expense",
-    "plannedUpdated": "Expense planning status updated",
-    "plannedUpdateError": "Couldn't update planning status",
-    "bulkDeleteSuccess": "Deleted {{count}} expenses",
-    "bulkDeleteError": "Couldn't delete {{count}} expenses"
+  "status": {
+    "label": "Status",
+    "all": "All",
+    "paid": "Paid",
+    "planned": "Planned",
+    "chipPaid": "Paid",
+    "chipPlanned": "Planned"
   },
-  "delete": {
-    "singleTitle": "Are you sure you want to delete this expense?",
-    "bulkTitle": "Delete multiple expenses",
-    "saveSingle": "Delete",
-    "comingSoon": "Coming soon!",
-    "saveBulk": "Confirm deletion",
-    "expenseAcc": "the expense",
-    "expensesAcc": "the selected expenses"
+  "filters": {
+    "search": "Search by name",
+    "searchPlaceholder": "Search expenses...",
+    "category": "Category",
+    "allCategories": "Categories",
+    "categoriesSelected_one": "{{count}} category",
+    "categoriesSelected_other": "{{count}} categories",
+    "period": "Period",
+    "periods": {
+      "all": "All time",
+      "thisMonth": "This month",
+      "lastMonth": "Last month",
+      "last30": "Last 30 days",
+      "thisYear": "This year",
+      "custom": "Custom range"
+    },
+    "more": "More filters",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "amountFrom": "Min amount",
+    "amountTo": "Max amount",
+    "amountChip": "Amount: {{range}}",
+    "searchChip": "Name: {{value}}",
+    "removeFilter": "Remove filter: {{label}}",
+    "clear": "Clear filters"
   },
   "columns": {
     "name": "Name",
     "category": "Category",
     "amount": "Amount",
     "date": "Date",
+    "status": "Status",
     "actions": "Actions"
   },
   "actions": {
+    "menuFor": "Actions for: {{name}}",
     "edit": "Edit",
-    "approve": "Approve",
-    "withdrawApprove": "Withdraw approval",
-    "setAsPlanned": "Set as planned",
-    "unsetPlanned": "Set as unplanned",
+    "setAsPlanned": "Mark as planned",
+    "unsetPlanned": "Mark as paid",
     "delete": "Delete"
   },
-  "filters": {
-    "search": "Search",
-    "category": "Category",
-    "dateFrom": "Date from",
-    "dateTo": "Date to",
-    "amountFrom": "Amount from",
-    "amountTo": "Amount to",
-    "planned": "Planned",
-    "reset": "Reset",
-    "categoriesSelected": "Selected: {{selected}}/{{total}}"
+  "selection": {
+    "label": "Selected expenses",
+    "selected_one": "{{count}} expense selected",
+    "selected_other": "{{count}} expenses selected",
+    "delete": "Delete selected",
+    "clear": "Clear selection"
+  },
+  "empty": {
+    "title": "No expenses",
+    "filtered": "No expense matches the selected filters.",
+    "none": "Add your first expense to start tracking your budget."
+  },
+  "delete": {
+    "singleTitle": "Delete expense?",
+    "singleText": "The expense \"{{name}}\" will be deleted permanently.",
+    "bulkTitle_one": "Delete {{count}} expense?",
+    "bulkTitle_other": "Delete {{count}} expenses?",
+    "bulkText": "The selected expenses will be deleted permanently.",
+    "cannotUndo": "This can't be undone.",
+    "confirm": "Delete"
+  },
+  "snackbar": {
+    "categoriesFetchError": "Couldn't load categories",
+    "expensesFetchError": "Couldn't load expenses",
+    "expenseAdded": "Expense added",
+    "expenseUpdated": "Changes saved",
+    "expenseSaveError": "Something went wrong. Please try again.",
+    "expenseDeleted": "Expense deleted",
+    "expenseDeleteError": "Couldn't delete the expense",
+    "markedPlanned": "Marked as planned",
+    "markedPaid": "Marked as paid",
+    "plannedUpdateError": "Couldn't change the expense status",
+    "bulkDeleteSuccess_one": "Deleted {{count}} expense",
+    "bulkDeleteSuccess_other": "Deleted {{count}} expenses",
+    "bulkDeleteError": "Couldn't delete some expenses ({{count}})"
   },
   "form": {
     "name": "Name",
+    "namePlaceholder": "e.g. Groceries",
     "descriptionOptional": "Description (optional)",
     "category": "Category",
     "categoriesLoading": "Loading categories...",
     "amount": "Amount",
     "date": "Date",
-    "plannedQuestion": "Planned?",
-    "yes": "Yes",
-    "no": "No"
+    "planned": "Planned expense",
+    "plannedHint": "A payment that is still to come, e.g. a bill with a due date.",
+    "editHint": "The category can't be changed after the expense is added. Change the status from the actions menu in the list."
   },
   "validation": {
     "nameRequired": "Name is required",
@@ -77,16 +114,6 @@
     "amountMin": "Amount must be greater than 0",
     "amountRequired": "Amount is required",
     "dateRequired": "Date is required",
-    "plannedRequired": "Choose an option",
     "descriptionMax": "Description can't be longer than 255 characters"
-  },
-  "status": {
-    "planned": "Planned",
-    "approved": "Approved",
-    "normal": "Normal"
-  },
-  "approve": {
-    "prompt": "Are you sure you want to set the new expense status to",
-    "unknownStatus": "unknown"
   }
 }

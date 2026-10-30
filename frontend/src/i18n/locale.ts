@@ -1,3 +1,4 @@
+import dayjs, { Dayjs } from "dayjs";
 import type { AppLanguage } from "./i18n";
 
 export const getIntlLocale = (language: AppLanguage): string => {
@@ -20,4 +21,12 @@ export const formatCurrencyPLN = (
     minimumFractionDigits: fractionDigits,
     maximumFractionDigits: fractionDigits,
   }).format(amount);
+};
+
+export const formatDate = (
+  date: string | Date | Dayjs,
+  language: AppLanguage,
+  format = "D MMM YYYY",
+): string => {
+  return dayjs(date).locale(language).format(format);
 };

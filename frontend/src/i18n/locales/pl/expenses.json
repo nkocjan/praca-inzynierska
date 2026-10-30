@@ -1,75 +1,122 @@
 {
   "page": {
+    "heading": "Historia wydatków",
+    "subtitle": "Przeglądaj, filtruj i edytuj swoje wydatki.",
     "addExpense": "Dodaj wydatek",
-    "addNewExpenseTitle": "Dodaj nowy wydatek",
-    "loadFromFile": "Wczytaj wydatek z pliku",
-    "add": "Dodaj",
-    "cancel": "Anuluj",
+    "addNewExpenseTitle": "Nowy wydatek",
     "editExpenseTitle": "Edytuj wydatek",
-    "approveExpenseTitle": "Zatwierdź wydatek",
-    "withdrawApproveTitle": "Wycofaj zatwierdzanie wydatku",
-    "setAsPlannedTitle": "Ustaw jako zaplanowany",
-    "confirm": "Zatwierdź",
-    "confirmWithdrawal": "Potwierdź wycofanie"
+    "add": "Dodaj",
+    "save": "Zapisz zmiany",
+    "cancel": "Anuluj",
+    "results_one": "{{total}} wydatek",
+    "results_few": "{{total}} wydatki",
+    "results_many": "{{total}} wydatków",
+    "results_other": "{{total}} wydatku"
   },
-  "snackbar": {
-    "categoriesFetchError": "Nie udało się pobrać listy kategorii",
-    "expensesFetchError": "Nie udało się pobrać danych o wydatkach",
-    "comingSoon": "Funkcjonalność wkrótce!",
-    "expenseAdded": "Wydatek dodany pomyślnie",
-    "expenseUpdated": "Wydatek zaktualizowany pomyślnie",
-    "expenseSaveError": "Wystąpił błąd. Spróbuj ponownie.",
-    "expenseDeleted": "Wydatek usunięty pomyślnie",
-    "expenseDeleteError": "Nie udało się usunąć wydatku",
-    "plannedUpdated": "Zmieniono status planowania wydatku",
-    "plannedUpdateError": "Nie udało się zmienić statusu planowania wydatku",
-    "bulkDeleteSuccess": "Usunięto {{count}} wydatków",
-    "bulkDeleteError": "Nie udało się usunąć {{count}} wydatków"
+  "status": {
+    "label": "Status",
+    "all": "Wszystkie",
+    "paid": "Zrealizowane",
+    "planned": "Zaplanowane",
+    "chipPaid": "Zrealizowany",
+    "chipPlanned": "Zaplanowany"
   },
-  "delete": {
-    "singleTitle": "Czy na pewno chcesz usunąć wydatek?",
-    "bulkTitle": "Usuń wiele wydatków",
-    "saveSingle": "Usuń",
-    "saveBulk": "Potwierdź usunięcie",
-    "expenseAcc": "wydatku",
-    "expensesAcc": "wydatków"
+  "filters": {
+    "search": "Szukaj po nazwie",
+    "searchPlaceholder": "Szukaj wydatku...",
+    "category": "Kategoria",
+    "allCategories": "Kategorie",
+    "categoriesSelected_one": "{{count}} kategoria",
+    "categoriesSelected_few": "{{count}} kategorie",
+    "categoriesSelected_many": "{{count}} kategorii",
+    "categoriesSelected_other": "{{count}} kategorii",
+    "period": "Okres",
+    "periods": {
+      "all": "Cały okres",
+      "thisMonth": "Ten miesiąc",
+      "lastMonth": "Poprzedni miesiąc",
+      "last30": "Ostatnie 30 dni",
+      "thisYear": "Ten rok",
+      "custom": "Własny zakres"
+    },
+    "more": "Więcej filtrów",
+    "dateFrom": "Od dnia",
+    "dateTo": "Do dnia",
+    "amountFrom": "Kwota od",
+    "amountTo": "Kwota do",
+    "amountChip": "Kwota: {{range}}",
+    "searchChip": "Nazwa: {{value}}",
+    "removeFilter": "Usuń filtr: {{label}}",
+    "clear": "Wyczyść filtry"
   },
   "columns": {
     "name": "Nazwa",
     "category": "Kategoria",
     "amount": "Kwota",
     "date": "Data",
+    "status": "Status",
     "actions": "Akcje"
   },
   "actions": {
+    "menuFor": "Akcje dla: {{name}}",
     "edit": "Edytuj",
-    "approve": "Zatwierdź",
-    "withdrawApprove": "Wycofaj zatwierdzanie",
-    "setAsPlanned": "Ustaw jako zaplanowany",
-    "unsetPlanned": "Ustaw jako nieplanowany",
+    "setAsPlanned": "Oznacz jako zaplanowany",
+    "unsetPlanned": "Oznacz jako zrealizowany",
     "delete": "Usuń"
   },
-  "filters": {
-    "search": "Szukaj",
-    "category": "Kategoria",
-    "dateFrom": "Data od",
-    "dateTo": "Data do",
-    "amountFrom": "Kwota od",
-    "amountTo": "Kwota do",
-    "planned": "Planowany",
-    "reset": "Reset",
-    "categoriesSelected": "Wybrano: {{selected}}/{{total}}"
+  "selection": {
+    "label": "Zaznaczone wydatki",
+    "selected_one": "Zaznaczono {{count}} wydatek",
+    "selected_few": "Zaznaczono {{count}} wydatki",
+    "selected_many": "Zaznaczono {{count}} wydatków",
+    "selected_other": "Zaznaczono {{count}} wydatku",
+    "delete": "Usuń zaznaczone",
+    "clear": "Odznacz"
+  },
+  "empty": {
+    "title": "Brak wydatków",
+    "filtered": "Żaden wydatek nie pasuje do wybranych filtrów.",
+    "none": "Dodaj pierwszy wydatek, aby zacząć śledzić budżet."
+  },
+  "delete": {
+    "singleTitle": "Usunąć wydatek?",
+    "singleText": "Wydatek \"{{name}}\" zostanie trwale usunięty.",
+    "bulkTitle_one": "Usunąć {{count}} wydatek?",
+    "bulkTitle_few": "Usunąć {{count}} wydatki?",
+    "bulkTitle_many": "Usunąć {{count}} wydatków?",
+    "bulkTitle_other": "Usunąć {{count}} wydatku?",
+    "bulkText": "Zaznaczone wydatki zostaną trwale usunięte.",
+    "cannotUndo": "Tej operacji nie można cofnąć.",
+    "confirm": "Usuń"
+  },
+  "snackbar": {
+    "categoriesFetchError": "Nie udało się pobrać listy kategorii",
+    "expensesFetchError": "Nie udało się pobrać wydatków",
+    "expenseAdded": "Dodano wydatek",
+    "expenseUpdated": "Zapisano zmiany",
+    "expenseSaveError": "Wystąpił błąd. Spróbuj ponownie.",
+    "expenseDeleted": "Usunięto wydatek",
+    "expenseDeleteError": "Nie udało się usunąć wydatku",
+    "markedPlanned": "Oznaczono jako zaplanowany",
+    "markedPaid": "Oznaczono jako zrealizowany",
+    "plannedUpdateError": "Nie udało się zmienić statusu wydatku",
+    "bulkDeleteSuccess_one": "Usunięto {{count}} wydatek",
+    "bulkDeleteSuccess_few": "Usunięto {{count}} wydatki",
+    "bulkDeleteSuccess_many": "Usunięto {{count}} wydatków",
+    "bulkDeleteSuccess_other": "Usunięto {{count}} wydatku",
+    "bulkDeleteError": "Nie udało się usunąć części wydatków (liczba: {{count}})"
   },
   "form": {
     "name": "Nazwa",
+    "namePlaceholder": "np. Zakupy spożywcze",
     "descriptionOptional": "Opis (opcjonalnie)",
     "category": "Kategoria",
     "categoriesLoading": "Ładowanie kategorii...",
     "amount": "Kwota",
     "date": "Data",
-    "plannedQuestion": "Czy planowany?",
-    "yes": "Tak",
-    "no": "Nie"
+    "planned": "Wydatek zaplanowany",
+    "plannedHint": "Płatność, która dopiero nastąpi, np. rachunek z terminem.",
+    "editHint": "Kategorii nie można zmienić po dodaniu wydatku. Status zmienisz w menu akcji na liście."
   },
   "validation": {
     "nameRequired": "Nazwa jest wymagana",
@@ -77,16 +124,6 @@
     "amountMin": "Kwota musi być większa niż 0",
     "amountRequired": "Kwota jest wymagana",
     "dateRequired": "Data jest wymagana",
-    "plannedRequired": "Wybierz opcję",
     "descriptionMax": "Opis nie może być dłuższy niż 255 znaków"
-  },
-  "status": {
-    "planned": "Zaplanowany",
-    "approved": "Zatwierdzony",
-    "normal": "Zwykły"
-  },
-  "approve": {
-    "prompt": "Czy na pewno chcesz ustawić nowy stan wydatku jako",
-    "unknownStatus": "nieznany"
   }
 }

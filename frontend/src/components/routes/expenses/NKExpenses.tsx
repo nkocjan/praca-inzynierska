@@ -1,282 +1,264 @@
-import { NKButton } from "../../../lib/button/Button.tsx";
-import Grid from "@mui/material/Grid2";
-import NKGrid from "../../../lib/grid/NKGrid.tsx";
-import getExpensesColumns from "./grid/expansesColumns.tsx";
-import { useEffect, useRef, useState } from "react";
-import ExpensesFilters from "./grid/expenseFilters.tsx";
-import { Dayjs } from "dayjs";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Box, Button, Card, Stack, Typography, useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import { DataGrid, GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
 import { useSnackbar } from "notistack";
-import { useDialog } from "../../../lib/dialog/useDialog";
-import AddExpanseForm from "./forms/AddEditExpanseForm.tsx";
-import ConfirmDelete from "../../../lib/dialog/templates/ConfirmDelete.tsx";
-import { apiClient } from "../../../api/apiClient.ts";
-import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
-import {
-  CategoryDTO,
-  ExpenseSearchRequestUiDTO,
-  ExpenseUiDTO,
-} from "../../../api/generated";
-import { useDebounce } from "../../../hooks/useDebounce.ts";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
+import { apiClient } from "../../../api/apiClient.ts";
+import { CategoryDTO, ExpenseUiDTO } from "../../../api/generated";
+import { useDebounce } from "../../../hooks/useDebounce.ts";
+import { normalizeLanguage } from "../../../i18n/i18n";
+import ConfirmDelete from "../../../lib/dialog/templates/ConfirmDelete.tsx";
+import { useDialog } from "../../../lib/dialog/useDialog";
+import { useCategoryColors } from "../../../theme/chartColors";
+import { EMPTY_FILTERS, ExpenseFilterState, hasActiveFilters, toSearchRequest } from "./expenseFilters";
+import AddExpanseForm from "./forms/AddEditExpanseForm.tsx";
+import ExpenseFiltersBar from "./grid/ExpenseFiltersBar";
+import ExpensesEmptyState from "./grid/ExpensesEmptyState";
+import SelectionBar from "./grid/SelectionBar";
+import useExpenseColumns from "./grid/useExpenseColumns";
 
 const NKExpenses = () => {
-  const { t } = useTranslation("expenses");
-
-  const [nameFilter, setNameFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
-  const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
-  const [dateTo, setDateTo] = useState<Dayjs | null>(null);
-  const [amountFrom, setAmountFrom] = useState<number | "">("");
-  const [amountTo, setAmountTo] = useState<number | "">("");
-  const [isPlanned, setIsPlanned] = useState<boolean | undefined>(undefined);
-
-  const location = useLocation();
-  const prefillAppliedRef = useRef(false);
-
-  const [rows, setRows] = useState<ExpenseUiDTO[]>([]);
-  const [rowCount, setRowCount] = useState(0);
-  const [categories, setCategories] = useState<CategoryDTO[]>([]);
-  const [loadingCategories, setLoadingCategories] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const { t, i18n } = useTranslation("expenses");
+  const language = normalizeLanguage(i18n.language);
+  const theme = useTheme();
+  const compact = useMediaQuery(theme.breakpoints.down("sm"));
   const { enqueueSnackbar } = useSnackbar();
+  const { openDialog, closeDialog } = useDialog();
+  const location = useLocation();
 
-  const debouncedNameFilter = useDebounce(nameFilter, 500);
-  const debouncedAmountFrom = useDebounce(amountFrom, 500);
-  const debouncedAmountTo = useDebounce(amountTo, 500);
+  // The categories page links here with its categories already selected.
+  const [filters, setFilters] = useState<ExpenseFilterState>(() => {
+    const state = location.state as { prefillCategoryIds?: string[] } | null;
+    return { ...EMPTY_FILTERS, categoryIds: state?.prefillCategoryIds ?? [] };
+  });
+  const [categories, setCategories] = useState<CategoryDTO[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [rows, setRows] = useState<ExpenseUiDTO[]>([]);
+  const [rowCount, setRowCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [selection, setSelection] = useState<GridRowSelectionModel>([]);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 10 });
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: "date", sort: "desc" }]);
+
+  const { colorFor } = useCategoryColors(categories, language);
+
+  const debouncedName = useDebounce(filters.name, 400);
+  const debouncedAmountFrom = useDebounce(filters.amountFrom, 400);
+  const debouncedAmountTo = useDebounce(filters.amountTo, 400);
+
+  const { categoryIds, status, period, dateFrom, dateTo } = filters;
+  // Text fields go through the debounced copies, everything else applies at once.
+  const request = useMemo(
+    () =>
+      toSearchRequest({
+        name: debouncedName,
+        amountFrom: debouncedAmountFrom,
+        amountTo: debouncedAmountTo,
+        categoryIds,
+        status,
+        period,
+        dateFrom,
+        dateTo,
+      }),
+    [debouncedName, debouncedAmountFrom, debouncedAmountTo, categoryIds, status, period, dateFrom, dateTo],
+  );
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      setLoadingCategories(true);
-      try {
-        const response = await apiClient.get<CategoryDTO[]>(
-          "/api/bff/categories/combo",
-        );
-        setCategories(response.data);
-      } catch (error) {
+    apiClient
+      .get<CategoryDTO[]>("/api/bff/categories/combo")
+      .then(response => setCategories(response.data))
+      .catch(error => {
         console.error("Błąd podczas pobierania kategorii:", error);
-        enqueueSnackbar(t("snackbar.categoriesFetchError"), {
-          variant: "error",
-        });
-      } finally {
-        setLoadingCategories(false);
-      }
-    };
-
-    void fetchCategories();
+        enqueueSnackbar(t("snackbar.categoriesFetchError"), { variant: "error" });
+      })
+      .finally(() => setCategoriesLoading(false));
   }, [enqueueSnackbar, t]);
 
   useEffect(() => {
-    const state = location.state as
-      | { prefillCategoryIds?: string[] }
-      | undefined;
-    if (prefillAppliedRef.current) return;
-    if (!state?.prefillCategoryIds?.length) return;
-    setCategoryFilter(state.prefillCategoryIds);
-    setPaginationModel(prev => ({ ...prev, page: 0 }));
-    prefillAppliedRef.current = true;
-  }, [location.state]);
+    let ignore = false;
+    setLoading(true);
+    const sort = sortModel[0] ? `${sortModel[0].field},${sortModel[0].sort}` : "date,desc";
 
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: 10,
-  });
-  const [sortModel, setSortModel] = useState<GridSortModel>([
-    { field: "date", sort: "desc" },
-  ]);
-
-  const { openDialog, closeDialog } = useDialog();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-
-      const requestBody: ExpenseSearchRequestUiDTO = {
-        name: debouncedNameFilter || undefined,
-        categoryIds: categoryFilter.length > 0 ? categoryFilter : undefined,
-        dateFrom: dateFrom ? dateFrom.startOf("day").toISOString() : undefined,
-        dateTo: dateTo ? dateTo.endOf("day").toISOString() : undefined,
-        amountFrom:
-          debouncedAmountFrom === "" ? undefined : debouncedAmountFrom,
-        amountTo: debouncedAmountTo === "" ? undefined : debouncedAmountTo,
-        isPlanned: isPlanned,
-        description: undefined,
-      };
-
-      const sortParams = sortModel.map(s => `${s.field},${s.sort}`).join(",");
-
-      try {
-        const response = await apiClient.post(
-          "/api/bff/expenses/search",
-          requestBody,
-          {
-            params: {
-              page: paginationModel.page,
-              size: paginationModel.pageSize,
-              sort: sortParams || "date,desc",
-            },
-          },
-        );
-
+    apiClient
+      .post<{ content: ExpenseUiDTO[]; totalElements: number }>("/api/bff/expenses/search", request, {
+        params: { page: paginationModel.page, size: paginationModel.pageSize, sort },
+      })
+      .then(response => {
+        if (ignore) return;
         setRows(response.data.content);
         setRowCount(response.data.totalElements);
-      } catch (error) {
+      })
+      .catch(error => {
+        if (ignore) return;
         console.error("Błąd podczas pobierania wydatków:", error);
-        enqueueSnackbar(t("snackbar.expensesFetchError"), {
-          variant: "error",
-        });
-      } finally {
-        setLoading(false);
-      }
+        enqueueSnackbar(t("snackbar.expensesFetchError"), { variant: "error" });
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+
+    // A slower, older response must not overwrite the result of newer filters.
+    return () => {
+      ignore = true;
     };
+  }, [request, paginationModel, sortModel, refreshTrigger, enqueueSnackbar, t]);
 
-    void fetchData();
-  }, [
-    debouncedNameFilter,
-    debouncedAmountFrom,
-    debouncedAmountTo,
-    categoryFilter,
-    dateFrom,
-    dateTo,
-    isPlanned,
-    paginationModel,
-    sortModel,
-    refreshTrigger,
-    enqueueSnackbar,
-    t,
-  ]);
+  const refresh = useCallback(() => setRefreshTrigger(value => value + 1), []);
 
-  const handleFormSuccess = () => {
-    closeDialog();
-    setRefreshTrigger(prev => prev + 1);
+  const changeFilters = (patch: Partial<ExpenseFilterState>) => {
+    setFilters(previous => ({ ...previous, ...patch }));
+    setPaginationModel(previous => ({ ...previous, page: 0 }));
+    setSelection([]);
   };
 
-  const columns = getExpensesColumns(handleFormSuccess);
+  const resetFilters = useCallback(() => {
+    setFilters(EMPTY_FILTERS);
+    setPaginationModel(previous => ({ ...previous, page: 0 }));
+    setSelection([]);
+  }, []);
 
-  const handleDelete = (selectedIds: string[]) => {
-    if (selectedIds.length === 0) return;
+  const columns = useExpenseColumns({ compact, colorFor, onChanged: refresh });
+
+  const openAddExpense = () =>
+    openDialog(
+      {
+        title: t("page.addNewExpenseTitle"),
+        saveButtonTitle: t("page.add"),
+        cancelButtonTitle: t("page.cancel"),
+        formId: "expense-form",
+        maxWidth: "sm",
+      },
+      <AddExpanseForm
+        formId="expense-form"
+        onSuccess={() => {
+          closeDialog();
+          refresh();
+        }}
+      />,
+    );
+
+  const deleteSelected = () => {
+    const ids = selection.map(String);
     const formId = "delete-expenses-form";
     openDialog(
       {
-        title: t("delete.bulkTitle"),
-        saveButtonTitle: t("delete.saveBulk"),
+        title: t("delete.bulkTitle", { count: ids.length }),
+        saveButtonTitle: t("delete.confirm"),
         cancelButtonTitle: t("page.cancel"),
         formId,
+        destructive: true,
       },
       <ConfirmDelete
-        translation={t("delete.expensesAcc")}
+        message={t("delete.bulkText")}
+        hint={t("delete.cannotUndo")}
         formId={formId}
         onConfirm={async () => {
-          const results = await Promise.allSettled(
-            selectedIds.map(id => apiClient.delete(`/api/bff/expenses/${id}`)),
-          );
-          const successCount = results.filter(
-            r => r.status === "fulfilled",
-          ).length;
-          const failCount = results.length - successCount;
-
-          if (successCount > 0) {
-            enqueueSnackbar(
-              t("snackbar.bulkDeleteSuccess", { count: successCount }),
-              {
-                variant: "success",
-              },
-            );
+          const results = await Promise.allSettled(ids.map(id => apiClient.delete(`/api/bff/expenses/${id}`)));
+          const deleted = results.filter(result => result.status === "fulfilled").length;
+          const failed = results.length - deleted;
+          if (deleted > 0) {
+            enqueueSnackbar(t("snackbar.bulkDeleteSuccess", { count: deleted }), { variant: "success" });
           }
-          if (failCount > 0) {
-            enqueueSnackbar(
-              t("snackbar.bulkDeleteError", { count: failCount }),
-              {
-                variant: "error",
-              },
-            );
+          if (failed > 0) {
+            enqueueSnackbar(t("snackbar.bulkDeleteError", { count: failed }), { variant: "error" });
+            refresh();
             throw new Error("Nie wszystkie wydatki zostały usunięte");
           }
         }}
-        onSuccess={handleFormSuccess}></ConfirmDelete>,
+        onSuccess={() => {
+          closeDialog();
+          setSelection([]);
+          refresh();
+        }}
+      />,
     );
   };
 
-  return (
-    <Grid
-      container
-      spacing={3}
-      sx={{ padding: 3, marginTop: 5 }}>
-      <Grid>
-        <NKButton
-          title={t("page.addExpense")}
-          onClick={() =>
-            openDialog(
-              {
-                title: t("page.addNewExpenseTitle"),
-                saveButtonTitle: t("page.add"),
-                cancelButtonTitle: t("page.cancel"),
-                formId: "expense-form",
-              },
-              <AddExpanseForm
-                formId="expense-form"
-                onSuccess={handleFormSuccess}
-              />,
-            )
-          }></NKButton>
-      </Grid>
-      <Grid>
-        {/* <NKButton
-          title={t("page.loadFromFile")}
-          onClick={() =>
-            enqueueSnackbar(t("snackbar.comingSoon"), { variant: "info" })
-          }
-        ></NKButton> */}
-      </Grid>
+  const filtered = hasActiveFilters(filters);
 
-      <Grid
-        size={12}
-        sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-        <NKGrid
-          sx={{
-            minHeight: 300,
-            height: "auto",
-            maxHeight: "73vh",
-            flexGrow: 1,
-          }}
-          columns={columns}
+  return (
+    <Box sx={{ pb: selection.length > 0 ? 10 : 0 }}>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        justifyContent="space-between"
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        spacing={2}
+        sx={{ mb: 3 }}>
+        <Box>
+          <Typography
+            variant="h4"
+            component="h2">
+            {t("page.heading")}
+          </Typography>
+          <Typography color="text.secondary">{t("page.subtitle")}</Typography>
+        </Box>
+        <Button
+          variant="contained"
+          size="large"
+          startIcon={<AddRoundedIcon />}
+          onClick={openAddExpense}>
+          {t("page.addExpense")}
+        </Button>
+      </Stack>
+
+      <Card sx={{ overflow: "hidden" }}>
+        <ExpenseFiltersBar
+          filters={filters}
+          onChange={changeFilters}
+          onReset={resetFilters}
+          categories={categories}
+          categoriesLoading={categoriesLoading}
+          colorFor={colorFor}
+          resultCount={rowCount}
+        />
+        <DataGrid
+          autoHeight
           rows={rows}
-          rowCount={rowCount}
+          columns={columns}
+          rowCount={rowCount ?? 0}
           loading={loading}
-          pagination
+          rowHeight={64}
+          columnHeaderHeight={44}
+          columnVisibilityModel={compact ? { category: false, date: false, isPlanned: false } : {}}
+          checkboxSelection={!compact}
+          disableRowSelectionOnClick
+          keepNonExistentRowsSelected
+          rowSelectionModel={selection}
+          onRowSelectionModelChange={setSelection}
           paginationMode="server"
           paginationModel={paginationModel}
           onPaginationModelChange={setPaginationModel}
+          pageSizeOptions={[10, 25, 50]}
           sortingMode="server"
+          sortingOrder={["desc", "asc"]}
           sortModel={sortModel}
           onSortModelChange={setSortModel}
-          onDelete={handleDelete}
-          isCheckboxOn={true}
-          filters={
-            <ExpensesFilters
-              nameFilter={nameFilter}
-              setNameFilter={setNameFilter}
-              categoryFilter={categoryFilter}
-              setCategoryFilter={setCategoryFilter}
-              dateFrom={dateFrom}
-              setDateFrom={setDateFrom}
-              dateTo={dateTo}
-              setDateTo={setDateTo}
-              amountFrom={amountFrom}
-              setAmountFrom={setAmountFrom}
-              amountTo={amountTo}
-              setAmountTo={setAmountTo}
-              isPlanned={isPlanned}
-              setIsPlanned={setIsPlanned}
-              categories={categories}
-              categoriesLoading={loadingCategories}
-            />
-          }
+          disableColumnMenu
+          slots={{ noRowsOverlay: ExpensesEmptyState }}
+          slotProps={{
+            noRowsOverlay: { filtered, onReset: resetFilters },
+            loadingOverlay: { variant: "skeleton", noRowsVariant: "skeleton" },
+          }}
+          sx={{
+            border: 0,
+            borderRadius: 0,
+            borderTop: 1,
+            borderColor: "divider",
+            "--DataGrid-overlayHeight": "320px",
+          }}
         />
-      </Grid>
-    </Grid>
+      </Card>
+
+      <SelectionBar
+        count={selection.length}
+        onClear={() => setSelection([])}
+        onDelete={deleteSelected}
+      />
+    </Box>
   );
 };
 

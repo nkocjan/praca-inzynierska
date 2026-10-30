@@ -6,6 +6,8 @@ import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 
+export const DRAWER_WIDTH = 264;
+
 export interface NavItem {
   path: string;
   labelKey: string;

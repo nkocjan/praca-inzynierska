@@ -1,5 +1,9 @@
-import { alpha, createTheme, Theme } from "@mui/material/styles";
+import { alpha, createTheme, Theme, ThemeOptions } from "@mui/material/styles";
+import { enUS as coreEnUS, plPL as corePlPL } from "@mui/material/locale";
+import { enUS as gridEnUS, plPL as gridPlPL } from "@mui/x-data-grid/locales";
 import type {} from "@mui/x-data-grid/themeAugmentation";
+import { enUS as pickersEnUS, plPL as pickersPlPL } from "@mui/x-date-pickers/locales";
+import type { AppLanguage } from "../i18n/i18n";
 import type { ThemeMode } from "./colorModeContext";
 
 const tokens = {
@@ -12,6 +16,7 @@ const tokens = {
     warning: { main: "#d97706" },
     error: { main: "#dc2626" },
     info: { main: "#0369a1" },
+    gridHeader: "#f8fafc",
     shadow: "0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06)",
   },
   dark: {
@@ -23,14 +28,24 @@ const tokens = {
     warning: { main: "#fbbf24" },
     error: { main: "#f87171" },
     info: { main: "#38bdf8" },
+    gridHeader: "#182036",
     shadow: "0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.25)",
   },
 };
 
-export const createAppTheme = (mode: ThemeMode): Theme => {
-  const t = tokens[mode];
+const locales = {
+  pl: { core: corePlPL, grid: gridPlPL, pickers: pickersPlPL, of: "z" },
+  en: { core: coreEnUS, grid: gridEnUS, pickers: pickersEnUS, of: "of" },
+};
 
-  return createTheme({
+export const createAppTheme = (mode: ThemeMode, language: AppLanguage): Theme => {
+  const t = tokens[mode];
+  const locale = locales[language];
+  // "1-10 z 120" with a plain hyphen instead of the library's en dash.
+  const labelDisplayedRows = ({ from, to, count }: { from: number; to: number; count: number }) =>
+    `${from}-${to} ${locale.of} ${count !== -1 ? count : `${to}+`}`;
+
+  const options: ThemeOptions = {
     palette: {
       mode,
       background: t.background,
@@ -126,13 +141,44 @@ export const createAppTheme = (mode: ThemeMode): Theme => {
         styleOverrides: { paper: { borderRadius: 16, backgroundImage: "none" } },
       },
       MuiToggleButton: {
-        styleOverrides: { root: { textTransform: "none", fontWeight: 600 } },
+        styleOverrides: {
+          root: {
+            textTransform: "none",
+            fontWeight: 600,
+            "&.Mui-selected, &.Mui-selected:hover": {
+              color: t.primary.main,
+              backgroundColor: alpha(t.primary.main, mode === "light" ? 0.1 : 0.16),
+            },
+          },
+        },
       },
       MuiDataGrid: {
         styleOverrides: {
-          root: { borderColor: t.divider, backgroundColor: t.background.paper },
+          root: {
+            borderColor: t.divider,
+            backgroundColor: t.background.paper,
+            "--DataGrid-rowBorderColor": t.divider,
+            "--DataGrid-containerBackground": t.gridHeader,
+            "& .MuiDataGrid-columnHeaderTitle": { fontWeight: 600, fontSize: "0.8125rem", color: t.text.secondary },
+            "& .MuiDataGrid-columnSeparator": { display: "none" },
+            "& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus": { outline: "none" },
+            "& .MuiDataGrid-cell:focus-visible, & .MuiDataGrid-columnHeader:focus-visible": {
+              outline: `2px solid ${t.primary.main}`,
+              outlineOffset: -2,
+            },
+          },
+          row: {
+            "&:hover": { backgroundColor: alpha(t.primary.main, 0.04) },
+          },
         },
       },
+    },
+  };
+
+  return createTheme(options, locale.core, locale.grid, locale.pickers, {
+    components: {
+      MuiDataGrid: { defaultProps: { localeText: { MuiTablePagination: { labelDisplayedRows } } } },
+      MuiTablePagination: { defaultProps: { labelDisplayedRows } },
     },
   });
 };

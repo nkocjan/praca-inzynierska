@@ -1,30 +1,32 @@
+import { useEffect, useState } from "react";
 import {
-  FormControl,
+  Box,
   FormControlLabel,
-  FormHelperText,
-  FormLabel,
-  InputLabel,
+  InputAdornment,
   MenuItem,
-  OutlinedInput,
-  Radio,
-  RadioGroup,
-  Select,
+  Stack,
+  Switch,
   TextField,
+  Typography,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import dayjs, { Dayjs } from "dayjs";
-
+import { useFormik } from "formik";
 import { useSnackbar } from "notistack";
+import { useTranslation } from "react-i18next";
+import * as Yup from "yup";
+
 import { apiClient } from "../../../../api/apiClient.ts";
 import {
   CategoryUiDTO,
   CreateExpenseRequestUiDTO,
   UpdateExpenseRequestUiDTO,
 } from "../../../../api/generated";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { normalizeLanguage } from "../../../../i18n/i18n";
+import { getCurrencySymbol } from "../../../../i18n/locale";
+import { useCategoryColors } from "../../../../theme/chartColors";
 
 interface properties {
   isEdit?: boolean;
@@ -42,43 +44,30 @@ interface properties {
 const AddExpenseForm = (props: properties) => {
   const { enqueueSnackbar } = useSnackbar();
   const { t, i18n } = useTranslation("expenses");
-
-  const tt = (key: string, options?: Record<string, unknown>) =>
-    i18n.t(key, { ns: "expenses", ...options });
+  const language = normalizeLanguage(i18n.language);
 
   const validationSchema = Yup.object({
-    name: Yup.string().required(tt("validation.nameRequired")),
-    category: Yup.string().required(tt("validation.categoryRequired")),
-    amount: Yup.number()
-      .min(0.01, tt("validation.amountMin"))
-      .required(tt("validation.amountRequired")),
-    date: Yup.mixed<Dayjs>().nullable().required(tt("validation.dateRequired")),
-    planned: Yup.boolean().required(tt("validation.plannedRequired")),
-    description: Yup.string().max(255, tt("validation.descriptionMax")),
+    name: Yup.string().trim().required(t("validation.nameRequired")),
+    category: Yup.string().required(t("validation.categoryRequired")),
+    amount: Yup.number().min(0.01, t("validation.amountMin")).required(t("validation.amountRequired")),
+    date: Yup.mixed<Dayjs>().nullable().required(t("validation.dateRequired")),
+    planned: Yup.boolean(),
+    description: Yup.string().max(255, t("validation.descriptionMax")),
   });
 
   const [categories, setCategories] = useState<CategoryUiDTO[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const { colorFor } = useCategoryColors(categories, language);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setLoadingCategories(true);
-        const response = await apiClient.get<CategoryUiDTO[]>(
-          "/api/bff/categories/combo",
-        );
-        setCategories(response.data);
-      } catch (error) {
+    apiClient
+      .get<CategoryUiDTO[]>("/api/bff/categories/combo")
+      .then(response => setCategories(response.data))
+      .catch(error => {
         console.error("Nie udało się pobrać kategorii:", error);
-        enqueueSnackbar(t("snackbar.categoriesFetchError"), {
-          variant: "error",
-        });
-      } finally {
-        setLoadingCategories(false);
-      }
-    };
-
-    void fetchCategories();
+        enqueueSnackbar(t("snackbar.categoriesFetchError"), { variant: "error" });
+      })
+      .finally(() => setLoadingCategories(false));
   }, [enqueueSnackbar, t]);
 
   const formik = useFormik({
@@ -100,18 +89,16 @@ const AddExpenseForm = (props: properties) => {
             throw new Error("Brak ID wydatku podczas próby edycji.");
           }
           const requestBody: UpdateExpenseRequestUiDTO = {
-            name: values.name,
+            name: values.name.trim(),
             description: values.description,
             amount: Number(values.amount),
             date: localDateTimeString,
           };
           await apiClient.put(`/api/bff/expenses/${props.id}`, requestBody);
-          enqueueSnackbar(t("snackbar.expenseUpdated"), {
-            variant: "success",
-          });
+          enqueueSnackbar(t("snackbar.expenseUpdated"), { variant: "success" });
         } else {
           const requestBody: CreateExpenseRequestUiDTO = {
-            name: values.name,
+            name: values.name.trim(),
             description: values.description,
             amount: Number(values.amount),
             date: localDateTimeString,
@@ -124,169 +111,193 @@ const AddExpenseForm = (props: properties) => {
         props.onSuccess();
       } catch (error) {
         console.error("Błąd podczas zapisywania wydatku:", error);
-        enqueueSnackbar(t("snackbar.expenseSaveError"), {
-          variant: "error",
-        });
+        enqueueSnackbar(t("snackbar.expenseSaveError"), { variant: "error" });
       } finally {
         setSubmitting(false);
       }
     },
   });
 
+  const fieldError = (field: "name" | "category" | "amount" | "description") =>
+    formik.touched[field] && formik.errors[field] ? formik.errors[field] : undefined;
+
   return (
-    <form
+    <Box
+      component="form"
       id={props.formId}
       onSubmit={formik.handleSubmit}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "8px",
-        maxWidth: "450px",
-      }}>
-      <TextField
-        sx={{ marginTop: "8px" }}
-        label={t("form.name")}
-        variant="outlined"
-        fullWidth
-        size="small"
-        name="name"
-        value={formik.values.name}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.name && Boolean(formik.errors.name)}
-        helperText={
-          <span style={{ minHeight: "20px", display: "block" }}>
-            {formik.touched.name && formik.errors.name}
-          </span>
-        }
-        disabled={formik.isSubmitting}
-      />
+      noValidate
+      sx={{ pt: 1 }}>
+      <Grid
+        container
+        spacing={2}>
+        <Grid size={12}>
+          <TextField
+            label={t("form.name")}
+            placeholder={t("form.namePlaceholder")}
+            fullWidth
+            autoFocus
+            name="name"
+            value={formik.values.name}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={Boolean(fieldError("name"))}
+            helperText={fieldError("name")}
+            disabled={formik.isSubmitting}
+          />
+        </Grid>
 
-      <TextField
-        label={t("form.descriptionOptional")}
-        variant="outlined"
-        fullWidth
-        multiline
-        rows={2}
-        size="small"
-        name="description"
-        value={formik.values.description}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.description && Boolean(formik.errors.description)}
-        helperText={
-          <span style={{ minHeight: "20px", display: "block" }}>
-            {formik.touched.description && formik.errors.description}
-          </span>
-        }
-        disabled={formik.isSubmitting}
-      />
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <TextField
+            label={t("form.amount")}
+            type="number"
+            fullWidth
+            name="amount"
+            value={formik.values.amount}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={Boolean(fieldError("amount"))}
+            helperText={fieldError("amount")}
+            disabled={formik.isSubmitting}
+            slotProps={{
+              input: { endAdornment: <InputAdornment position="end">{getCurrencySymbol(language)}</InputAdornment> },
+              htmlInput: { min: 0, step: "0.01", inputMode: "decimal" },
+            }}
+          />
+        </Grid>
 
-      <FormControl
-        sx={{ width: "100%" }}
-        size="small"
-        error={formik.touched.category && Boolean(formik.errors.category)}
-        disabled={props.isEdit || formik.isSubmitting || loadingCategories}>
-        <InputLabel>{t("form.category")}</InputLabel>
-        <Select
-          name="category"
-          value={formik.values.category}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          input={<OutlinedInput label={t("form.category")} />}>
-          {loadingCategories && (
-            <MenuItem
-              disabled
-              value="">
-              {t("form.categoriesLoading")}
-            </MenuItem>
-          )}
-          {categories.map(category => (
-            <MenuItem
-              key={category.id}
-              value={category.id}>
-              {category.name}
-            </MenuItem>
-          ))}
-        </Select>
-        <FormHelperText sx={{ minHeight: "20px" }}>
-          {formik.touched.category && formik.errors.category}
-        </FormHelperText>
-      </FormControl>
-
-      <TextField
-        label={t("form.amount")}
-        type="number"
-        variant="outlined"
-        fullWidth
-        size="small"
-        name="amount"
-        value={formik.values.amount}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.amount && Boolean(formik.errors.amount)}
-        helperText={
-          <span style={{ minHeight: "20px", display: "block" }}>
-            {formik.touched.amount && formik.errors.amount}
-          </span>
-        }
-        disabled={formik.isSubmitting}
-      />
-
-      <DatePicker
-        label={t("form.date")}
-        value={formik.values.date}
-        onChange={(date: Dayjs | null) =>
-          formik.setFieldValue("date", date ? dayjs(date) : null)
-        }
-        disabled={formik.isSubmitting}
-        slotProps={{
-          textField: {
-            variant: "outlined",
-            size: "small",
-            fullWidth: true,
-            error: formik.touched.date && Boolean(formik.errors.date),
-            helperText:
-              (formik.touched.date && String(formik.errors.date || "")) || " ",
-            sx: {
-              "& .MuiFormHelperText-root": {
-                minHeight: "20px",
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <DatePicker
+            label={t("form.date")}
+            value={formik.values.date}
+            onChange={(date: Dayjs | null) => formik.setFieldValue("date", date ? dayjs(date) : null)}
+            disabled={formik.isSubmitting}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                error: Boolean(formik.touched.date && formik.errors.date),
+                helperText: formik.touched.date && formik.errors.date ? String(formik.errors.date) : undefined,
               },
-            },
-          },
-        }}
-      />
+            }}
+          />
+        </Grid>
 
-      <FormControl
-        sx={{ marginTop: "8px" }}
-        component="fieldset"
-        error={formik.touched.planned && Boolean(formik.errors.planned)}
-        disabled={props.isEdit || formik.isSubmitting}>
-        <FormLabel component="legend">{t("form.plannedQuestion")}</FormLabel>
-        <RadioGroup
-          row
-          name="planned"
-          value={formik.values.planned}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}>
-          <FormControlLabel
-            value={true}
-            control={<Radio />}
-            label={t("form.yes")}
+        <Grid size={12}>
+          <TextField
+            select
+            label={t("form.category")}
+            fullWidth
+            name="category"
+            value={formik.values.category}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={Boolean(fieldError("category"))}
+            helperText={fieldError("category")}
+            disabled={props.isEdit || formik.isSubmitting || loadingCategories}
+            slotProps={{
+              select: {
+                renderValue: value => {
+                  const category = categories.find(item => item.id === value);
+                  return (
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      spacing={1}>
+                      <Box
+                        aria-hidden
+                        sx={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: colorFor(category?.id) }}
+                      />
+                      <span>{category?.name ?? props.category?.name}</span>
+                    </Stack>
+                  );
+                },
+              },
+            }}>
+            {loadingCategories && (
+              <MenuItem
+                disabled
+                value="">
+                {t("form.categoriesLoading")}
+              </MenuItem>
+            )}
+            {categories.map(category => (
+              <MenuItem
+                key={category.id}
+                value={category.id}
+                sx={{ gap: 1.25 }}>
+                <Box
+                  aria-hidden
+                  sx={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: colorFor(category.id) }}
+                />
+                {category.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+
+        <Grid size={12}>
+          <TextField
+            label={t("form.descriptionOptional")}
+            fullWidth
+            multiline
+            minRows={2}
+            name="description"
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={Boolean(fieldError("description"))}
+            helperText={fieldError("description")}
+            disabled={formik.isSubmitting}
           />
-          <FormControlLabel
-            value={false}
-            control={<Radio />}
-            label={t("form.no")}
-          />
-        </RadioGroup>
-        {formik.touched.planned && formik.errors.planned && (
-          <FormHelperText sx={{ minHeight: "20px" }}>
-            {formik.errors.planned}
-          </FormHelperText>
-        )}
-      </FormControl>
-    </form>
+        </Grid>
+
+        <Grid size={12}>
+          {props.isEdit ? (
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{ color: "text.secondary" }}>
+              <InfoOutlinedIcon sx={{ fontSize: 18, mt: "2px" }} />
+              <Typography variant="body2">{t("form.editHint")}</Typography>
+            </Stack>
+          ) : (
+            <Box
+              sx={{
+                border: 1,
+                borderColor: "divider",
+                borderRadius: "12px",
+                px: 2,
+                py: 1.25,
+              }}>
+              <FormControlLabel
+                sx={{ m: 0, width: "100%", justifyContent: "space-between", gap: 2 }}
+                labelPlacement="start"
+                control={
+                  <Switch
+                    name="planned"
+                    checked={formik.values.planned}
+                    onChange={formik.handleChange}
+                    disabled={formik.isSubmitting}
+                    inputProps={{ "aria-describedby": "expense-planned-hint" }}
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography sx={{ fontWeight: 600 }}>{t("form.planned")}</Typography>
+                    <Typography
+                      id="expense-planned-hint"
+                      variant="body2"
+                      color="text.secondary">
+                      {t("form.plannedHint")}
+                    </Typography>
+                  </Box>
+                }
+              />
+            </Box>
+          )}
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 
