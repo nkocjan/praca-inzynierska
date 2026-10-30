@@ -26,21 +26,17 @@ Modules, ports and local setup: `README.md`. Databases, demo data and the reset 
 - `.env` next to the compose file is a symlink into `my_own_page` and holds `JWT_SECRET` (shared by
   `user-service` and `bff`). It never goes into this public repository.
 - Deploy: `.github/workflows/deploy.yml` on push to `dev` (SSH, `git pull --ff-only`, images built one at a
-  time, `up -d`). Needs the repository secrets `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` (same values as the
-  owner's other repositories).
+  time, `up -d`). Uses the repository secrets `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` (same values as the
+  owner's other repositories; set on 2026-10-30).
 - After the first start of fresh databases run `./db/setup-foreign-tables.sh` (idempotent; done on
-  2026-10-29).
+  2026-10-29). Demo accounts were created with `./db/reset-demo-data.sh` on 2026-10-30; the script deletes
+  ALL accounts and data, so run it again only with the owner's go-ahead.
 
-## Pending (written 2026-10-29)
+## Pending (updated 2026-10-30)
 
-1. Repository secrets `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` are still missing: the workflow fails in a few
-   seconds without connecting. The 2026-10-29 deploy of `dev` was run by hand on the server with the
-   workflow's own commands. After the owner adds them, check with a push or "Run workflow".
-2. Demo data: the `users` table is empty, so the demo accounts do not exist yet. Run
-   `./db/reset-demo-data.sh` (deletes ALL accounts and data, then creates the demo accounts; expected last
-   line: 3 users, 18 categories, about 2160 budgets and 3200 expenses) and add the cron line from
-   `db/README.md` — only with the owner's go-ahead.
-3. Then verify:
+1. The login page says the demo data returns to its initial state every 2 hours, but the cron line from
+   `db/README.md` is not installed on the server yet. Add it only with the owner's go-ahead.
+2. After changes, verify:
    ```bash
    B=https://inzynierka.nkocjan.pl/api
    curl -s -X POST $B/auth/login -H 'Content-Type: application/json' -d '{"username":"demo","password":"demo1234"}'   # {"token":...}
