@@ -143,10 +143,24 @@ export interface CategoryUiDTO {
     'monthlyBudget'?: BudgetUiDTO;
     'yearlyBudget'?: BudgetUiDTO;
 }
+export interface ChangeEmailUiRequestDTO {
+    'newEmail'?: string;
+    'confirmNewEmail'?: string;
+    'password'?: string;
+}
+export interface ChangeNicknameUiRequestDTO {
+    'newNickname'?: string;
+    'password'?: string;
+    'confirmPassword'?: string;
+}
 export interface ChangePasswordRequestDTO {
     'oldPassword'?: string;
     'newPassword'?: string;
     'confirmNewPassword'?: string;
+}
+export interface ConfirmCredentialsRequestDTO {
+    'email'?: string;
+    'password'?: string;
 }
 export interface CreateExpenseRequestUiDTO {
     'name'?: string;
@@ -188,17 +202,17 @@ export interface GetDefaultBudgetsResponseUiDTO {
     'monthlyAmount'?: number;
     'yearlyAmount'?: number;
 }
-export interface PageBudgetDTO {
+export interface PageBudgetUiDTO {
     'totalPages'?: number;
     'totalElements'?: number;
     'size'?: number;
-    'content'?: Array<BudgetDTO>;
+    'content'?: Array<BudgetUiDTO>;
     'number'?: number;
-    'sort'?: Array<SortObject>;
+    'numberOfElements'?: number;
+    'sort'?: SortObject;
+    'pageable'?: PageableObject;
     'first'?: boolean;
     'last'?: boolean;
-    'numberOfElements'?: number;
-    'pageable'?: PageableObject;
     'empty'?: boolean;
 }
 export interface PageExpenseUiDTO {
@@ -207,11 +221,11 @@ export interface PageExpenseUiDTO {
     'size'?: number;
     'content'?: Array<ExpenseUiDTO>;
     'number'?: number;
-    'sort'?: Array<SortObject>;
+    'numberOfElements'?: number;
+    'sort'?: SortObject;
+    'pageable'?: PageableObject;
     'first'?: boolean;
     'last'?: boolean;
-    'numberOfElements'?: number;
-    'pageable'?: PageableObject;
     'empty'?: boolean;
 }
 export interface Pageable {
@@ -221,15 +235,18 @@ export interface Pageable {
 }
 export interface PageableObject {
     'offset'?: number;
-    'sort'?: Array<SortObject>;
-    'pageSize'?: number;
-    'pageNumber'?: number;
+    'sort'?: SortObject;
     'paged'?: boolean;
+    'pageNumber'?: number;
+    'pageSize'?: number;
     'unpaged'?: boolean;
 }
 export interface PieChartDataUiDTO {
     'labels'?: Array<string>;
     'data'?: Array<number>;
+}
+export interface ResetCategoriesRequestDTO {
+    'categoryIds'?: Array<string>;
 }
 export interface SetDefaultBudgetsRequestUiDTO {
     'categoryId'?: string;
@@ -238,11 +255,9 @@ export interface SetDefaultBudgetsRequestUiDTO {
     'yearlyAmount'?: number;
 }
 export interface SortObject {
-    'direction'?: string;
-    'nullHandling'?: string;
-    'ascending'?: boolean;
-    'property'?: string;
-    'ignoreCase'?: boolean;
+    'empty'?: boolean;
+    'sorted'?: boolean;
+    'unsorted'?: boolean;
 }
 export interface UpdateCategoryUiDTO {
     'name'?: string;
@@ -273,6 +288,7 @@ export interface UserUiDTO {
     'phoneNumber'?: string;
     'isActive'?: boolean;
     'isPremium'?: boolean;
+    'isDemo'?: boolean;
 }
 
 /**
@@ -482,6 +498,45 @@ export const BudgetCommandControllerApiAxiosParamCreator = function (configurati
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @param {string} id 
+         * @param {BudgetUpdateRequestUiDTO} budgetUpdateRequestUiDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateBudget: async (id: string, budgetUpdateRequestUiDTO: BudgetUpdateRequestUiDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateBudget', 'id', id)
+            // verify required parameter 'budgetUpdateRequestUiDTO' is not null or undefined
+            assertParamExists('updateBudget', 'budgetUpdateRequestUiDTO', budgetUpdateRequestUiDTO)
+            const localVarPath = `/api/bff/budgets/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(budgetUpdateRequestUiDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -527,6 +582,19 @@ export const BudgetCommandControllerApiFp = function(configuration?: Configurati
             const localVarOperationServerBasePath = operationServerMap['BudgetCommandControllerApi.setDefaultBudget']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * 
+         * @param {string} id 
+         * @param {BudgetUpdateRequestUiDTO} budgetUpdateRequestUiDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateBudget(id: string, budgetUpdateRequestUiDTO: BudgetUpdateRequestUiDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BudgetUiDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateBudget(id, budgetUpdateRequestUiDTO, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BudgetCommandControllerApi.updateBudget']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -563,6 +631,16 @@ export const BudgetCommandControllerApiFactory = function (configuration?: Confi
         setDefaultBudget(setDefaultBudgetsRequestUiDTO: SetDefaultBudgetsRequestUiDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.setDefaultBudget(setDefaultBudgetsRequestUiDTO, options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @param {string} id 
+         * @param {BudgetUpdateRequestUiDTO} budgetUpdateRequestUiDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateBudget(id: string, budgetUpdateRequestUiDTO: BudgetUpdateRequestUiDTO, options?: RawAxiosRequestConfig): AxiosPromise<BudgetUiDTO> {
+            return localVarFp.updateBudget(id, budgetUpdateRequestUiDTO, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -598,6 +676,17 @@ export class BudgetCommandControllerApi extends BaseAPI {
      */
     public setDefaultBudget(setDefaultBudgetsRequestUiDTO: SetDefaultBudgetsRequestUiDTO, options?: RawAxiosRequestConfig) {
         return BudgetCommandControllerApiFp(this.configuration).setDefaultBudget(setDefaultBudgetsRequestUiDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {BudgetUpdateRequestUiDTO} budgetUpdateRequestUiDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public updateBudget(id: string, budgetUpdateRequestUiDTO: BudgetUpdateRequestUiDTO, options?: RawAxiosRequestConfig) {
+        return BudgetCommandControllerApiFp(this.configuration).updateBudget(id, budgetUpdateRequestUiDTO, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -798,7 +887,7 @@ export const BudgetQueryControllerApiFp = function(configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async searchBudgets(pageable: Pageable, budgetSearchRequestDTO: BudgetSearchRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PageBudgetDTO>> {
+        async searchBudgets(pageable: Pageable, budgetSearchRequestDTO: BudgetSearchRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PageBudgetUiDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.searchBudgets(pageable, budgetSearchRequestDTO, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BudgetQueryControllerApi.searchBudgets']?.[localVarOperationServerIndex]?.url;
@@ -846,7 +935,7 @@ export const BudgetQueryControllerApiFactory = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchBudgets(pageable: Pageable, budgetSearchRequestDTO: BudgetSearchRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<PageBudgetDTO> {
+        searchBudgets(pageable: Pageable, budgetSearchRequestDTO: BudgetSearchRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<PageBudgetUiDTO> {
             return localVarFp.searchBudgets(pageable, budgetSearchRequestDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -1895,6 +1984,111 @@ export const UserCommandControllerApiAxiosParamCreator = function (configuration
     return {
         /**
          * 
+         * @param {ChangeEmailUiRequestDTO} changeEmailUiRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        changeEmailMe: async (changeEmailUiRequestDTO: ChangeEmailUiRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'changeEmailUiRequestDTO' is not null or undefined
+            assertParamExists('changeEmailMe', 'changeEmailUiRequestDTO', changeEmailUiRequestDTO)
+            const localVarPath = `/api/bff/users/me/email`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(changeEmailUiRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {ChangeNicknameUiRequestDTO} changeNicknameUiRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        changeNicknameMe: async (changeNicknameUiRequestDTO: ChangeNicknameUiRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'changeNicknameUiRequestDTO' is not null or undefined
+            assertParamExists('changeNicknameMe', 'changeNicknameUiRequestDTO', changeNicknameUiRequestDTO)
+            const localVarPath = `/api/bff/users/me/nickname`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(changeNicknameUiRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {ChangePasswordRequestDTO} changePasswordRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        changePasswordMe: async (changePasswordRequestDTO: ChangePasswordRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'changePasswordRequestDTO' is not null or undefined
+            assertParamExists('changePasswordMe', 'changePasswordRequestDTO', changePasswordRequestDTO)
+            const localVarPath = `/api/bff/users/me/password`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(changePasswordRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {UserCreateRequestDTO} userCreateRequestDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1928,6 +2122,150 @@ export const UserCommandControllerApiAxiosParamCreator = function (configuration
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @param {ConfirmCredentialsRequestDTO} confirmCredentialsRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteMe: async (confirmCredentialsRequestDTO: ConfirmCredentialsRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'confirmCredentialsRequestDTO' is not null or undefined
+            assertParamExists('deleteMe', 'confirmCredentialsRequestDTO', confirmCredentialsRequestDTO)
+            const localVarPath = `/api/bff/users/me/delete`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(confirmCredentialsRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {ConfirmCredentialsRequestDTO} confirmCredentialsRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetAccountDataMe: async (confirmCredentialsRequestDTO: ConfirmCredentialsRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'confirmCredentialsRequestDTO' is not null or undefined
+            assertParamExists('resetAccountDataMe', 'confirmCredentialsRequestDTO', confirmCredentialsRequestDTO)
+            const localVarPath = `/api/bff/users/me/reset-data`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(confirmCredentialsRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {ResetCategoriesRequestDTO} resetCategoriesRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetSelectedCategories: async (id: string, resetCategoriesRequestDTO: ResetCategoriesRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('resetSelectedCategories', 'id', id)
+            // verify required parameter 'resetCategoriesRequestDTO' is not null or undefined
+            assertParamExists('resetSelectedCategories', 'resetCategoriesRequestDTO', resetCategoriesRequestDTO)
+            const localVarPath = `/api/bff/users/{id}/categories/reset`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(resetCategoriesRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {ResetCategoriesRequestDTO} resetCategoriesRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetSelectedCategoriesMe: async (resetCategoriesRequestDTO: ResetCategoriesRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'resetCategoriesRequestDTO' is not null or undefined
+            assertParamExists('resetSelectedCategoriesMe', 'resetCategoriesRequestDTO', resetCategoriesRequestDTO)
+            const localVarPath = `/api/bff/users/me/categories/reset`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(resetCategoriesRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -1939,6 +2277,42 @@ export const UserCommandControllerApiFp = function(configuration?: Configuration
     return {
         /**
          * 
+         * @param {ChangeEmailUiRequestDTO} changeEmailUiRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async changeEmailMe(changeEmailUiRequestDTO: ChangeEmailUiRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserUiDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.changeEmailMe(changeEmailUiRequestDTO, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.changeEmailMe']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {ChangeNicknameUiRequestDTO} changeNicknameUiRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async changeNicknameMe(changeNicknameUiRequestDTO: ChangeNicknameUiRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserUiDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.changeNicknameMe(changeNicknameUiRequestDTO, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.changeNicknameMe']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {ChangePasswordRequestDTO} changePasswordRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async changePasswordMe(changePasswordRequestDTO: ChangePasswordRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.changePasswordMe(changePasswordRequestDTO, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.changePasswordMe']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {UserCreateRequestDTO} userCreateRequestDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1947,6 +2321,55 @@ export const UserCommandControllerApiFp = function(configuration?: Configuration
             const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(userCreateRequestDTO, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.createUser']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {ConfirmCredentialsRequestDTO} confirmCredentialsRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteMe(confirmCredentialsRequestDTO: ConfirmCredentialsRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteMe(confirmCredentialsRequestDTO, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.deleteMe']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {ConfirmCredentialsRequestDTO} confirmCredentialsRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async resetAccountDataMe(confirmCredentialsRequestDTO: ConfirmCredentialsRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.resetAccountDataMe(confirmCredentialsRequestDTO, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.resetAccountDataMe']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {ResetCategoriesRequestDTO} resetCategoriesRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async resetSelectedCategories(id: string, resetCategoriesRequestDTO: ResetCategoriesRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.resetSelectedCategories(id, resetCategoriesRequestDTO, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.resetSelectedCategories']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {ResetCategoriesRequestDTO} resetCategoriesRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async resetSelectedCategoriesMe(resetCategoriesRequestDTO: ResetCategoriesRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.resetSelectedCategoriesMe(resetCategoriesRequestDTO, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.resetSelectedCategoriesMe']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -1960,12 +2383,76 @@ export const UserCommandControllerApiFactory = function (configuration?: Configu
     return {
         /**
          * 
+         * @param {ChangeEmailUiRequestDTO} changeEmailUiRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        changeEmailMe(changeEmailUiRequestDTO: ChangeEmailUiRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<UserUiDTO> {
+            return localVarFp.changeEmailMe(changeEmailUiRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {ChangeNicknameUiRequestDTO} changeNicknameUiRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        changeNicknameMe(changeNicknameUiRequestDTO: ChangeNicknameUiRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<UserUiDTO> {
+            return localVarFp.changeNicknameMe(changeNicknameUiRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {ChangePasswordRequestDTO} changePasswordRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        changePasswordMe(changePasswordRequestDTO: ChangePasswordRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.changePasswordMe(changePasswordRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {UserCreateRequestDTO} userCreateRequestDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         createUser(userCreateRequestDTO: UserCreateRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<UserUiDTO> {
             return localVarFp.createUser(userCreateRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {ConfirmCredentialsRequestDTO} confirmCredentialsRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteMe(confirmCredentialsRequestDTO: ConfirmCredentialsRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteMe(confirmCredentialsRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {ConfirmCredentialsRequestDTO} confirmCredentialsRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetAccountDataMe(confirmCredentialsRequestDTO: ConfirmCredentialsRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.resetAccountDataMe(confirmCredentialsRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {ResetCategoriesRequestDTO} resetCategoriesRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetSelectedCategories(id: string, resetCategoriesRequestDTO: ResetCategoriesRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.resetSelectedCategories(id, resetCategoriesRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {ResetCategoriesRequestDTO} resetCategoriesRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetSelectedCategoriesMe(resetCategoriesRequestDTO: ResetCategoriesRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.resetSelectedCategoriesMe(resetCategoriesRequestDTO, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1976,12 +2463,83 @@ export const UserCommandControllerApiFactory = function (configuration?: Configu
 export class UserCommandControllerApi extends BaseAPI {
     /**
      * 
+     * @param {ChangeEmailUiRequestDTO} changeEmailUiRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public changeEmailMe(changeEmailUiRequestDTO: ChangeEmailUiRequestDTO, options?: RawAxiosRequestConfig) {
+        return UserCommandControllerApiFp(this.configuration).changeEmailMe(changeEmailUiRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {ChangeNicknameUiRequestDTO} changeNicknameUiRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public changeNicknameMe(changeNicknameUiRequestDTO: ChangeNicknameUiRequestDTO, options?: RawAxiosRequestConfig) {
+        return UserCommandControllerApiFp(this.configuration).changeNicknameMe(changeNicknameUiRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {ChangePasswordRequestDTO} changePasswordRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public changePasswordMe(changePasswordRequestDTO: ChangePasswordRequestDTO, options?: RawAxiosRequestConfig) {
+        return UserCommandControllerApiFp(this.configuration).changePasswordMe(changePasswordRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {UserCreateRequestDTO} userCreateRequestDTO 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     public createUser(userCreateRequestDTO: UserCreateRequestDTO, options?: RawAxiosRequestConfig) {
         return UserCommandControllerApiFp(this.configuration).createUser(userCreateRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {ConfirmCredentialsRequestDTO} confirmCredentialsRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public deleteMe(confirmCredentialsRequestDTO: ConfirmCredentialsRequestDTO, options?: RawAxiosRequestConfig) {
+        return UserCommandControllerApiFp(this.configuration).deleteMe(confirmCredentialsRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {ConfirmCredentialsRequestDTO} confirmCredentialsRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public resetAccountDataMe(confirmCredentialsRequestDTO: ConfirmCredentialsRequestDTO, options?: RawAxiosRequestConfig) {
+        return UserCommandControllerApiFp(this.configuration).resetAccountDataMe(confirmCredentialsRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {ResetCategoriesRequestDTO} resetCategoriesRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public resetSelectedCategories(id: string, resetCategoriesRequestDTO: ResetCategoriesRequestDTO, options?: RawAxiosRequestConfig) {
+        return UserCommandControllerApiFp(this.configuration).resetSelectedCategories(id, resetCategoriesRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {ResetCategoriesRequestDTO} resetCategoriesRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public resetSelectedCategoriesMe(resetCategoriesRequestDTO: ResetCategoriesRequestDTO, options?: RawAxiosRequestConfig) {
+        return UserCommandControllerApiFp(this.configuration).resetSelectedCategoriesMe(resetCategoriesRequestDTO, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

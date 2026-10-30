@@ -153,7 +153,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **searchBudgets**
-> PageBudgetDTO searchBudgets(budgetSearchRequestDTO)
+> PageBudgetUiDTO searchBudgets(budgetSearchRequestDTO)
 
 
 ### Example
@@ -188,7 +188,7 @@ const { status, data } = await apiInstance.searchBudgets(
 
 ### Return type
 
-**PageBudgetDTO**
+**PageBudgetUiDTO**
 
 ### Authorization
 

@@ -7,6 +7,7 @@ All URIs are relative to *http://localhost:8080*
 |[**createBudget**](#createbudget) | **POST** /api/bff/budgets | |
 |[**deleteBudget**](#deletebudget) | **DELETE** /api/bff/budgets/{id} | |
 |[**setDefaultBudget**](#setdefaultbudget) | **POST** /api/bff/budgets/set-default | |
+|[**updateBudget**](#updatebudget) | **PUT** /api/bff/budgets/{id} | |
 
 # **createBudget**
 > BudgetUiDTO createBudget(budgetCreateRequestUiDTO)
@@ -157,6 +158,60 @@ No authorization required
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 |**204** | No Content |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **updateBudget**
+> BudgetUiDTO updateBudget(budgetUpdateRequestUiDTO)
+
+
+### Example
+
+```typescript
+import {
+    BudgetCommandControllerApi,
+    Configuration,
+    BudgetUpdateRequestUiDTO
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new BudgetCommandControllerApi(configuration);
+
+let id: string; // (default to undefined)
+let budgetUpdateRequestUiDTO: BudgetUpdateRequestUiDTO; //
+
+const { status, data } = await apiInstance.updateBudget(
+    id,
+    budgetUpdateRequestUiDTO
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **budgetUpdateRequestUiDTO** | **BudgetUpdateRequestUiDTO**|  | |
+| **id** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**BudgetUiDTO**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

@@ -5,11 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**direction** | **string** |  | [optional] [default to undefined]
-**nullHandling** | **string** |  | [optional] [default to undefined]
-**ascending** | **boolean** |  | [optional] [default to undefined]
-**property** | **string** |  | [optional] [default to undefined]
-**ignoreCase** | **boolean** |  | [optional] [default to undefined]
+**empty** | **boolean** |  | [optional] [default to undefined]
+**sorted** | **boolean** |  | [optional] [default to undefined]
+**unsorted** | **boolean** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -17,11 +15,9 @@ Name | Type | Description | Notes
 import { SortObject } from './api';
 
 const instance: SortObject = {
-    direction,
-    nullHandling,
-    ascending,
-    property,
-    ignoreCase,
+    empty,
+    sorted,
+    unsorted,
 };
 ```
 

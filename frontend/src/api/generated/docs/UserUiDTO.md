@@ -13,6 +13,7 @@ Name | Type | Description | Notes
 **phoneNumber** | **string** |  | [optional] [default to undefined]
 **isActive** | **boolean** |  | [optional] [default to undefined]
 **isPremium** | **boolean** |  | [optional] [default to undefined]
+**isDemo** | **boolean** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -28,6 +29,7 @@ const instance: UserUiDTO = {
     phoneNumber,
     isActive,
     isPremium,
+    isDemo,
 };
 ```
 
