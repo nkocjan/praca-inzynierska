@@ -60,32 +60,9 @@ public class UserCommandController {
         return ResponseEntity.ok(userUiDTO);
     }
 
-    @PutMapping("/{id}/activate")
-    public ResponseEntity<UserUiDTO> activateAccount(
-            @PathVariable UUID id, @RequestBody ActivateAccountRequestDTO request) {
-        var userDTO = userServiceClient.activateAccount(id, request);
-        var userUiDTO = mapperExtension.toUserUiDTO(userDTO);
-        return ResponseEntity.ok(userUiDTO);
-    }
-
-    @PutMapping("/{id}/premium")
-    public ResponseEntity<UserUiDTO> setPremium(
-            @PathVariable UUID id, @RequestBody SetPremiumRequestDTO request) {
-        var userDTO = userServiceClient.setPremium(id, request);
-        var userUiDTO = mapperExtension.toUserUiDTO(userDTO);
-        return ResponseEntity.ok(userUiDTO);
-    }
-
-    @PutMapping("/{id}/password")
-    public ResponseEntity<Void> changePassword(
-            @PathVariable UUID id, @RequestBody ChangePasswordRequestDTO request) {
-        userServiceClient.changePassword(id, request);
-        return ResponseEntity.noContent().build();
-    }
-
     // --- SETTINGS: endpoints bez jawnego {id} (userId z JWT) ---
-    // Login, e-mail, data reset and account deletion have no {id} variants on purpose: they would
-    // skip the password check.
+    // Login, e-mail, password, data reset and account deletion have no {id} variants on purpose:
+    // they would skip the password check.
 
     @PutMapping("/me/nickname")
     public ResponseEntity<UserUiDTO> changeNicknameMe(
