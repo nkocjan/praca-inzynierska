@@ -5,19 +5,16 @@ import { normalizeLanguage } from "../../../../i18n/i18n";
 import { getIntlLocale } from "../../../../i18n/locale";
 import FilterChips, { FilterChip } from "../../../../lib/filters/FilterChips";
 import { FilterAdornment } from "../../../../lib/filters/FilterParts";
-import { CATEGORY_PERIODS, CategoryFilterState, CategoryPeriod, CategoryStatus } from "../categoryFilters";
+import { CategoryFilterState, CategoryStatus } from "../categoryFilters";
 
 interface CategoryFiltersBarProps {
   filters: CategoryFilterState;
   onChange: (patch: Partial<CategoryFilterState>) => void;
   onReset: () => void;
   resultCount: number | null;
-  // Phones show one period column at a time; the others only exist on wider screens.
-  period?: CategoryPeriod;
-  onPeriodChange?: (period: CategoryPeriod) => void;
 }
 
-const CategoryFiltersBar = ({ filters, onChange, onReset, resultCount, period, onPeriodChange }: CategoryFiltersBarProps) => {
+const CategoryFiltersBar = ({ filters, onChange, onReset, resultCount }: CategoryFiltersBarProps) => {
   const { t, i18n } = useTranslation("categories");
   const language = normalizeLanguage(i18n.language);
 
@@ -63,23 +60,6 @@ const CategoryFiltersBar = ({ filters, onChange, onReset, resultCount, period, o
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
-        {period && onPeriodChange && (
-          <ToggleButtonGroup
-            exclusive
-            size="small"
-            value={period}
-            aria-label={t("filters.period")}
-            onChange={(_event, value: CategoryPeriod | null) => value && onPeriodChange(value)}
-            sx={{ "& .MuiToggleButton-root": { flexGrow: 1 } }}>
-            {CATEGORY_PERIODS.map(value => (
-              <ToggleButton
-                key={value}
-                value={value}>
-                {t(`filters.periods.${value}`)}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        )}
         <Typography
           variant="body2"
           color="text.secondary"

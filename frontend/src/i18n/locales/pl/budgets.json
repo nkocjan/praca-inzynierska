@@ -19,7 +19,6 @@
     "ended": "Zakończone",
     "all": "Wszystkie",
     "chip": {
-      "current": "W trakcie",
       "upcoming": "Zaplanowany",
       "ended": "Zakończony"
     }
@@ -49,9 +48,7 @@
   "columns": {
     "category": "Kategoria",
     "period": "Okres",
-    "amount": "Limit",
-    "spent": "Wydano",
-    "status": "Status",
+    "spent": "Wykorzystanie limitu",
     "actions": "Akcje"
   },
   "actions": {

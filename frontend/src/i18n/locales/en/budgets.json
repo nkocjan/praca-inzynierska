@@ -17,7 +17,6 @@
     "ended": "Ended",
     "all": "All",
     "chip": {
-      "current": "In progress",
       "upcoming": "Planned",
       "ended": "Ended"
     }
@@ -47,9 +46,7 @@
   "columns": {
     "category": "Category",
     "period": "Period",
-    "amount": "Limit",
-    "spent": "Spent",
-    "status": "Status",
+    "spent": "Limit usage",
     "actions": "Actions"
   },
   "actions": {

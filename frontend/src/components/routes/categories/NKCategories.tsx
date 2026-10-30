@@ -80,8 +80,8 @@ const NKCategories = () => {
     setPaginationModel(previous => ({ ...previous, page: 0 }));
   }, []);
 
-  const columns = useCategoryColumns({ compact, colorFor, onChanged: refresh });
-  // Phones keep the name and the period picked above the list.
+  const columns = useCategoryColumns({ compact, colorFor, onChanged: refresh, period, onPeriodChange: setPeriod });
+  // Phones keep the name and the period picked in its column header.
   const columnVisibilityModel = compact
     ? Object.fromEntries(CATEGORY_PERIODS.map(value => [value, value === period]))
     : {};
@@ -137,8 +137,6 @@ const NKCategories = () => {
           onChange={changeFilters}
           onReset={resetFilters}
           resultCount={loaded ? rows.length : null}
-          period={compact ? period : undefined}
-          onPeriodChange={setPeriod}
         />
         <DataGrid
           autoHeight

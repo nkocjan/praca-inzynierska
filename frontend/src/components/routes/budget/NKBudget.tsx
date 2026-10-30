@@ -134,7 +134,7 @@ const NKBudget = () => {
     setPaginationModel(previous => ({ ...previous, page: 0 }));
   }, []);
 
-  const columns = useBudgetColumns({ compact, colorFor, onChanged: refresh });
+  const columns = useBudgetColumns({ compact, colorFor, onChanged: refresh, showEnded: filters.status !== "ended" });
 
   const openAddBudget = () => {
     const formId = "budget-form";
@@ -200,7 +200,7 @@ const NKBudget = () => {
           loading={loading}
           rowHeight={64}
           columnHeaderHeight={44}
-          columnVisibilityModel={compact ? { periodStart: false, amount: false, timing: false } : {}}
+          columnVisibilityModel={compact ? { periodStart: false } : {}}
           disableRowSelectionOnClick
           paginationMode="server"
           paginationModel={paginationModel}

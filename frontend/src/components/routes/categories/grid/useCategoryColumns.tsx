@@ -8,14 +8,24 @@ import BudgetUsage from "../../../../lib/budgetUsage/BudgetUsage";
 import CategoryAvatar from "../../../../lib/category/CategoryAvatar";
 import { CATEGORY_PERIODS, CategoryPeriod, periodPercent } from "../categoryFilters";
 import CategoryActionMenu from "./CategoryActionMenu";
+import PeriodHeaderMenu from "./PeriodHeaderMenu";
 
 interface CategoryColumnsOptions {
   compact: boolean;
   colorFor: (categoryId?: string) => string;
   onChanged: () => void;
+  // Phones show one period column; its header switches between them.
+  period: CategoryPeriod;
+  onPeriodChange: (period: CategoryPeriod) => void;
 }
 
-const useCategoryColumns = ({ compact, colorFor, onChanged }: CategoryColumnsOptions): GridColDef<CategoryUiDTO>[] => {
+const useCategoryColumns = ({
+  compact,
+  colorFor,
+  onChanged,
+  period: shownPeriod,
+  onPeriodChange,
+}: CategoryColumnsOptions): GridColDef<CategoryUiDTO>[] => {
   const { t } = useTranslation("categories");
 
   return useMemo(
@@ -23,14 +33,14 @@ const useCategoryColumns = ({ compact, colorFor, onChanged }: CategoryColumnsOpt
       {
         field: "name",
         headerName: t("columns.name"),
-        flex: 1.4,
-        minWidth: compact ? 140 : 220,
+        flex: compact ? 1.2 : 1.4,
+        minWidth: compact ? 120 : 220,
         sortingOrder: ["asc", "desc"],
         renderCell: ({ row }) => (
           <Stack
             direction="row"
             alignItems="center"
-            spacing={1.5}
+            spacing={compact ? 1 : 1.5}
             sx={{ height: "100%", minWidth: 0 }}>
             <CategoryAvatar
               name={row.name}
@@ -61,16 +71,25 @@ const useCategoryColumns = ({ compact, colorFor, onChanged }: CategoryColumnsOpt
         (period: CategoryPeriod): GridColDef<CategoryUiDTO> => ({
           field: period,
           headerName: t(`columns.${period}`),
-          flex: 1,
-          minWidth: compact ? 140 : 180,
+          flex: compact ? 1.2 : 1,
+          minWidth: compact ? 130 : 180,
           sortingOrder: ["desc", "asc"],
           valueGetter: (_value, row) => periodPercent(row, period),
+          ...(compact && {
+            renderHeader: () => (
+              <PeriodHeaderMenu
+                value={shownPeriod}
+                onChange={onPeriodChange}
+              />
+            ),
+          }),
           renderCell: ({ row }) => (
             <BudgetUsage
               spent={Number(row[period]?.spentAmount ?? 0)}
               limit={Number(row[period]?.amount ?? 0)}
               label={`${row.name}, ${t(`columns.${period}`).toLowerCase()}`}
               showLimit
+              dense={compact}
             />
           ),
         }),
@@ -78,7 +97,8 @@ const useCategoryColumns = ({ compact, colorFor, onChanged }: CategoryColumnsOpt
       {
         field: "actions",
         headerName: t("columns.actions"),
-        width: compact ? 48 : 64,
+        width: compact ? 40 : 64,
+        minWidth: 40,
         sortable: false,
         filterable: false,
         align: "center",
@@ -91,7 +111,7 @@ const useCategoryColumns = ({ compact, colorFor, onChanged }: CategoryColumnsOpt
         ),
       },
     ],
-    [t, compact, colorFor, onChanged],
+    [t, compact, colorFor, onChanged, shownPeriod, onPeriodChange],
   );
 };
 

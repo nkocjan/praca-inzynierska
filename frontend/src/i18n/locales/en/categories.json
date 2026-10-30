@@ -21,12 +21,7 @@
     "search": "Search by name",
     "searchPlaceholder": "Search categories...",
     "searchChip": "Name: {{value}}",
-    "period": "Period shown",
-    "periods": {
-      "weeklyBudget": "Week",
-      "monthlyBudget": "Month",
-      "yearlyBudget": "Year"
-    }
+    "periodMenu": "Period shown: {{period}}"
   },
   "columns": {
     "name": "Category",

@@ -14,10 +14,12 @@ interface BudgetUsageProps {
   label: string;
   // Shown as "spent / limit" (currency once, at the limit) where no other column carries the limit.
   showLimit?: boolean;
+  // Phones: a slightly smaller amount line, so long English amounts ("13,552 / PLN 18,000") fit.
+  dense?: boolean;
 }
 
 // Spent amount over a progress bar with the percentage; near or over the limit it also gets an icon and a tooltip.
-const BudgetUsage = ({ spent, limit, label, showLimit = false }: BudgetUsageProps) => {
+const BudgetUsage = ({ spent, limit, label, showLimit = false, dense = false }: BudgetUsageProps) => {
   const { t, i18n } = useTranslation("common");
   const theme = useTheme();
   const language = normalizeLanguage(i18n.language);
@@ -65,7 +67,7 @@ const BudgetUsage = ({ spent, limit, label, showLimit = false }: BudgetUsageProp
         variant="body2"
         color="text.secondary"
         noWrap
-        sx={{ fontVariantNumeric: "tabular-nums" }}>
+        sx={{ fontVariantNumeric: "tabular-nums", ...(dense && { fontSize: "0.8125rem" }) }}>
         <Box
           component="span"
           sx={{ color: "text.primary", fontWeight: 600 }}>

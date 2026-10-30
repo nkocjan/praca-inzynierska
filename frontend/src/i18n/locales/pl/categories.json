@@ -23,12 +23,7 @@
     "search": "Szukaj po nazwie",
     "searchPlaceholder": "Szukaj kategorii...",
     "searchChip": "Nazwa: {{value}}",
-    "period": "Pokazany okres",
-    "periods": {
-      "weeklyBudget": "Tydzień",
-      "monthlyBudget": "Miesiąc",
-      "yearlyBudget": "Rok"
-    }
+    "periodMenu": "Pokazany okres: {{period}}"
   },
   "columns": {
     "name": "Kategoria",
