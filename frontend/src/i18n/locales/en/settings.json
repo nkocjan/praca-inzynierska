@@ -133,5 +133,5 @@
       "fetchCategoriesError": "Couldn't fetch the category list."
     }
   },
-  "demoAccountBlocked": "This is a demo account — this action is not available. Create your own account to try it."
+  "demoAccountBlocked": "This is a demo account - this action is not available. Create your own account to try it."
 }

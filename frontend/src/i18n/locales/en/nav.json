@@ -1,9 +1,8 @@
 {
-  "appBarTitle": "Home",
   "menu": {
-    "home": "Home",
+    "home": "Dashboard",
     "expenses": "Expenses",
-    "budget": "Budget",
+    "budget": "Budgets",
     "categories": "Categories"
   },
   "secondary": {
@@ -11,6 +10,12 @@
     "settings": "Settings",
     "logout": "Log out"
   },
+  "sections": {
+    "finance": "Finance",
+    "account": "Account"
+  },
+  "openMenu": "Open menu",
+  "demoAccount": "Demo account",
   "snackbar": {
     "logoutSuccess": "Logged out successfully"
   }

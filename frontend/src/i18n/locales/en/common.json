@@ -2,12 +2,21 @@
   "language": {
     "label": "Language",
     "pl": "Polish",
-    "en": "English"
+    "en": "English",
+    "short": {
+      "pl": "PL",
+      "en": "EN"
+    }
   },
   "common": {
     "noData": "No data"
   },
   "dialog": {
     "confirmDelete": "Do you confirm deleting {{item}}?"
+  },
+  "appName": "Home Budget",
+  "theme": {
+    "toDark": "Switch to dark theme",
+    "toLight": "Switch to light theme"
   }
 }

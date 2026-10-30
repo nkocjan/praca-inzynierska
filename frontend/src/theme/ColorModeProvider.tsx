@@ -7,7 +7,8 @@ import {
 
 const readInitialMode = (): ThemeMode => {
   const raw = localStorage.getItem(COLOR_MODE_STORAGE_KEY);
-  return raw === "light" || raw === "dark" ? raw : "dark";
+  if (raw === "light" || raw === "dark") return raw;
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 };
 
 const ColorModeProvider = ({ children }: { children: ReactNode }) => {

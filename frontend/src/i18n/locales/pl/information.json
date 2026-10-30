@@ -1,6 +1,6 @@
 {
   "title": "Informacje o aplikacji",
-  "description": "Aplikacja do zarządzania budżetami i wydatkami w kategoriach — zaprojektowana jako projekt portfolio oraz przykład rozwiązania opartego o mikroserwisy.",
+  "description": "Aplikacja do zarządzania budżetami i wydatkami w kategoriach - zaprojektowana jako projekt portfolio oraz przykład rozwiązania opartego o mikroserwisy.",
   "usage": {
     "title": "1) Instrukcja korzystania (dla nietechnicznych)",
     "items": {
@@ -10,7 +10,7 @@
       },
       "categories": {
         "primary": "2. Dodaj kategorie",
-        "secondary": "Kategorie to np. Jedzenie, Transport, Rozrywka — w nich grupujesz wydatki i budżety."
+        "secondary": "Kategorie to np. Jedzenie, Transport, Rozrywka - w nich grupujesz wydatki i budżety."
       },
       "budgets": {
         "primary": "3. Ustaw budżety",

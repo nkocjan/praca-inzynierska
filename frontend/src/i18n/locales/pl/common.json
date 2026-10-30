@@ -2,12 +2,21 @@
   "language": {
     "label": "Język",
     "pl": "Polski",
-    "en": "Angielski"
+    "en": "Angielski",
+    "short": {
+      "pl": "PL",
+      "en": "EN"
+    }
   },
   "common": {
     "noData": "Brak danych"
   },
   "dialog": {
     "confirmDelete": "Czy potwierdzasz usunięcie {{item}}?"
+  },
+  "appName": "Budżet domowy",
+  "theme": {
+    "toDark": "Włącz ciemny motyw",
+    "toLight": "Włącz jasny motyw"
   }
 }

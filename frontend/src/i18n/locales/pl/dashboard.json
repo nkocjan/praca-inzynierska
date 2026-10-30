@@ -1,14 +1,53 @@
 {
-  "expenses": "Wydatki",
-  "budget": "Budżet",
-  "recentExpenses": "Ostatnie wydatki",
-  "noName": "Brak nazwy",
-  "selectCategory": "Wybierz kategorię",
-  "loading": "Ładowanie danych...",
-  "loadError": "Wystąpił błąd podczas ładowania danych.",
-  "period": {
-    "week": "Ten tydzień",
-    "month": "Ten miesiąc",
-    "year": "Ten rok"
+  "hello": "Cześć, {{name}}!",
+  "helloGeneric": "Cześć!",
+  "subtitle": "Podsumowanie Twoich finansów · {{month}}",
+  "addExpense": "Dodaj wydatek",
+  "loadError": "Nie udało się pobrać danych. Spróbuj odświeżyć stronę.",
+  "retry": "Spróbuj ponownie",
+  "kpi": {
+    "month": "Wydatki w tym miesiącu",
+    "week": "Wydatki w tym tygodniu",
+    "year": "Wydatki w tym roku",
+    "ofBudget": "z {{budget}} budżetu",
+    "left": "zostało {{amount}}",
+    "over": "ponad budżet o {{amount}}",
+    "planned": "Zaplanowane płatności",
+    "plannedCaption_one": "{{count}} płatność w ciągu 30 dni",
+    "plannedCaption_few": "{{count}} płatności w ciągu 30 dni",
+    "plannedCaption_many": "{{count}} płatności w ciągu 30 dni",
+    "plannedCaption_other": "{{count}} płatności w ciągu 30 dni",
+    "percentUsed": "{{percent}}% budżetu"
+  },
+  "budgets": {
+    "title": "Budżety kategorii",
+    "subtitle": "Ten miesiąc, od największego wykorzystania",
+    "over": "Przekroczono",
+    "seeAll": "Wszystkie kategorie",
+    "empty": "Nie masz jeszcze kategorii."
+  },
+  "structure": {
+    "title": "Struktura wydatków",
+    "week": "Tydzień",
+    "month": "Miesiąc",
+    "year": "Rok",
+    "period": "Okres",
+    "total": "Razem",
+    "other": "Inne",
+    "empty": "Brak wydatków w tym okresie."
+  },
+  "trend": {
+    "title": "Wydatki a budżet",
+    "subtitle": "Ostatnie 6 miesięcy",
+    "allCategories": "Wszystkie kategorie",
+    "category": "Kategoria",
+    "expenses": "Wydatki",
+    "budget": "Budżet",
+    "empty": "Brak danych z ostatnich miesięcy."
+  },
+  "recent": {
+    "title": "Ostatnie wydatki",
+    "seeAll": "Zobacz wszystkie",
+    "empty": "Nie masz jeszcze wydatków."
   }
 }

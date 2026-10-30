@@ -1,14 +1,51 @@
 {
-  "expenses": "Expenses",
-  "budget": "Budget",
-  "recentExpenses": "Recent expenses",
-  "noName": "No name",
-  "selectCategory": "Select category",
-  "loading": "Loading data...",
-  "loadError": "An error occurred while loading data.",
-  "period": {
-    "week": "This week",
-    "month": "This month",
-    "year": "This year"
+  "hello": "Hi, {{name}}!",
+  "helloGeneric": "Hi!",
+  "subtitle": "Your finances at a glance · {{month}}",
+  "addExpense": "Add expense",
+  "loadError": "Could not load the data. Try refreshing the page.",
+  "retry": "Try again",
+  "kpi": {
+    "month": "Spent this month",
+    "week": "Spent this week",
+    "year": "Spent this year",
+    "ofBudget": "of {{budget}} budget",
+    "left": "{{amount}} left",
+    "over": "{{amount}} over budget",
+    "planned": "Upcoming payments",
+    "plannedCaption_one": "{{count}} payment in the next 30 days",
+    "plannedCaption_other": "{{count}} payments in the next 30 days",
+    "percentUsed": "{{percent}}% of budget"
+  },
+  "budgets": {
+    "title": "Category budgets",
+    "subtitle": "This month, most used first",
+    "over": "Over budget",
+    "seeAll": "All categories",
+    "empty": "You have no categories yet."
+  },
+  "structure": {
+    "title": "Spending breakdown",
+    "week": "Week",
+    "month": "Month",
+    "year": "Year",
+    "period": "Period",
+    "total": "Total",
+    "other": "Other",
+    "empty": "No expenses in this period."
+  },
+  "trend": {
+    "title": "Spending vs budget",
+    "subtitle": "Last 6 months",
+    "allCategories": "All categories",
+    "category": "Category",
+    "expenses": "Expenses",
+    "budget": "Budget",
+    "empty": "No data from recent months."
+  },
+  "recent": {
+    "title": "Recent expenses",
+    "seeAll": "See all",
+    "empty": "You have no expenses yet."
   }
 }

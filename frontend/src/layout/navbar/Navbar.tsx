@@ -1,263 +1,145 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import Drawer from "@mui/material/Drawer";
-import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import NKLogoIcon from "../../lib/icons/NKLogoIcon.tsx";
-import NKExpansesIcon from "../../lib/icons/menu/NKExpansesIcon.tsx";
-import NKBudgetIcon from "../../lib/icons/menu/NKBudgetIcon.tsx";
-import NKCategoryIcon from "../../lib/icons/menu/NKCategoryIcon.tsx";
-import NKInfoIcon from "../../lib/icons/menu/NKInfoIcon.tsx";
-import NKSettingsIcon from "../../lib/icons/menu/NKSettingsIcon.tsx";
-import NKLogoutIcon from "../../lib/icons/menu/NKLogoutIcon.tsx";
-import NKMainIcon from "../../lib/icons/menu/NKMainIcon.tsx";
+import {
+  Avatar,
+  Box,
+  Chip,
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { NavLink, useNavigate } from "react-router-dom";
-import NKDarkLightSwitch from "./dark-light-switch/NKDarkLightSwitch.tsx";
-import NKLanguageSelect from "./language-select/NKLanguageSelect.tsx";
 import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
+import { NAV_SECTIONS } from "../navigation.tsx";
+import { useCurrentUser } from "../../auth/useCurrentUser.ts";
+import { clearSession } from "../../auth/session.ts";
+import BrandLogo from "../BrandLogo.tsx";
 
-const drawerWidth = 240;
+interface NavbarProps {
+  onNavigate?: () => void;
+}
 
-export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [isClosing, setIsClosing] = React.useState(false);
-
+// Sidebar content: brand, navigation and the signed-in user.
+export default function Navbar({ onNavigate }: NavbarProps) {
   const { t } = useTranslation("nav");
-
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-
-  const menuItems = [
-    { text: t("menu.home"), path: "/" },
-    { text: t("menu.expenses"), path: "/expenses" },
-    { text: t("menu.budget"), path: "/budget" },
-    { text: t("menu.categories"), path: "/categories" },
-  ];
-
-  const secondaryItems = [
-    { text: t("secondary.information"), path: "/information" },
-    { text: t("secondary.settings"), path: "/settings" },
-    { text: t("secondary.logout"), path: "/logout" },
-  ];
-
-  const handleDrawerClose = () => {
-    setIsClosing(true);
-    setMobileOpen(false);
-  };
-
-  const handleDrawerTransitionEnd = () => {
-    setIsClosing(false);
-  };
-
-  const handleDrawerToggle = () => {
-    if (!isClosing) {
-      setMobileOpen(!mobileOpen);
-    }
-  };
-
-  const getMainIcon = (id: number) => {
-    switch (id) {
-      case 0:
-        return <NKMainIcon />;
-      case 1:
-        return <NKExpansesIcon />;
-      case 2:
-        return <NKBudgetIcon />;
-      case 3:
-        return <NKCategoryIcon />;
-    }
-  };
-
-  const getSecondaryIcon = (id: number) => {
-    switch (id) {
-      case 0:
-        return <NKInfoIcon />;
-      case 1:
-        return <NKSettingsIcon />;
-      case 2:
-        return <NKLogoutIcon />;
-    }
-  };
+  const user = useCurrentUser();
 
   const handleLogout = () => {
-    localStorage.removeItem("jwtToken");
-
+    clearSession();
     enqueueSnackbar(t("snackbar.logoutSuccess"), { variant: "success" });
-
     navigate("/login", { replace: true });
   };
 
-  const drawer = (
-    <div>
-      <Toolbar />
-      <Box sx={{ display: "flex", flexDirection: "column", height: "90vh" }}>
-        <Divider />
-        <List>
-          {menuItems.map((item, index) => (
-            <ListItem
-              key={item.text}
-              disablePadding>
-              <ListItemButton
-                component={NavLink}
-                to={item.path}
-                sx={{
-                  "&.active": {
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    fontWeight: "bold",
-                  },
-                  "& .MuiSvgIcon-root": {
-                    transition: "transform 0.3s ease-in-out",
-                  },
-                  "&:hover .MuiSvgIcon-root": {
-                    transform: "scale(1.1)",
-                  },
-                }}>
-                <ListItemIcon>{getMainIcon(index)}</ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <Divider />
-        <List>
-          {secondaryItems.map((item, index) => (
-            <ListItem
-              key={item.text}
-              disablePadding>
-              <ListItemButton
-                {
-                  ...(item.path === "/logout"
-                    ? { onClick: handleLogout } // Jeśli tak, dodaj onClick
-                    : { component: NavLink, to: item.path }) // Jeśli nie, działaj jak link
-                }
-                sx={{
-                  "&.active": {
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    fontWeight: "bold",
-                  },
-                  "& .MuiSvgIcon-root": {
-                    transition: "transform 0.3s ease-in-out",
-                  },
-                  "&:hover .MuiSvgIcon-root": {
-                    transform: "scale(1.1)",
-                  },
-                }}>
-                <ListItemIcon>{getSecondaryIcon(index)}</ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-      </Box>
-    </div>
-  );
-
-  const container = window !== undefined ? () => document.body : undefined;
+  const initials = `${user?.name?.[0] ?? ""}${user?.surname?.[0] ?? ""}`;
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}>
-            <NKLogoIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div">
-            {t("appBarTitle")}
-          </Typography>
-          <Box
-            sx={{
-              marginLeft: "auto",
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              height: "100%",
-            }}>
-            <Box
-              sx={{
-                width: { xs: "80px", sm: "100px", md: "120px" },
-                minWidth: "80px",
-                display: "flex",
-                alignItems: "center",
-                "& .MuiSelect-root": {
-                  height: "40px",
-                },
-              }}>
-              <NKLanguageSelect />
-            </Box>
-            <NKDarkLightSwitch />
-          </Box>
-        </Toolbar>
-      </AppBar>
+    <Stack sx={{ height: "100%", px: 2, py: 2.5 }}>
+      <Box sx={{ px: 1, mb: 3 }}>
+        <BrandLogo />
+      </Box>
+
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders">
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onTransitionEnd={handleDrawerTransitionEnd}
-          onClose={handleDrawerClose}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}>
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: "none", sm: "block" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
-          open>
-          {drawer}
-        </Drawer>
+        sx={{ flexGrow: 1 }}>
+        {NAV_SECTIONS.map(section => (
+          <Box
+            key={section.titleKey}
+            sx={{ mb: 2 }}>
+            <Typography
+              variant="overline"
+              color="text.secondary"
+              sx={{ px: 1.5, fontSize: "0.7rem" }}>
+              {t(section.titleKey)}
+            </Typography>
+            <List
+              dense
+              disablePadding>
+              {section.items.map(item => (
+                <ListItemButton
+                  key={item.path}
+                  component={NavLink}
+                  to={item.path}
+                  end
+                  onClick={onNavigate}
+                  sx={theme => ({
+                    mb: 0.5,
+                    py: 1,
+                    color: "text.secondary",
+                    "& .MuiListItemIcon-root": { color: "inherit", minWidth: 36 },
+                    "&:hover": { color: "text.primary" },
+                    "&.active": {
+                      color: "primary.main",
+                      backgroundColor: alpha(theme.palette.primary.main, 0.12),
+                      "& .MuiListItemText-primary": { fontWeight: 650 },
+                    },
+                  })}>
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText
+                    primary={t(item.labelKey)}
+                    primaryTypographyProps={{ fontSize: "0.92rem", fontWeight: 500 }}
+                  />
+                </ListItemButton>
+              ))}
+            </List>
+          </Box>
+        ))}
       </Box>
-      <Box
-        component="main"
+
+      <Stack
+        direction="row"
+        spacing={1.5}
+        alignItems="center"
         sx={{
-          flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          p: 1.5,
+          borderRadius: "14px",
+          border: 1,
+          borderColor: "divider",
         }}>
-        <Toolbar />
-      </Box>
-    </Box>
+        <Avatar
+          sx={{ width: 38, height: 38, bgcolor: "primary.main", color: "primary.contrastText", fontSize: "0.9rem", fontWeight: 700 }}>
+          {initials || "?"}
+        </Avatar>
+        <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+          <Typography
+            variant="subtitle2"
+            noWrap>
+            {user ? `${user.name} ${user.surname}` : " "}
+          </Typography>
+          {user?.isDemo ? (
+            <Chip
+              label={t("demoAccount")}
+              size="small"
+              color="primary"
+              variant="outlined"
+              sx={{ height: 20, fontSize: "0.68rem" }}
+            />
+          ) : (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              noWrap
+              component="div">
+              {user?.username}
+            </Typography>
+          )}
+        </Box>
+        <Tooltip title={t("secondary.logout")}>
+          <IconButton
+            onClick={handleLogout}
+            aria-label={t("secondary.logout")}
+            size="small">
+            <LogoutOutlinedIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Stack>
+    </Stack>
   );
 }

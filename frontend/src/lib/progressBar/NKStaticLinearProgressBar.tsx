@@ -1,6 +1,7 @@
 import { Box, LinearProgress, Typography } from "@mui/material";
 import i18n, { normalizeLanguage } from "../../i18n/i18n";
 import { formatCurrencyPLN } from "../../i18n/locale";
+import { toneFor, usagePercent } from "../budgetStatus";
 
 const NKStaticLinearProgressBar = ({
   value,
@@ -9,43 +10,27 @@ const NKStaticLinearProgressBar = ({
   value: number;
   maxValue: number;
 }) => {
-  const percent = (value * 100) / maxValue;
-  const progressValue = Math.min(percent, 100);
+  const percent = usagePercent(value, maxValue);
   const language = normalizeLanguage(i18n.language);
 
   return (
-    <Box sx={{ position: "relative", width: "80%", textAlign: "center" }}>
+    <Box sx={{ width: "85%", py: 1 }}>
       <LinearProgress
         variant="determinate"
-        value={progressValue}
-        sx={{
-          marginTop: "10%",
-          height: 10,
-          borderRadius: 5,
-          backgroundColor: "rgba(255, 255, 255, 0.15)",
-          "& .MuiLinearProgress-bar": {
-            borderRadius: 5,
-            backgroundColor:
-              percent > 100
-                ? "#ff4c4c"
-                : `rgba(77, 166, 255, ${0.3 + (percent / 100) * 0.7})`,
-          },
-        }}
+        color={toneFor(percent)}
+        value={Math.min(percent, 100)}
       />
       <Typography
         variant="caption"
-        sx={{
-          position: "absolute",
-          width: "100%",
-          left: "50%",
-          transform: "translate(-50%, -0%)",
-          fontWeight: "bold",
-          fontSize: "smaller",
-          color: "rgba(255,255,255,1.0)",
-          textShadow: "0px 0px 5px rgba(0,0,0,0.7)",
-        }}>
-        {formatCurrencyPLN(value, language)} /{" "}
-        {formatCurrencyPLN(maxValue, language)}
+        color="text.secondary"
+        component="p"
+        sx={{ mt: 0.5, lineHeight: 1.4, fontVariantNumeric: "tabular-nums" }}>
+        <Box
+          component="span"
+          sx={{ color: "text.primary", fontWeight: 600 }}>
+          {formatCurrencyPLN(value, language, 0)}
+        </Box>{" "}
+        / {formatCurrencyPLN(maxValue, language, 0)}
       </Typography>
     </Box>
   );

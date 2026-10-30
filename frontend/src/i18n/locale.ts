@@ -11,10 +11,13 @@ export const getCurrencySymbol = (language: AppLanguage): string => {
 export const formatCurrencyPLN = (
   amount: number,
   language: AppLanguage,
+  fractionDigits = 2,
 ): string => {
   return new Intl.NumberFormat(getIntlLocale(language), {
     style: "currency",
     currency: "PLN",
     currencyDisplay: "symbol",
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
   }).format(amount);
 };

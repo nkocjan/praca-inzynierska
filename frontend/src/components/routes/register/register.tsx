@@ -1,24 +1,36 @@
-import { NKTextInput } from "../../../lib/Input/TextInput.tsx";
+import { useMemo, useState } from "react";
+import { Button, Link, Stack, TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import Typography from "@mui/material/Typography";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import { NKButton } from "../../../lib/button/Button.tsx";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
-import { apiClient } from "../../../api/apiClient.ts";
-import { useState } from "react";
-import { UserCreateRequestDTO } from "../../../api/generated/api.ts";
 import { useTranslation } from "react-i18next";
-import { useMemo } from "react";
+import { apiClient } from "../../../api/apiClient.ts";
+import { UserCreateRequestDTO } from "../../../api/generated/api.ts";
+import AuthLayout from "../../auth/AuthLayout.tsx";
 
-const darkTheme = createTheme({
-  palette: {
-    mode: "dark",
-  },
-});
+type RegisterValues = {
+  name: string;
+  surname: string;
+  username: string;
+  phoneNumber: string;
+  email: string;
+  confirmEmail: string;
+  password: string;
+  confirmPassword: string;
+};
+
+const FIELDS: { name: keyof RegisterValues; type?: string; autoComplete: string }[] = [
+  { name: "name", autoComplete: "given-name" },
+  { name: "surname", autoComplete: "family-name" },
+  { name: "username", autoComplete: "username" },
+  { name: "phoneNumber", type: "tel", autoComplete: "tel" },
+  { name: "email", type: "email", autoComplete: "email" },
+  { name: "confirmEmail", type: "email", autoComplete: "email" },
+  { name: "password", type: "password", autoComplete: "new-password" },
+  { name: "confirmPassword", type: "password", autoComplete: "new-password" },
+];
 
 const NKRegister = () => {
   const navigate = useNavigate();
@@ -57,23 +69,21 @@ const NKRegister = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i18n.language]);
 
-  const formik = useFormik({
-    // Typy dla initialValues (w tym pola potwierdzające)
+  const formik = useFormik<RegisterValues>({
     initialValues: {
       name: "",
       surname: "",
       username: "",
-      password: "",
-      confirmPassword: "",
+      phoneNumber: "",
       email: "",
       confirmEmail: "",
-      phoneNumber: "",
+      password: "",
+      confirmPassword: "",
     },
     validationSchema,
     onSubmit: async values => {
       setLoading(true);
       try {
-        // 1. Stwórz obiekt DTO tylko z tymi polami, które wysyłasz do API
         const request: UserCreateRequestDTO = {
           name: values.name,
           surname: values.surname,
@@ -83,14 +93,12 @@ const NKRegister = () => {
           phoneNumber: values.phoneNumber,
         };
 
-        // 2. Wywołaj publiczny endpoint rejestracji
         await apiClient.post("/api/bff/users", request);
 
         enqueueSnackbar(t("auth:register.success"), {
           variant: "success",
         });
 
-        // 3. Przekieruj na stronę logowania
         navigate("/login");
       } catch (error) {
         console.error("Błąd rejestracji:", error);
@@ -103,216 +111,92 @@ const NKRegister = () => {
     },
   });
 
+  const helperFor = (name: keyof RegisterValues) => {
+    if (formik.touched[name] && formik.errors[name]) return formik.errors[name];
+    if (name === "password") return t("auth:register.passwordHint");
+    return " ";
+  };
+
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      {/* Użyj <form> aby Formik mógł przechwycić submit */}
-      <form onSubmit={formik.handleSubmit}>
+    <AuthLayout contentWidth={560}>
+      <Typography
+        variant="h4"
+        component="h1"
+        sx={{ mb: 1 }}>
+        {t("auth:register.heading")}
+      </Typography>
+      <Typography
+        color="text.secondary"
+        sx={{ mb: 4 }}>
+        {t("auth:register.subtitle")}
+      </Typography>
+
+      <form
+        onSubmit={formik.handleSubmit}
+        noValidate>
         <Grid
           container
-          spacing={2}
-          /* Zmieniono spacing na 2 dla ciaśniejszego układu */ size={12}>
-          <Grid
-            container
-            size={12}
-            direction="column"
-            sx={{
-              alignItems: "center",
-              minWidth: "100vh",
-              marginTop: "2rem",
-            }}>
-            <Typography
-              variant="h4"
-              gutterBottom>
-              {t("auth:register.title")}
-            </Typography>
-
-            {/* --- IMIĘ --- */}
+          columnSpacing={2}
+          rowSpacing={0.5}>
+          {FIELDS.map(field => (
             <Grid
-              size={5}
-              sx={{ mb: 2.5 }}>
-              {" "}
-              {/* Dodano margines dolny */}
-              <NKTextInput
-                label={t("auth:register.name")}
-                required={true}
-                name="name"
-                value={formik.values.name}
+              key={field.name}
+              size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label={t(`auth:register.${field.name}`)}
+                name={field.name}
+                type={field.type ?? "text"}
+                autoComplete={field.autoComplete}
+                required
+                fullWidth
+                value={formik.values[field.name]}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.name && Boolean(formik.errors.name)}
-                helperText={formik.touched.name && formik.errors.name}
+                error={formik.touched[field.name] && Boolean(formik.errors[field.name])}
+                helperText={helperFor(field.name)}
               />
             </Grid>
-
-            {/* --- NAZWISKO --- */}
-            <Grid
-              size={5}
-              sx={{ mb: 2.5 }}>
-              <NKTextInput
-                label={t("auth:register.surname")}
-                required={true}
-                name="surname"
-                value={formik.values.surname}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.surname && Boolean(formik.errors.surname)}
-                helperText={formik.touched.surname && formik.errors.surname}
-              />
-            </Grid>
-
-            {/* --- LOGIN --- */}
-            <Grid
-              size={5}
-              sx={{ mb: 2.5 }}>
-              <NKTextInput
-                label={t("auth:register.username")}
-                required={true}
-                tooltip={t("auth:register.tooltip.username")}
-                name="username"
-                value={formik.values.username}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.username && Boolean(formik.errors.username)
-                }
-                helperText={formik.touched.username && formik.errors.username}
-              />
-            </Grid>
-
-            {/* --- HASŁO --- */}
-            <Grid
-              size={5}
-              sx={{ mb: 2.5 }}>
-              <NKTextInput
-                label={t("auth:register.password")}
-                type="password"
-                required={true}
-                tooltip={t("auth:register.tooltip.password")}
-                name="password"
-                value={formik.values.password}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.password && Boolean(formik.errors.password)
-                }
-                helperText={formik.touched.password && formik.errors.password}
-              />
-            </Grid>
-
-            {/* --- POWTÓRZ HASŁO --- */}
-            <Grid
-              size={5}
-              sx={{ mb: 2.5 }}>
-              <NKTextInput
-                label={t("auth:register.confirmPassword")}
-                type="password"
-                required={true}
-                tooltip={t("auth:register.tooltip.confirmPassword")}
-                name="confirmPassword"
-                value={formik.values.confirmPassword}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.confirmPassword &&
-                  Boolean(formik.errors.confirmPassword)
-                }
-                helperText={
-                  formik.touched.confirmPassword &&
-                  formik.errors.confirmPassword
-                }
-              />
-            </Grid>
-
-            {/* --- EMAIL --- */}
-            <Grid
-              size={5}
-              sx={{ mb: 2.5 }}>
-              <NKTextInput
-                label={t("auth:register.email")}
-                type="email"
-                required={true}
-                name="email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-              />
-            </Grid>
-
-            {/* --- POWTÓRZ EMAIL --- */}
-            <Grid
-              size={5}
-              sx={{ mb: 2.5 }}>
-              <NKTextInput
-                label={t("auth:register.confirmEmail")}
-                type="email"
-                required={true}
-                name="confirmEmail"
-                value={formik.values.confirmEmail}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.confirmEmail &&
-                  Boolean(formik.errors.confirmEmail)
-                }
-                helperText={
-                  formik.touched.confirmEmail && formik.errors.confirmEmail
-                }
-              />
-            </Grid>
-
-            {/* --- NUMER TELEFONU --- */}
-            <Grid
-              size={5}
-              sx={{ mb: 2.5 }}>
-              <NKTextInput
-                label={t("auth:register.phoneNumber")}
-                required={true}
-                name="phoneNumber"
-                value={formik.values.phoneNumber}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.phoneNumber &&
-                  Boolean(formik.errors.phoneNumber)
-                }
-                helperText={
-                  formik.touched.phoneNumber && formik.errors.phoneNumber
-                }
-              />
-            </Grid>
-
-            {/* --- PRZYCISKI --- */}
-            <Grid
-              size={5}
-              container
-              direction="row"
-              spacing={2}
-              sx={{ mt: 2 }}>
-              <Grid size={6}>
-                <NKButton
-                  title={
-                    loading
-                      ? t("auth:register.submitting")
-                      : t("auth:register.submit")
-                  }
-                  type="submit"
-                  disabled={loading}
-                />
-              </Grid>
-              <Grid size={6}>
-                <NKButton
-                  title={t("auth:register.backToLogin")}
-                  onClick={() => navigate("/login")}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
+          ))}
         </Grid>
+
+        <Stack
+          spacing={2}
+          sx={{ mt: 2 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            fullWidth
+            disabled={loading}>
+            {loading ? t("auth:register.submitting") : t("auth:register.submit")}
+          </Button>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ textAlign: "center" }}>
+            {t("auth:register.haveAccount")}{" "}
+            <Link
+              component={RouterLink}
+              to="/login"
+              fontWeight={600}>
+              {t("auth:register.loginLink")}
+            </Link>
+          </Typography>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ textAlign: "center" }}>
+            {t("auth:register.tryDemo")}{" "}
+            <Link
+              component={RouterLink}
+              to="/login"
+              fontWeight={600}>
+              {t("auth:register.tryDemoLink")}
+            </Link>
+          </Typography>
+        </Stack>
       </form>
-    </ThemeProvider>
+    </AuthLayout>
   );
 };
 
