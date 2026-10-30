@@ -32,5 +32,9 @@
     "aria": "{{label}}: spent {{spent}} of {{limit}} ({{percent}}%)",
     "over": "Over the limit by {{amount}}",
     "near": "Close to the limit"
+  },
+  "password": {
+    "show": "Show password",
+    "hide": "Hide password"
   }
 }

@@ -1,137 +1,121 @@
 {
-  "menu": {
-    "title": "Account settings",
-    "setDefaultBudgets": "Set default budgets",
-    "changeLogin": "Change login",
-    "changePassword": "Change password",
-    "changeEmail": "Change email",
-    "resetData": "Reset data",
-    "resetCategories": "Reset selected categories",
-    "deleteAccount": "Delete account"
+  "page": {
+    "heading": "Account settings",
+    "subtitle": "Your details, sign-in, app appearance and data management.",
+    "demoNotice": "You are using a shared demo account, so changing sign-in details, clearing all data and deleting the account are turned off here. Create your own account to try them."
   },
-  "changeData": {
-    "profileTitle": "Edit profile",
-    "contactAdmin": "If you have any issues, contact the administrator",
+  "common": {
+    "change": "Change",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "profile": {
+    "title": "Profile and sign-in",
+    "subtitle": "Account details. Changing the login, e-mail address or password requires your password.",
+    "demo": "Demo account",
+    "login": "Login",
+    "email": "E-mail address",
+    "password": "Password",
+    "passwordHint": "At least 8 characters, one digit and one capital letter.",
+    "phone": "Phone"
+  },
+  "credentials": {
+    "currentPassword": "Current password",
+    "saveError": "Couldn't save the changes. Check the details and try again.",
     "login": {
-      "label": "Set new login",
-      "title1": "New login",
-      "title2": "Current password",
-      "title3": "Repeat password",
-      "submit": "Set new login"
+      "title": "Change login",
+      "new": "New login",
+      "saved": "Login changed"
     },
     "password": {
-      "label": "Set a new password",
-      "title1": "Current password",
-      "title2": "New password",
-      "title3": "Confirm new password",
-      "submit": "Save new password"
+      "title": "Change password",
+      "new": "New password",
+      "repeat": "Repeat new password",
+      "hint": "At least 8 characters, one digit and one capital letter.",
+      "saved": "Password changed"
     },
     "email": {
-      "label": "Set a new email",
-      "title1": "New email address",
-      "title2": "Confirm new email",
-      "title3": "Enter your password to confirm",
-      "submit": "Save new email"
-    },
-    "reset": "Reset",
-    "snackbar": {
-      "saved": "Changes saved",
-      "saveError": "Couldn't save changes"
+      "title": "Change e-mail address",
+      "new": "New e-mail address",
+      "repeat": "Repeat e-mail address",
+      "saved": "E-mail address changed"
     },
     "validation": {
-      "newLoginRequired": "You must provide a new login",
-      "passwordRequired": "You must provide a password",
-      "repeatPasswordRequired": "You must repeat the password",
+      "loginRequired": "Enter a new login",
+      "loginMin": "Login must be at least 3 characters",
+      "passwordRequired": "Enter your password",
+      "newPasswordRequired": "Enter a new password",
+      "repeatRequired": "Repeat the value",
       "passwordsMustMatch": "Passwords must match",
-      "oldPasswordRequired": "You must provide the current password",
-      "newPasswordRequired": "You must provide a new password",
-      "confirmNewPasswordRequired": "You must confirm the new password",
-      "invalidEmail": "You must provide a valid email address",
-      "newEmailRequired": "You must provide a new email address",
-      "confirmEmailRequired": "You must confirm the new email",
-      "emailsMustMatch": "Email addresses must match"
+      "emailRequired": "Enter an e-mail address",
+      "emailInvalid": "Enter a valid e-mail address",
+      "emailsMustMatch": "E-mail addresses must match"
     }
+  },
+  "appearance": {
+    "title": "Appearance",
+    "subtitle": "Saved on this device.",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "language": "Language",
+    "languages": {
+      "pl": "Polski",
+      "en": "English"
+    }
+  },
+  "limits": {
+    "title": "Budget limits",
+    "where": "Limits are set on categories",
+    "description": "Each category has a weekly, monthly and yearly limit. Changes apply from the current periods; the amount of a single period is changed in Budgets.",
+    "button": "Go to categories"
+  },
+  "data": {
+    "title": "Your data",
+    "subtitle": "Clear expenses and budget history. Categories and their limits stay."
+  },
+  "resetCategories": {
+    "title": "Clear selected categories",
+    "description": "Deletes the expenses and budget history of the selected categories.",
+    "button": "Choose categories",
+    "dialogTitle": "Clear category data?",
+    "dialogText": "The expenses and budget history of the selected categories will be deleted. The categories and their limits stay.",
+    "dialogHint": "This cannot be undone.",
+    "confirm": "Clear data",
+    "selected_one": "{{count}} category selected",
+    "selected_other": "{{count}} categories selected",
+    "selectAll": "Select all",
+    "selectNone": "Clear selection",
+    "minOne": "Select at least one category",
+    "done": "Data of the selected categories cleared",
+    "error": "Couldn't clear the data",
+    "fetchError": "Couldn't load categories"
   },
   "resetData": {
-    "dialog": {
-      "confirm": "Confirm",
-      "cancel": "Cancel"
-    },
-    "resetAll": {
-      "label": "Reset all data",
-      "stepsInfo": "You will be asked to enter your email and password to confirm deleting the data",
-      "buttonTitle": "Confirm data deletion",
-      "info": "All your data: budgets, expenses, and saved categories will be deleted. You will be able to start over. If you want to reset data only for specific categories, choose the option to reset selected categories.",
-      "dialogTitle": "Confirm data reset"
-    },
-    "resetCategories": {
-      "label": "Reset data for selected categories",
-      "stepsInfo": "Select the categories for which you want to delete data:",
-      "info": "Data for the selected categories will be deleted:",
-      "buttonTitle": "Confirm deletion for selected categories",
-      "dialogTitle": "Confirm category reset"
-    }
+    "title": "Clear all data",
+    "description": "Deletes all expenses and budget history so you can start over.",
+    "button": "Clear data",
+    "dialogTitle": "Clear all data?",
+    "dialogText": "All expenses and budget history will be deleted. Categories and their limits stay.",
+    "confirm": "Clear everything",
+    "done": "All data cleared",
+    "error": "Couldn't clear the data"
   },
   "deleteAccount": {
-    "title": "Delete account",
-    "warning": "Your account will be permanently deleted. To confirm, you will be asked to provide your email and password. Are you sure you want to delete the account?",
-    "dialogTitle": "Confirm account deletion",
-    "confirm": "Confirm",
-    "cancel": "Cancel",
-    "button": "Yes, delete my account"
+    "title": "Danger zone",
+    "subtitle": "Delete the account permanently",
+    "description": "The account will be deleted permanently and you will not be able to sign in to it.",
+    "button": "Delete account",
+    "dialogTitle": "Delete account?",
+    "dialogText": "The account will be deleted permanently and you will be signed out.",
+    "confirm": "Delete account",
+    "done": "Account deleted",
+    "error": "Couldn't delete the account"
   },
-  "deleteResetForm": {
-    "validation": {
-      "emailInvalid": "You must provide a valid email address",
-      "emailRequired": "You must provide an email address",
-      "passwordRequired": "You must provide a password"
-    },
-    "fields": {
-      "email": "Email",
-      "password": "Password"
-    },
-    "snackbar": {
-      "resetSuccess": "Data has been reset",
-      "deleteSuccess": "Account has been deleted",
-      "missingAction": "No action for this form",
-      "failed": "Operation failed"
-    }
-  },
-  "resetSelectedCategories": {
-    "title": "Select categories to reset:",
-    "validation": {
-      "minOne": "Select at least one category"
-    },
-    "snackbar": {
-      "fetchError": "Couldn't fetch the category list",
-      "resetSuccess": "Reset data for selected categories",
-      "resetError": "Couldn't reset data"
-    }
-  },
-  "defaultBudgets": {
-    "title": "Edit default category budgets",
-    "categoryLabel": "Category *",
-    "loadingCategories": "Loading categories...",
-    "chooseCategory": "Choose a category",
-    "weeklyBudget": "Weekly budget",
-    "monthlyBudget": "Monthly budget",
-    "yearlyBudget": "Yearly budget",
-    "submit": "Submit",
-    "reset": "Reset",
-    "validation": {
-      "categoryRequired": "Category is required",
-      "positive": "Value must be positive",
-      "number": "Enter a valid number"
-    },
-    "snackbar": {
-      "fetchCategoriesError": "Couldn't fetch the category list.",
-      "fetchDefaultsError": "Couldn't fetch default budgets.",
-      "saveSuccess": "Default budgets saved.",
-      "saveError": "Couldn't save default budgets."
-    },
-    "alerts": {
-      "fetchCategoriesError": "Couldn't fetch the category list."
-    }
+  "confirm": {
+    "hint": "This cannot be undone. Confirm it with the account's e-mail address and password.",
+    "email": "E-mail address",
+    "password": "Password"
   },
   "demoAccountBlocked": "This is a demo account - this action is not available. Create your own account to try it."
 }
