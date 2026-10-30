@@ -14,6 +14,7 @@ docs/BudgetDTO.md
 docs/BudgetQueryControllerApi.md
 docs/BudgetSearchRequestDTO.md
 docs/BudgetUiDTO.md
+docs/BudgetUpdateRequestUiDTO.md
 docs/CategoryCommandControllerApi.md
 docs/CategoryCreateRequestUiDTO.md
 docs/CategoryDTO.md
@@ -22,7 +23,10 @@ docs/CategoryRepDTO.md
 docs/CategorySimplifiedDTO.md
 docs/CategorySimplifiedUiDTO.md
 docs/CategoryUiDTO.md
+docs/ChangeEmailUiRequestDTO.md
+docs/ChangeNicknameUiRequestDTO.md
 docs/ChangePasswordRequestDTO.md
+docs/ConfirmCredentialsRequestDTO.md
 docs/CreateExpenseRequestUiDTO.md
 docs/DashboardDataResponseUiDTO.md
 docs/ExpenseCommandControllerApi.md
@@ -30,11 +34,12 @@ docs/ExpenseQueryControllerApi.md
 docs/ExpenseSearchRequestUiDTO.md
 docs/ExpenseUiDTO.md
 docs/GetDefaultBudgetsResponseUiDTO.md
-docs/PageBudgetDTO.md
+docs/PageBudgetUiDTO.md
 docs/PageExpenseUiDTO.md
 docs/Pageable.md
 docs/PageableObject.md
 docs/PieChartDataUiDTO.md
+docs/ResetCategoriesRequestDTO.md
 docs/SetDefaultBudgetsRequestUiDTO.md
 docs/SortObject.md
 docs/UpdateCategoryUiDTO.md

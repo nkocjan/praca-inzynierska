@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**name** | **string** |  | [optional] [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
-**isActive** | **boolean** |  | [optional] [default to undefined]
 **categoryId** | **string** |  | [optional] [default to undefined]
+**period** | **string** |  | [optional] [default to undefined]
+**amount** | **number** |  | [optional] [default to undefined]
+**date** | **string** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -16,10 +16,10 @@ Name | Type | Description | Notes
 import { BudgetCreateRequestUiDTO } from './api';
 
 const instance: BudgetCreateRequestUiDTO = {
-    name,
-    description,
-    isActive,
     categoryId,
+    period,
+    amount,
+    date,
 };
 ```
 
