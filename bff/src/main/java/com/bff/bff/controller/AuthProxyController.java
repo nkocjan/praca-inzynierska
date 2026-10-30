@@ -30,8 +30,13 @@ public class AuthProxyController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<AuthRequestDTO> entity = new HttpEntity<>(authRequest, headers);
         try {
-            return restTemplate.postForEntity(
+            ResponseEntity<String> response = restTemplate.postForEntity(
                     userServiceUrl + "/api/v1/auth/login", entity, String.class);
+            // Pass on only the status and body. Copying the upstream headers would repeat its
+            // Transfer-Encoding next to Tomcat's own, and the gateway (Caddy) rejects such a response.
+            return ResponseEntity.status(response.getStatusCode())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response.getBody());
         } catch (HttpStatusCodeException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
         } catch (RestClientException e) {
