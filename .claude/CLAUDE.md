@@ -29,19 +29,20 @@ Modules, ports and local setup: `README.md`. Databases, demo data and the reset 
   time, `up -d`). Uses the repository secrets `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` (same values as the
   owner's other repositories; set on 2026-10-30).
 - After the first start of fresh databases run `./db/setup-foreign-tables.sh` (idempotent; done on
-  2026-10-29). Demo accounts were created with `./db/reset-demo-data.sh` on 2026-10-30; the script deletes
-  ALL accounts and data, so run it again only with the owner's go-ahead.
+  2026-10-29).
+- Demo reset every 2 hours (the login page promises it): the cron line lives in the owner's private repo
+  `my_own_page` (`cron/crontab`, installed by its deploy), not in this repository. The same repo has a
+  one-click "Server task" workflow (`inzynierka-demo-reset`) for a reset right away. The script deletes ALL
+  accounts and data, including accounts registered by visitors.
 
-## Pending (updated 2026-10-30)
+## Checking the demo after changes
 
-1. The login page says the demo data returns to its initial state every 2 hours, but the cron line from
-   `db/README.md` is not installed on the server yet. Add it only with the owner's go-ahead.
-2. After changes, verify:
-   ```bash
-   B=https://inzynierka.nkocjan.pl/api
-   curl -s -X POST $B/auth/login -H 'Content-Type: application/json' -d '{"username":"demo","password":"demo1234"}'   # {"token":...}
-   curl -s -o /dev/null -w '%{http_code}\n' -X POST $B/auth/login -H 'Content-Type: application/json' -d '{"username":"demo","password":"x"}'   # 401
-   curl -s -o /dev/null -w '%{http_code}\n' $B/api/bff/categories   # 401
-   ```
-   and use one-click login on each demo account. For the portfolio screenshot of this app, capture the
-   dashboard, not the login page: it shows the demo password.
+```bash
+B=https://inzynierka.nkocjan.pl/api
+curl -s -X POST $B/auth/login -H 'Content-Type: application/json' -d '{"username":"demo","password":"demo1234"}'   # {"token":...}
+curl -s -o /dev/null -w '%{http_code}\n' -X POST $B/auth/login -H 'Content-Type: application/json' -d '{"username":"demo","password":"x"}'   # 401
+curl -s -o /dev/null -w '%{http_code}\n' $B/api/bff/categories   # 401
+```
+
+Then use one-click login on each demo account. For the portfolio screenshot of this app, capture the
+dashboard, not the login page: it shows the demo password.
