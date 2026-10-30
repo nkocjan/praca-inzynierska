@@ -6,6 +6,13 @@ import { getTokenPayload } from "./session";
 export type CurrentUser = UserUiDTO & { isDemo?: boolean };
 
 let cache: { userId: string; request: Promise<CurrentUser> } | null = null;
+const listeners = new Set<() => void>();
+
+// After the user changes their login or e-mail, every mounted hook loads the profile again.
+export const refreshCurrentUser = () => {
+  cache = null;
+  listeners.forEach(listener => listener());
+};
 
 const loadUser = (userId: string) => {
   if (cache?.userId !== userId) {
@@ -22,7 +29,16 @@ const loadUser = (userId: string) => {
 
 export const useCurrentUser = () => {
   const [user, setUser] = useState<CurrentUser | null>(null);
+  const [version, setVersion] = useState(0);
   const userId = getTokenPayload()?.userId;
+
+  useEffect(() => {
+    const listener = () => setVersion(value => value + 1);
+    listeners.add(listener);
+    return () => {
+      listeners.delete(listener);
+    };
+  }, []);
 
   useEffect(() => {
     if (!userId) return;
@@ -33,7 +49,7 @@ export const useCurrentUser = () => {
     return () => {
       active = false;
     };
-  }, [userId]);
+  }, [userId, version]);
 
   return user;
 };

@@ -2,6 +2,7 @@ package com.budget_service.budget_service.controller;
 
 import com.budget_service.budget_service.dto.BudgetCreateRequestDTO;
 import com.budget_service.budget_service.dto.BudgetDTO;
+import com.budget_service.budget_service.dto.BudgetUpdateRequestDTO;
 import com.budget_service.budget_service.dto.SetDefaultBudgetsRequestDTO;
 import com.budget_service.budget_service.service.BudgetCommandService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,11 @@ public class BudgetCommandController {
     @PostMapping
     public BudgetDTO create(@RequestBody BudgetCreateRequestDTO dto, @RequestHeader("X-User-Id") UUID userId) {
         return budgetCommandService.create(dto, userId);
+    }
+
+    @PutMapping("/{id}")
+    public BudgetDTO updateAmount(@PathVariable UUID id, @RequestBody BudgetUpdateRequestDTO dto, @RequestHeader("X-User-Id") UUID userId) {
+        return budgetCommandService.updateAmount(id, dto, userId);
     }
 
     @DeleteMapping("/{id}")

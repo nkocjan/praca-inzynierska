@@ -23,9 +23,6 @@ import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
-export interface ActivateAccountRequestDTO {
-    'isActive'?: string;
-}
 export interface AuthRequestDTO {
     'username'?: string;
     'password'?: string;
@@ -40,11 +37,20 @@ export interface BarChartDataUiDTO {
     'budgetData'?: Array<number>;
 }
 export interface BudgetCreateRequestUiDTO {
-    'name'?: string;
-    'description'?: string;
-    'isActive'?: boolean;
     'categoryId'?: string;
+    'period'?: BudgetCreateRequestUiDTOPeriodEnum;
+    'amount'?: number;
+    'date'?: string;
 }
+
+export const BudgetCreateRequestUiDTOPeriodEnum = {
+    Week: 'WEEK',
+    Month: 'MONTH',
+    Year: 'YEAR'
+} as const;
+
+export type BudgetCreateRequestUiDTOPeriodEnum = typeof BudgetCreateRequestUiDTOPeriodEnum[keyof typeof BudgetCreateRequestUiDTOPeriodEnum];
+
 export interface BudgetDTO {
     'id'?: string;
     'name'?: string;
@@ -96,6 +102,9 @@ export const BudgetUiDTOPeriodEnum = {
 
 export type BudgetUiDTOPeriodEnum = typeof BudgetUiDTOPeriodEnum[keyof typeof BudgetUiDTOPeriodEnum];
 
+export interface BudgetUpdateRequestUiDTO {
+    'amount'?: number;
+}
 export interface CategoryCreateRequestUiDTO {
     'name'?: string;
     'weekBudget'?: number;
@@ -228,9 +237,6 @@ export interface SetDefaultBudgetsRequestUiDTO {
     'monthlyAmount'?: number;
     'yearlyAmount'?: number;
 }
-export interface SetPremiumRequestDTO {
-    'isPremium'?: string;
-}
 export interface SortObject {
     'direction'?: string;
     'nullHandling'?: string;
@@ -267,13 +273,6 @@ export interface UserUiDTO {
     'phoneNumber'?: string;
     'isActive'?: boolean;
     'isPremium'?: boolean;
-}
-export interface UserUpdateRequestDTO {
-    'name'?: string;
-    'surname'?: string;
-    'username'?: string;
-    'email'?: string;
-    'phoneNumber'?: string;
 }
 
 /**
@@ -1896,84 +1895,6 @@ export const UserCommandControllerApiAxiosParamCreator = function (configuration
     return {
         /**
          * 
-         * @param {string} id 
-         * @param {ActivateAccountRequestDTO} activateAccountRequestDTO 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        activateAccount: async (id: string, activateAccountRequestDTO: ActivateAccountRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('activateAccount', 'id', id)
-            // verify required parameter 'activateAccountRequestDTO' is not null or undefined
-            assertParamExists('activateAccount', 'activateAccountRequestDTO', activateAccountRequestDTO)
-            const localVarPath = `/api/bff/users/{id}/activate`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(activateAccountRequestDTO, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} id 
-         * @param {ChangePasswordRequestDTO} changePasswordRequestDTO 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        changePassword: async (id: string, changePasswordRequestDTO: ChangePasswordRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('changePassword', 'id', id)
-            // verify required parameter 'changePasswordRequestDTO' is not null or undefined
-            assertParamExists('changePassword', 'changePasswordRequestDTO', changePasswordRequestDTO)
-            const localVarPath = `/api/bff/users/{id}/password`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(changePasswordRequestDTO, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @param {UserCreateRequestDTO} userCreateRequestDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2007,117 +1928,6 @@ export const UserCommandControllerApiAxiosParamCreator = function (configuration
                 options: localVarRequestOptions,
             };
         },
-        /**
-         * 
-         * @param {string} id 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        deleteUser: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteUser', 'id', id)
-            const localVarPath = `/api/bff/users/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} id 
-         * @param {SetPremiumRequestDTO} setPremiumRequestDTO 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        setPremium: async (id: string, setPremiumRequestDTO: SetPremiumRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('setPremium', 'id', id)
-            // verify required parameter 'setPremiumRequestDTO' is not null or undefined
-            assertParamExists('setPremium', 'setPremiumRequestDTO', setPremiumRequestDTO)
-            const localVarPath = `/api/bff/users/{id}/premium`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(setPremiumRequestDTO, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} id 
-         * @param {UserUpdateRequestDTO} userUpdateRequestDTO 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateUser: async (id: string, userUpdateRequestDTO: UserUpdateRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateUser', 'id', id)
-            // verify required parameter 'userUpdateRequestDTO' is not null or undefined
-            assertParamExists('updateUser', 'userUpdateRequestDTO', userUpdateRequestDTO)
-            const localVarPath = `/api/bff/users/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(userUpdateRequestDTO, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
@@ -2129,32 +1939,6 @@ export const UserCommandControllerApiFp = function(configuration?: Configuration
     return {
         /**
          * 
-         * @param {string} id 
-         * @param {ActivateAccountRequestDTO} activateAccountRequestDTO 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async activateAccount(id: string, activateAccountRequestDTO: ActivateAccountRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserUiDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.activateAccount(id, activateAccountRequestDTO, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.activateAccount']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} id 
-         * @param {ChangePasswordRequestDTO} changePasswordRequestDTO 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async changePassword(id: string, changePasswordRequestDTO: ChangePasswordRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.changePassword(id, changePasswordRequestDTO, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.changePassword']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
          * @param {UserCreateRequestDTO} userCreateRequestDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2163,44 +1947,6 @@ export const UserCommandControllerApiFp = function(configuration?: Configuration
             const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(userCreateRequestDTO, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.createUser']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} id 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async deleteUser(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUser(id, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.deleteUser']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} id 
-         * @param {SetPremiumRequestDTO} setPremiumRequestDTO 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async setPremium(id: string, setPremiumRequestDTO: SetPremiumRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserUiDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.setPremium(id, setPremiumRequestDTO, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.setPremium']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} id 
-         * @param {UserUpdateRequestDTO} userUpdateRequestDTO 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async updateUser(id: string, userUpdateRequestDTO: UserUpdateRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserUiDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateUser(id, userUpdateRequestDTO, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserCommandControllerApi.updateUser']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -2214,61 +1960,12 @@ export const UserCommandControllerApiFactory = function (configuration?: Configu
     return {
         /**
          * 
-         * @param {string} id 
-         * @param {ActivateAccountRequestDTO} activateAccountRequestDTO 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        activateAccount(id: string, activateAccountRequestDTO: ActivateAccountRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<UserUiDTO> {
-            return localVarFp.activateAccount(id, activateAccountRequestDTO, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} id 
-         * @param {ChangePasswordRequestDTO} changePasswordRequestDTO 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        changePassword(id: string, changePasswordRequestDTO: ChangePasswordRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.changePassword(id, changePasswordRequestDTO, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @param {UserCreateRequestDTO} userCreateRequestDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         createUser(userCreateRequestDTO: UserCreateRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<UserUiDTO> {
             return localVarFp.createUser(userCreateRequestDTO, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} id 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        deleteUser(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.deleteUser(id, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} id 
-         * @param {SetPremiumRequestDTO} setPremiumRequestDTO 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        setPremium(id: string, setPremiumRequestDTO: SetPremiumRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<UserUiDTO> {
-            return localVarFp.setPremium(id, setPremiumRequestDTO, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} id 
-         * @param {UserUpdateRequestDTO} userUpdateRequestDTO 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateUser(id: string, userUpdateRequestDTO: UserUpdateRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<UserUiDTO> {
-            return localVarFp.updateUser(id, userUpdateRequestDTO, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -2279,66 +1976,12 @@ export const UserCommandControllerApiFactory = function (configuration?: Configu
 export class UserCommandControllerApi extends BaseAPI {
     /**
      * 
-     * @param {string} id 
-     * @param {ActivateAccountRequestDTO} activateAccountRequestDTO 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public activateAccount(id: string, activateAccountRequestDTO: ActivateAccountRequestDTO, options?: RawAxiosRequestConfig) {
-        return UserCommandControllerApiFp(this.configuration).activateAccount(id, activateAccountRequestDTO, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} id 
-     * @param {ChangePasswordRequestDTO} changePasswordRequestDTO 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public changePassword(id: string, changePasswordRequestDTO: ChangePasswordRequestDTO, options?: RawAxiosRequestConfig) {
-        return UserCommandControllerApiFp(this.configuration).changePassword(id, changePasswordRequestDTO, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @param {UserCreateRequestDTO} userCreateRequestDTO 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     public createUser(userCreateRequestDTO: UserCreateRequestDTO, options?: RawAxiosRequestConfig) {
         return UserCommandControllerApiFp(this.configuration).createUser(userCreateRequestDTO, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} id 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public deleteUser(id: string, options?: RawAxiosRequestConfig) {
-        return UserCommandControllerApiFp(this.configuration).deleteUser(id, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} id 
-     * @param {SetPremiumRequestDTO} setPremiumRequestDTO 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public setPremium(id: string, setPremiumRequestDTO: SetPremiumRequestDTO, options?: RawAxiosRequestConfig) {
-        return UserCommandControllerApiFp(this.configuration).setPremium(id, setPremiumRequestDTO, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} id 
-     * @param {UserUpdateRequestDTO} userUpdateRequestDTO 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public updateUser(id: string, userUpdateRequestDTO: UserUpdateRequestDTO, options?: RawAxiosRequestConfig) {
-        return UserCommandControllerApiFp(this.configuration).updateUser(id, userUpdateRequestDTO, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

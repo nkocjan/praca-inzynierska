@@ -1,13 +1,10 @@
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import {
   Badge,
   Box,
   Button,
-  Checkbox,
-  Chip,
   Collapse,
   InputAdornment,
-  ListItemText,
   MenuItem,
   Select,
   Stack,
@@ -17,7 +14,6 @@ import {
   Typography,
 } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
-import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
@@ -26,6 +22,9 @@ import { useTranslation } from "react-i18next";
 import { CategoryDTO } from "../../../../api/generated";
 import { normalizeLanguage } from "../../../../i18n/i18n";
 import { formatDate, getCurrencySymbol, getIntlLocale } from "../../../../i18n/locale";
+import CategoryMultiSelect from "../../../../lib/filters/CategoryMultiSelect";
+import FilterChips, { FilterChip } from "../../../../lib/filters/FilterChips";
+import { FilterAdornment } from "../../../../lib/filters/FilterParts";
 import {
   countAdvancedFilters,
   ExpenseFilterState,
@@ -43,21 +42,6 @@ interface ExpenseFiltersBarProps {
   colorFor: (categoryId?: string) => string;
   resultCount: number | null;
 }
-
-const Dot = ({ color }: { color: string }) => (
-  <Box
-    aria-hidden
-    sx={{ width: 8, height: 8, borderRadius: "50%", flexShrink: 0, backgroundColor: color }}
-  />
-);
-
-const iconAdornment = (icon: ReactNode) => (
-  <InputAdornment
-    position="start"
-    sx={{ color: "text.secondary", "& svg": { fontSize: 20 } }}>
-    {icon}
-  </InputAdornment>
-);
 
 const ExpenseFiltersBar = ({
   filters,
@@ -96,7 +80,7 @@ const ExpenseFiltersBar = ({
     return `${from} - ${to}`;
   };
 
-  const chips: { key: string; label: string; color?: string; onDelete: () => void }[] = [
+  const chips: FilterChip[] = [
     ...(filters.name.trim()
       ? [{ key: "name", label: t("filters.searchChip", { value: filters.name.trim() }), onDelete: () => onChange({ name: "" }) }]
       : []),
@@ -160,51 +144,25 @@ const ExpenseFiltersBar = ({
           placeholder={t("filters.searchPlaceholder")}
           sx={{ gridColumn: { xs: "1 / -1", md: "auto" } }}
           slotProps={{
-            input: { startAdornment: iconAdornment(<SearchRoundedIcon />) },
+            input: {
+              startAdornment: (
+                <FilterAdornment>
+                  <SearchRoundedIcon />
+                </FilterAdornment>
+              ),
+            },
             htmlInput: { "aria-label": t("filters.search") },
           }}
         />
 
-        <Box sx={{ minWidth: 0 }}>
-          <Box
-            id="expense-filter-category-label"
-            sx={visuallyHidden}>
-            {t("filters.category")}
-          </Box>
-          <Select
-            size="small"
-            fullWidth
-            multiple
-            displayEmpty
-            labelId="expense-filter-category-label"
-            disabled={categoriesLoading}
-            value={filters.categoryIds}
-            onChange={event => onChange({ categoryIds: event.target.value as string[] })}
-            startAdornment={iconAdornment(<CategoryOutlinedIcon />)}
-            renderValue={(selected: string[]) =>
-              selected.length === 0
-                ? t("filters.allCategories")
-                : selected.length === 1
-                  ? categoryName(selected[0])
-                  : t("filters.categoriesSelected", { count: selected.length })
-            }
-            MenuProps={{ slotProps: { paper: { sx: { maxHeight: 360 } } } }}>
-            {categories.map(category => (
-              <MenuItem
-                key={category.id}
-                value={category.id}
-                sx={{ gap: 1 }}>
-                <Checkbox
-                  size="small"
-                  checked={filters.categoryIds.includes(category.id ?? "")}
-                  sx={{ p: 0.5 }}
-                />
-                <Dot color={colorFor(category.id)} />
-                <ListItemText primary={category.name} />
-              </MenuItem>
-            ))}
-          </Select>
-        </Box>
+        <CategoryMultiSelect
+          id="expense-filter-category"
+          categories={categories}
+          value={filters.categoryIds}
+          onChange={categoryIds => onChange({ categoryIds })}
+          colorFor={colorFor}
+          disabled={categoriesLoading}
+        />
 
         <Box sx={{ minWidth: 0 }}>
           <Box
@@ -218,7 +176,11 @@ const ExpenseFiltersBar = ({
             labelId="expense-filter-period-label"
             value={filters.period}
             onChange={event => changePeriod(event.target.value as PeriodPreset)}
-            startAdornment={iconAdornment(<DateRangeOutlinedIcon />)}>
+            startAdornment={
+              <FilterAdornment>
+                <DateRangeOutlinedIcon />
+              </FilterAdornment>
+            }>
             {PERIOD_PRESETS.map(period => (
               <MenuItem
                 key={period}
@@ -301,33 +263,10 @@ const ExpenseFiltersBar = ({
         </Box>
       </Collapse>
 
-      {chips.length > 0 && (
-        <Stack
-          direction="row"
-          alignItems="center"
-          useFlexGap
-          flexWrap="wrap"
-          spacing={1}
-          sx={{ mt: 2 }}>
-          {chips.map(chip => (
-            <Chip
-              key={chip.key}
-              size="small"
-              variant="outlined"
-              label={chip.label}
-              icon={chip.color ? <Dot color={chip.color} /> : undefined}
-              onDelete={chip.onDelete}
-              aria-label={t("filters.removeFilter", { label: chip.label })}
-              sx={{ fontWeight: 500, "& .MuiChip-icon": { ml: 1, mr: -0.25 } }}
-            />
-          ))}
-          <Button
-            size="small"
-            onClick={onReset}>
-            {t("filters.clear")}
-          </Button>
-        </Stack>
-      )}
+      <FilterChips
+        chips={chips}
+        onClear={onReset}
+      />
     </Box>
   );
 };

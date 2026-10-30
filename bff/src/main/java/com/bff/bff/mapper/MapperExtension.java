@@ -27,6 +27,8 @@ public interface MapperExtension {
 
     BudgetCreateRequestDTO toBudgetCreateRequestDTO(BudgetCreateRequestUiDTO budgetUiDTO);
 
+    BudgetUpdateRequestDTO toBudgetUpdateRequestDTO(BudgetUpdateRequestUiDTO budgetUiDTO);
+
     UpdateCategoryDTO toUpdateBudgetConfigForCategoryDTO(
             UpdateCategoryUiDTO updateBudgetConfigForCategoryUiDTO);
 

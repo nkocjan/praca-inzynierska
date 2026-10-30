@@ -3,6 +3,7 @@ package com.bff.bff.controller;
 import com.bff.bff.client.BudgetServiceClient;
 import com.bff.bff.dto.ui.BudgetCreateRequestUiDTO;
 import com.bff.bff.dto.ui.BudgetUiDTO;
+import com.bff.bff.dto.ui.BudgetUpdateRequestUiDTO;
 import com.bff.bff.dto.ui.SetDefaultBudgetsRequestUiDTO;
 import com.bff.bff.mapper.MapperExtension;
 import java.util.UUID;
@@ -22,6 +23,12 @@ public class BudgetCommandController {
     public BudgetUiDTO createBudget(@RequestBody BudgetCreateRequestUiDTO request) {
         var requestDto = mapperExtension.toBudgetCreateRequestDTO(request);
         var resultDto = budgetServiceClient.createBudget(requestDto);
+        return mapperExtension.toBudgetUiDTO(resultDto);
+    }
+
+    @PutMapping("/{id}")
+    public BudgetUiDTO updateBudget(@PathVariable UUID id, @RequestBody BudgetUpdateRequestUiDTO request) {
+        var resultDto = budgetServiceClient.updateBudget(id, mapperExtension.toBudgetUpdateRequestDTO(request));
         return mapperExtension.toBudgetUiDTO(resultDto);
     }
 

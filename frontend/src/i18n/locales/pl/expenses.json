@@ -24,12 +24,6 @@
   "filters": {
     "search": "Szukaj po nazwie",
     "searchPlaceholder": "Szukaj wydatku...",
-    "category": "Kategoria",
-    "allCategories": "Kategorie",
-    "categoriesSelected_one": "{{count}} kategoria",
-    "categoriesSelected_few": "{{count}} kategorie",
-    "categoriesSelected_many": "{{count}} kategorii",
-    "categoriesSelected_other": "{{count}} kategorii",
     "period": "Okres",
     "periods": {
       "all": "Cały okres",
@@ -45,9 +39,7 @@
     "amountFrom": "Kwota od",
     "amountTo": "Kwota do",
     "amountChip": "Kwota: {{range}}",
-    "searchChip": "Nazwa: {{value}}",
-    "removeFilter": "Usuń filtr: {{label}}",
-    "clear": "Wyczyść filtry"
+    "searchChip": "Nazwa: {{value}}"
   },
   "columns": {
     "name": "Nazwa",

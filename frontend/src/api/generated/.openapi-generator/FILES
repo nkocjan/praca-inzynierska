@@ -4,7 +4,6 @@ api.ts
 base.ts
 common.ts
 configuration.ts
-docs/ActivateAccountRequestDTO.md
 docs/AuthProxyControllerApi.md
 docs/AuthRequestDTO.md
 docs/BarChartDataPairUiDTO.md
@@ -37,7 +36,6 @@ docs/Pageable.md
 docs/PageableObject.md
 docs/PieChartDataUiDTO.md
 docs/SetDefaultBudgetsRequestUiDTO.md
-docs/SetPremiumRequestDTO.md
 docs/SortObject.md
 docs/UpdateCategoryUiDTO.md
 docs/UpdateExpenseRequestUiDTO.md
@@ -45,6 +43,5 @@ docs/UserCommandControllerApi.md
 docs/UserCreateRequestDTO.md
 docs/UserQueryControllerApi.md
 docs/UserUiDTO.md
-docs/UserUpdateRequestDTO.md
 git_push.sh
 index.ts

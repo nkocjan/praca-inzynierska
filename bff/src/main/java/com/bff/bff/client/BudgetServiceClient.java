@@ -14,6 +14,9 @@ public interface BudgetServiceClient {
     @PostMapping("/api/v1/budgets")
     BudgetDTO createBudget(@RequestBody BudgetCreateRequestDTO dto);
 
+    @PutMapping("/api/v1/budgets/{id}")
+    BudgetDTO updateBudget(@PathVariable("id") UUID id, @RequestBody BudgetUpdateRequestDTO dto);
+
     @DeleteMapping("/api/v1/budgets/{id}")
     void deleteBudget(@PathVariable("id") UUID id);
 

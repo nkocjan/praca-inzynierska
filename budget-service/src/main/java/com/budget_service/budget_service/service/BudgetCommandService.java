@@ -2,6 +2,7 @@ package com.budget_service.budget_service.service;
 
 import com.budget_service.budget_service.dto.BudgetCreateRequestDTO;
 import com.budget_service.budget_service.dto.BudgetDTO;
+import com.budget_service.budget_service.dto.BudgetUpdateRequestDTO;
 import com.budget_service.budget_service.dto.SetDefaultBudgetsRequestDTO;
 import com.budget_service.budget_service.entity.BudgetConfigHistoryEntity;
 import com.budget_service.budget_service.entity.BudgetEntity;
@@ -42,13 +43,37 @@ public class BudgetCommandService {
     private final BudgetConfigQueryService budgetConfigQueryService;
     private final BudgetConfigHistoryRepository budgetConfigHistoryRepository;
 
+    // A category has one budget per period, so setting it again for the same period changes its amount.
+    @Transactional
     public BudgetDTO create(BudgetCreateRequestDTO dto, UUID userId) {
+        if (dto.getPeriod() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Budget period is required");
+        }
+        requirePositive(dto.getAmount());
         CategoryEntity category = categoryRepository.findByIdAndUserId(dto.getCategoryId(), userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found: " + dto.getCategoryId()));
 
-        BudgetEntity entity = budgetMapper.toEntity(dto);
-        entity.setCategory(category);
+        DateRange range = calculateDateRange(dto.getPeriod(), dto.getDate() != null ? dto.getDate() : LocalDate.now());
+        BudgetEntity entity = budgetRepository
+                .findFirstByCategory_IdAndPeriodAndPeriodStart(category.getId(), dto.getPeriod(), range.start())
+                .orElseGet(() -> buildBudget(category, dto.getPeriod(), dto.getAmount(), range.start(), range.end()));
+        entity.setAmount(dto.getAmount());
         return budgetMapper.toDto(budgetRepository.save(entity));
+    }
+
+    @Transactional
+    public BudgetDTO updateAmount(UUID id, BudgetUpdateRequestDTO dto, UUID userId) {
+        requirePositive(dto.getAmount());
+        BudgetEntity entity = budgetRepository.findByIdAndCategory_User_Id(id, userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Budget not found: " + id));
+        entity.setAmount(dto.getAmount());
+        return budgetMapper.toDto(budgetRepository.save(entity));
+    }
+
+    private static void requirePositive(BigDecimal amount) {
+        if (amount == null || amount.signum() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Budget amount must be greater than 0");
+        }
     }
 
     public void delete(UUID id, UUID userId) {

@@ -3,6 +3,7 @@ import { Box, Button, Card, Stack, Typography, useMediaQuery } from "@mui/materi
 import { useTheme } from "@mui/material/styles";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { DataGrid, GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
+import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -29,10 +30,15 @@ const NKExpenses = () => {
   const { openDialog, closeDialog } = useDialog();
   const location = useLocation();
 
-  // The categories page links here with its categories already selected.
+  // The categories and budgets pages link here with their category (and the budget's period) already selected.
   const [filters, setFilters] = useState<ExpenseFilterState>(() => {
-    const state = location.state as { prefillCategoryIds?: string[] } | null;
-    return { ...EMPTY_FILTERS, categoryIds: state?.prefillCategoryIds ?? [] };
+    const state = location.state as { prefillCategoryIds?: string[]; prefillPeriod?: { from?: string; to?: string } } | null;
+    const period = state?.prefillPeriod;
+    return {
+      ...EMPTY_FILTERS,
+      categoryIds: state?.prefillCategoryIds ?? [],
+      ...(period?.from && period.to ? { period: "custom", dateFrom: dayjs(period.from), dateTo: dayjs(period.to) } : {}),
+    };
   });
   const [categories, setCategories] = useState<CategoryDTO[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);

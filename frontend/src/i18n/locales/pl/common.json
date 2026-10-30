@@ -19,5 +19,30 @@
   "theme": {
     "toDark": "Włącz ciemny motyw",
     "toLight": "Włącz jasny motyw"
+  },
+  "filters": {
+    "category": "Kategoria",
+    "allCategories": "Kategorie",
+    "categoriesSelected_one": "{{count}} kategoria",
+    "categoriesSelected_few": "{{count}} kategorie",
+    "categoriesSelected_many": "{{count}} kategorii",
+    "categoriesSelected_other": "{{count}} kategorii",
+    "removeFilter": "Usuń filtr: {{label}}",
+    "clear": "Wyczyść filtry"
+  },
+  "usage": {
+    "aria": "{{label}}: wydano {{spent}} z {{limit}} ({{percent}}%)",
+    "over": "Przekroczono limit o {{amount}}",
+    "near": "Blisko limitu"
+  },
+  "password": {
+    "show": "Pokaż hasło",
+    "hide": "Ukryj hasło"
+  },
+  "notFound": {
+    "code": "Błąd 404",
+    "title": "Nie znaleziono strony",
+    "text": "Ta strona nie istnieje albo zmieniła adres. Sprawdź adres albo przejdź do Pulpitu.",
+    "home": "Przejdź do Pulpitu"
   }
 }

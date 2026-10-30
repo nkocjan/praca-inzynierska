@@ -1,152 +1,167 @@
 {
-  "title": "About the application",
-  "description": "An application for managing budgets and expenses by category - designed as a portfolio project and an example of a microservices-based solution.",
-  "usage": {
-    "title": "1) Usage guide (non-technical)",
+  "page": {
+    "heading": "About the app",
+    "subtitle": "Household Budget helps you plan spending: every category has a weekly, monthly and yearly limit, and the app shows how much of it you have already spent. It was built as an engineering thesis and shows an application made of microservices."
+  },
+  "steps": {
+    "title": "Getting started",
+    "subtitle": "Six steps from creating an account to your first summaries.",
+    "step": "Step {{number}}",
     "items": {
-      "register": {
-        "primary": "1. Register an account and sign in",
-        "secondary": "After signing in, the app will remember your session and show the main dashboard."
+      "account": {
+        "title": "Create an account or use a demo one",
+        "text": "Demo accounts come with data from recent months, which goes back to its starting state every 2 hours."
       },
       "categories": {
-        "primary": "2. Add categories",
-        "secondary": "Categories are e.g. Food, Transport, Entertainment - they help you group expenses and budgets."
-      },
-      "budgets": {
-        "primary": "3. Set budgets",
-        "secondary": "For each category you can set weekly, monthly, and yearly budgets."
+        "title": "Add categories and limits",
+        "text": "For example Food or Transport. Every category has a weekly, monthly and yearly limit.",
+        "link": "Categories"
       },
       "expenses": {
-        "primary": "4. Add expenses",
-        "secondary": "You assign expenses to a category with a date and amount. The app compares them with the budget."
+        "title": "Record expenses",
+        "text": "An expense has a name, amount, date and category. Payments that are still to come are marked as planned.",
+        "link": "Expenses"
+      },
+      "budgets": {
+        "title": "Keep an eye on budgets",
+        "text": "Budgets for upcoming periods are created from the category limits, and you can change the amount of any period.",
+        "link": "Budgets"
       },
       "dashboard": {
-        "primary": "5. Check the dashboard",
-        "secondary": "On the main panel you will see summaries, charts, and whether you are within budget."
+        "title": "Check the Dashboard",
+        "text": "Week, month and year summaries, spending by category and recent transactions in one place.",
+        "link": "Dashboard"
       },
       "settings": {
-        "primary": "6. Manage data in settings",
-        "secondary": "You can change account details, reset data, or delete the account."
+        "title": "Adjust your account",
+        "text": "Change your sign-in details, theme and language, or clear your data to start over.",
+        "link": "Settings"
       }
     }
   },
-  "technical": {
-    "title": "2) Technical description (technical)",
-    "intro": "The solution is based on a distributed architecture: the frontend communicates with a BFF (Backend For Frontend) layer, and the BFF orchestrates calls to independent microservices.",
-    "systemPartsTitle": "System components:",
-    "parts": {
+  "architecture": {
+    "title": "How it works",
+    "subtitle": "The frontend talks to a single BFF layer, which calls independent microservices, each with its own database.",
+    "diagramLabel": "System diagram: browser, BFF, three microservices and their databases",
+    "nodes": {
       "frontend": {
-        "primary": "Frontend (React + TypeScript)",
-        "secondary": "SPA application: views, forms, charts, validation, HTTP communication."
+        "title": "Frontend",
+        "caption": "React, TypeScript and Material UI in the browser"
       },
       "bff": {
-        "primary": "BFF (Spring Boot)",
-        "secondary": "Single entry point from the frontend, JWT auth, data aggregation, OpenFeign calls to services."
+        "title": "BFF (Backend for Frontend)",
+        "caption": "Spring Boot: JWT sign-in and combining data from the services"
       },
       "userService": {
-        "primary": "user-service",
-        "secondary": "User account operations (e.g. registration, sign-in, profile data)."
+        "title": "user-service",
+        "caption": "Accounts and sign-in"
       },
       "budgetService": {
-        "primary": "budget-service",
-        "secondary": "Categories and budgets (e.g. weekly/monthly/yearly), budget reset logic."
+        "title": "budget-service",
+        "caption": "Categories, limits and budgets"
       },
       "expenseService": {
-        "primary": "expense-service",
-        "secondary": "Expenses and bulk operations (e.g. data reset), preparing data for the dashboard."
-      },
-      "databases": {
-        "primary": "Databases (PostgreSQL)",
-        "secondary": "Separate databases per service; part of the environment assumes replication of the expense DB instance."
+        "title": "expense-service",
+        "caption": "Expenses and summaries"
       }
     },
-    "security": "Security: frontend→BFF communication uses a JWT token (Bearer), and the BFF passes user context to microservices."
-  },
-  "technologies": {
-    "title": "3) Technologies used",
-    "frontendTitle": "Frontend",
-    "backendTitle": "Backend",
-    "infraTitle": "Infrastructure / tools",
-    "frontend": {
-      "react": {
-        "primary": "React + TypeScript",
-        "secondary": "SPA, components, routing"
-      },
-      "vite": {
-        "primary": "Vite",
-        "secondary": "Dev server and build"
-      },
-      "mui": {
-        "primary": "Material UI",
-        "secondary": "UI components"
-      },
-      "axios": {
-        "primary": "Axios",
-        "secondary": "HTTP communication + interceptors"
-      },
-      "formikYup": {
-        "primary": "Formik + Yup",
-        "secondary": "Forms + validation"
-      },
-      "notistack": {
-        "primary": "notistack",
-        "secondary": "Notifications (snackbars)"
-      },
-      "chart": {
-        "primary": "Chart.js",
-        "secondary": "Dashboard visualizations"
-      }
+    "databases": {
+      "userdb": "PostgreSQL",
+      "budgetdb": "PostgreSQL",
+      "expenseA": "Shard A + replica",
+      "expenseB": "Shard B + replica"
     },
-    "backend": {
-      "java": {
-        "primary": "Java 21",
-        "secondary": "Language / platform"
+    "points": {
+      "gateway": {
+        "title": "A single entry point",
+        "text": "The browser only knows the BFF. It checks the JWT token, passes the user's id to the services through OpenFeign and combines their answers, for example budgets with the sum of expenses."
       },
-      "spring": {
-        "primary": "Spring Boot 3",
-        "secondary": "REST, configuration, Actuator"
+      "data": {
+        "title": "Distributed data",
+        "text": "Expenses are split into two shards by user. Writes go to the primary instance, reads to the replica. Services see the tables of other databases through postgres_fdw."
       },
       "security": {
-        "primary": "Spring Security + JWT",
-        "secondary": "Authorization and endpoint protection"
+        "title": "Security",
+        "text": "Passwords are stored as BCrypt hashes, and the services check that an operation concerns the signed-in user. On demo accounts changing sign-in details and deleting the account are blocked."
+      }
+    }
+  },
+  "technologies": {
+    "title": "Technologies",
+    "subtitle": "The main libraries and tools used in the project.",
+    "groups": {
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "infra": "Data and infrastructure"
+    },
+    "items": {
+      "react": {
+        "name": "React 19 + TypeScript",
+        "text": "Single-page application with routing (React Router)."
+      },
+      "mui": {
+        "name": "Material UI",
+        "text": "Components, light and dark theme, tables (MUI X DataGrid) and date pickers."
+      },
+      "forms": {
+        "name": "Formik + Yup",
+        "text": "Forms with validation."
+      },
+      "charts": {
+        "name": "Chart.js",
+        "text": "Dashboard charts with colours that stay readable for colour-blind users."
+      },
+      "i18n": {
+        "name": "react-i18next",
+        "text": "Interface in Polish and English."
+      },
+      "vite": {
+        "name": "Vite",
+        "text": "Development server and builds."
+      },
+      "spring": {
+        "name": "Java 21 + Spring Boot 3",
+        "text": "Four REST services: BFF, users, budgets and expenses."
+      },
+      "security": {
+        "name": "Spring Security + JWT",
+        "text": "Sign-in and endpoint protection."
       },
       "jpa": {
-        "primary": "Spring Data JPA / Hibernate",
-        "secondary": "Data layer"
+        "name": "Spring Data JPA / Hibernate",
+        "text": "Data access and filtered search (Criteria API)."
       },
       "feign": {
-        "primary": "OpenFeign",
-        "secondary": "BFF→microservices communication"
-      },
-      "kafka": {
-        "primary": "Kafka",
-        "secondary": "Asynchronous communication (events)"
+        "name": "OpenFeign",
+        "text": "Calls from the BFF to the microservices."
       },
       "mapstruct": {
-        "primary": "MapStruct + Lombok",
-        "secondary": "DTO mappings and boilerplate reduction"
+        "name": "MapStruct + Lombok",
+        "text": "DTO mapping without boilerplate."
       },
       "openapi": {
-        "primary": "OpenAPI / springdoc",
-        "secondary": "API documentation"
-      }
-    },
-    "infra": {
+        "name": "OpenAPI (springdoc)",
+        "text": "API documentation and a TypeScript client generated from it."
+      },
       "postgres": {
-        "primary": "PostgreSQL 16",
-        "secondary": "Databases for microservices"
+        "name": "PostgreSQL 16",
+        "text": "A separate database for every service."
+      },
+      "sharding": {
+        "name": "Sharding and replication",
+        "text": "Two expense shards, each with a streaming replica for reads."
+      },
+      "fdw": {
+        "name": "postgres_fdw",
+        "text": "Tables of other databases visible locally, without copying the data."
       },
       "docker": {
-        "primary": "Docker + Docker Compose",
-        "secondary": "Running the environment locally"
+        "name": "Docker Compose",
+        "text": "The whole environment: six databases, four services and the frontend."
       },
-      "maven": {
-        "primary": "Maven",
-        "secondary": "Backend build"
-      },
-      "generator": {
-        "primary": "OpenAPI Generator",
-        "secondary": "Generating the API client for the frontend"
+      "deploy": {
+        "name": "GitHub Actions",
+        "text": "Automatic deployment after every change on the main branch."
       }
     }
   }

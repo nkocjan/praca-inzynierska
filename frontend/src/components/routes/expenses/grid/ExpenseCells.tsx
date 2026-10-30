@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { ExpenseUiDTO } from "../../../../api/generated";
 import { normalizeLanguage } from "../../../../i18n/i18n";
 import { formatCurrencyPLN, formatDate } from "../../../../i18n/locale";
+import CategoryAvatar from "../../../../lib/category/CategoryAvatar";
 
 export const ExpenseStatusChip = ({ planned }: { planned: boolean }) => {
   const { t } = useTranslation("expenses");
@@ -66,23 +67,10 @@ export const NameCell = ({ expense, color, compact }: NameCellProps) => {
       alignItems="center"
       spacing={1.5}
       sx={{ height: "100%", minWidth: 0 }}>
-      <Box
-        aria-hidden
-        sx={{
-          width: 36,
-          height: 36,
-          flexShrink: 0,
-          borderRadius: "10px",
-          display: "grid",
-          placeItems: "center",
-          fontWeight: 700,
-          fontSize: "0.85rem",
-          lineHeight: 1,
-          color: "text.primary",
-          backgroundColor: alpha(color, 0.2),
-        }}>
-        {expense.category?.name?.[0] ?? "?"}
-      </Box>
+      <CategoryAvatar
+        name={expense.category?.name}
+        color={color}
+      />
       <Box sx={{ minWidth: 0 }}>
         <Typography
           variant="body2"
