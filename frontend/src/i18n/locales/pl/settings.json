@@ -119,5 +119,6 @@
     "email": "Adres e-mail",
     "password": "Hasło"
   },
-  "demoAccountBlocked": "To konto demo - tej operacji nie można wykonać. Załóż własne konto, aby ją przetestować."
+  "demoAccountBlocked": "To konto demo - tej operacji nie można wykonać. Załóż własne konto, aby ją przetestować.",
+  "tooManyAttempts": "Za dużo błędnych haseł. Spróbuj ponownie za kilka minut."
 }

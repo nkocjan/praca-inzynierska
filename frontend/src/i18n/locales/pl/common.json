@@ -38,5 +38,11 @@
   "password": {
     "show": "Pokaż hasło",
     "hide": "Ukryj hasło"
+  },
+  "notFound": {
+    "code": "Błąd 404",
+    "title": "Nie znaleziono strony",
+    "text": "Ta strona nie istnieje albo zmieniła adres. Sprawdź adres albo przejdź do Pulpitu.",
+    "home": "Przejdź do Pulpitu"
   }
 }

@@ -7,6 +7,7 @@ import { apiClient } from "../../api/apiClient";
 import { refreshCurrentUser } from "../../auth/useCurrentUser";
 import PasswordField from "../../lib/Input/PasswordField";
 import { isDemoAccountError } from "../../lib/errors/demoAccountError";
+import { isTooManyAttemptsError } from "../../lib/errors/tooManyAttemptsError";
 
 export type CredentialKind = "login" | "password" | "email";
 
@@ -87,9 +88,12 @@ const CredentialForm = ({ kind, formId, onSuccess }: CredentialFormProps) => {
         onSuccess();
       } catch (error) {
         console.error("Błąd zapisu danych logowania:", error);
-        enqueueSnackbar(isDemoAccountError(error) ? t("settings:demoAccountBlocked") : t("settings:credentials.saveError"), {
-          variant: "error",
-        });
+        const message = isDemoAccountError(error)
+          ? t("settings:demoAccountBlocked")
+          : isTooManyAttemptsError(error)
+            ? t("settings:tooManyAttempts")
+            : t("settings:credentials.saveError");
+        enqueueSnackbar(message, { variant: "error" });
       } finally {
         setSubmitting(false);
       }

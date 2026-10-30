@@ -36,5 +36,11 @@
   "password": {
     "show": "Show password",
     "hide": "Hide password"
+  },
+  "notFound": {
+    "code": "Error 404",
+    "title": "Page not found",
+    "text": "This page does not exist or has moved. Check the address or go to the Dashboard.",
+    "home": "Go to the Dashboard"
   }
 }

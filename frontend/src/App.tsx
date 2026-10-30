@@ -15,6 +15,7 @@ import NKExpenses from "./components/routes/expenses/NKExpenses.tsx";
 import NKBudget from "./components/routes/budget/NKBudget.tsx";
 import NKCategories from "./components/routes/categories/NKCategories.tsx";
 import NKInformation from "./components/routes/information/NKInformation.tsx";
+import NKNotFound from "./components/routes/notFound/NKNotFound.tsx";
 import { DialogProvider } from "./lib/dialog/NKDialogContext.tsx";
 import NKDashboard from "./components/routes/dashboard/NKDashboard.tsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
@@ -81,6 +82,11 @@ const AppContent = () => {
                     <Route
                       path="information"
                       element={<NKInformation />}
+                    />
+                    {/* Also catches unknown addresses of signed-out visitors: ProtectedRoute sends them to /login. */}
+                    <Route
+                      path="*"
+                      element={<NKNotFound />}
                     />
                   </Route>
                 </Route>

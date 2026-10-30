@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import { apiClient } from "../../api/apiClient";
 import PasswordField from "../../lib/Input/PasswordField";
 import { isDemoAccountError } from "../../lib/errors/demoAccountError";
+import { isTooManyAttemptsError } from "../../lib/errors/tooManyAttemptsError";
 
 export type AccountAction = "resetData" | "deleteAccount";
 
@@ -38,7 +39,12 @@ const ConfirmAccountForm = ({ action, formId, onSuccess }: ConfirmAccountFormPro
         onSuccess();
       } catch (error) {
         console.error("Błąd operacji na koncie:", error);
-        enqueueSnackbar(isDemoAccountError(error) ? t("demoAccountBlocked") : t(`${action}.error`), { variant: "error" });
+        const message = isDemoAccountError(error)
+          ? t("demoAccountBlocked")
+          : isTooManyAttemptsError(error)
+            ? t("tooManyAttempts")
+            : t(`${action}.error`);
+        enqueueSnackbar(message, { variant: "error" });
       } finally {
         setSubmitting(false);
       }
