@@ -75,6 +75,13 @@ public class CategoryCommandService {
         }
 
         budgetRepository.saveAll(activeBudgets);
+
+        // The config is the default for the periods to come; without it the old limit came back next month.
+        newAmounts.forEach((type, amount) -> {
+            if (amount != null) {
+                budgetConfigCommandService.createOrUpdateConfig(categoryId, type, amount);
+            }
+        });
     }
 
     @Transactional

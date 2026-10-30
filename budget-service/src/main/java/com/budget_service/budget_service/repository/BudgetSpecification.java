@@ -3,9 +3,12 @@ package com.budget_service.budget_service.repository;
 import com.budget_service.budget_service.dto.BudgetSearchRequestDTO;
 import com.budget_service.budget_service.entity.BudgetEntity;
 import com.budget_service.budget_service.entity.CategoryEntity;
+import com.budget_service.budget_service.enums.BudgetType;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,8 +49,8 @@ public class BudgetSpecification {
                 predicates.add(cb.lessThanOrEqualTo(root.get("amount"), request.getAmountTo()));
             }
 
-            if(request.getPeriodType() != null) {
-                predicates.add(cb.equal(root.get("period"), request.getPeriodType()));
+            if (request.getPeriodType() != null && !request.getPeriodType().isBlank()) {
+                predicates.add(cb.equal(root.get("period"), parsePeriod(request.getPeriodType())));
             }
 
             if (request.getIsArchived() != null) {
@@ -62,5 +65,13 @@ public class BudgetSpecification {
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    private static BudgetType parsePeriod(String value) {
+        try {
+            return BudgetType.valueOf(value);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown budget period: " + value);
+        }
     }
 }

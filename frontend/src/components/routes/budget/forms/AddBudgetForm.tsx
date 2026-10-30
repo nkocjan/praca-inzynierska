@@ -1,15 +1,21 @@
+import { useEffect, useRef, useState } from "react";
 import {
-  FormControl,
-  FormHelperText,
-  InputLabel,
+  Box,
+  FormLabel,
+  InputAdornment,
   MenuItem,
-  OutlinedInput,
-  Select,
+  Stack,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { DatePicker } from "@mui/x-date-pickers";
+import dayjs, { Dayjs } from "dayjs";
 import { useFormik } from "formik";
 import { useSnackbar } from "notistack";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as Yup from "yup";
 
@@ -17,164 +23,273 @@ import { apiClient } from "../../../../api/apiClient";
 import type {
   BudgetCreateRequestUiDTO,
   CategoryUiDTO,
+  GetDefaultBudgetsResponseUiDTO,
 } from "../../../../api/generated";
+import { normalizeLanguage } from "../../../../i18n/i18n";
+import { formatCurrencyPLN, formatDate, getCurrencySymbol } from "../../../../i18n/locale";
+import { Dot } from "../../../../lib/filters/FilterParts";
+import { useCategoryColors } from "../../../../theme/chartColors";
+import { BudgetPeriodType, PERIOD_TYPES } from "../budgetFilters";
 
-interface Props {
+interface AddBudgetFormProps {
   formId: string;
+  categoryId?: string;
   onSuccess: () => void;
 }
 
-const AddBudgetForm = ({ formId, onSuccess }: Props) => {
+const DEFAULT_KEY: Record<BudgetPeriodType, keyof GetDefaultBudgetsResponseUiDTO> = {
+  WEEK: "weeklyAmount",
+  MONTH: "monthlyAmount",
+  YEAR: "yearlyAmount",
+};
+
+// Monday to Sunday, the same boundaries as the backend.
+const weekRange = (date: Dayjs) => {
+  const start = date.subtract((date.day() + 6) % 7, "day");
+  return { start, end: start.add(6, "day") };
+};
+
+const AddBudgetForm = ({ formId, categoryId, onSuccess }: AddBudgetFormProps) => {
   const { t, i18n } = useTranslation("budgets");
+  const language = normalizeLanguage(i18n.language);
   const { enqueueSnackbar } = useSnackbar();
-
-  const tt = (key: string, options?: Record<string, unknown>) =>
-    i18n.t(key, { ns: "budgets", ...options });
-
-  const validationSchema = Yup.object({
-    name: Yup.string().required(tt("validation.nameRequired")),
-    categoryId: Yup.string().required(tt("validation.categoryRequired")),
-    description: Yup.string().max(255, tt("validation.descriptionMax")),
-  });
-
   const [categories, setCategories] = useState<CategoryUiDTO[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [defaults, setDefaults] = useState<GetDefaultBudgetsResponseUiDTO | null>(null);
+  // Once the user types an amount, a change of category or period no longer overwrites it.
+  const amountTouched = useRef(false);
+  const { colorFor } = useCategoryColors(categories, language);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      setLoadingCategories(true);
-      try {
-        const response = await apiClient.get<CategoryUiDTO[]>(
-          "/api/bff/categories/combo",
-        );
-        setCategories(response.data);
-      } catch (error) {
+    apiClient
+      .get<CategoryUiDTO[]>("/api/bff/categories/combo")
+      .then(response => setCategories(response.data))
+      .catch(error => {
         console.error("Błąd podczas pobierania kategorii:", error);
-        enqueueSnackbar(t("snackbar.categoriesFetchError"), {
-          variant: "error",
-        });
-      } finally {
-        setLoadingCategories(false);
-      }
-    };
-
-    void fetchCategories();
+        enqueueSnackbar(t("snackbar.categoriesFetchError"), { variant: "error" });
+      })
+      .finally(() => setLoadingCategories(false));
   }, [enqueueSnackbar, t]);
 
   const formik = useFormik({
     initialValues: {
-      name: "",
-      description: "",
-      categoryId: "",
+      categoryId: categoryId ?? "",
+      period: "MONTH" as BudgetPeriodType,
+      date: dayjs() as Dayjs | null,
+      amount: "" as number | "",
     },
-    validationSchema,
+    validationSchema: Yup.object({
+      categoryId: Yup.string().required(t("validation.categoryRequired")),
+      date: Yup.mixed<Dayjs>().nullable().required(t("validation.dateRequired")),
+      amount: Yup.number().min(0.01, t("validation.amountMin")).required(t("validation.amountRequired")),
+    }),
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        const payload: BudgetCreateRequestUiDTO = {
-          name: values.name,
-          description: values.description || undefined,
+        const request: BudgetCreateRequestUiDTO = {
           categoryId: values.categoryId,
-          isActive: true,
+          period: values.period,
+          amount: Number(values.amount),
+          date: (values.date ?? dayjs()).format("YYYY-MM-DD"),
         };
-
-        await apiClient.post("/api/bff/budgets", payload);
-        enqueueSnackbar(t("snackbar.budgetCreated"), { variant: "success" });
+        await apiClient.post("/api/bff/budgets", request);
+        enqueueSnackbar(t("snackbar.budgetSaved"), { variant: "success" });
         onSuccess();
       } catch (error) {
-        console.error("Błąd podczas tworzenia budżetu:", error);
-        enqueueSnackbar(t("snackbar.budgetCreateError"), { variant: "error" });
+        console.error("Błąd podczas zapisywania budżetu:", error);
+        enqueueSnackbar(t("snackbar.budgetSaveError"), { variant: "error" });
       } finally {
         setSubmitting(false);
       }
     },
   });
 
+  const { setFieldValue } = formik;
+  const selectedCategory = formik.values.categoryId;
+  const period = formik.values.period;
+
+  useEffect(() => {
+    setDefaults(null);
+    if (!selectedCategory) return;
+    let ignore = false;
+    apiClient
+      .get<GetDefaultBudgetsResponseUiDTO>(`/api/bff/budgets/get-defaults/${selectedCategory}`)
+      .then(response => {
+        if (!ignore) setDefaults(response.data);
+      })
+      .catch(error => console.error("Błąd podczas pobierania domyślnych limitów:", error));
+    return () => {
+      ignore = true;
+    };
+  }, [selectedCategory]);
+
+  const defaultAmount = defaults?.[DEFAULT_KEY[period]];
+
+  useEffect(() => {
+    if (!amountTouched.current && defaultAmount !== undefined) {
+      void setFieldValue("amount", defaultAmount);
+    }
+  }, [defaultAmount, setFieldValue]);
+
+  const fieldError = (field: "categoryId" | "amount") =>
+    formik.touched[field] && formik.errors[field] ? formik.errors[field] : undefined;
+
+  const pickerProps = {
+    WEEK: { views: ["year", "month", "day"] as const, label: t("form.week"), format: undefined },
+    MONTH: { views: ["year", "month"] as const, label: t("form.month"), format: "MMMM YYYY" },
+    YEAR: { views: ["year"] as const, label: t("form.year"), format: "YYYY" },
+  }[period];
+
+  const week = formik.values.date ? weekRange(formik.values.date) : null;
+  const weekLabel = week
+    ? t("form.weekRange", {
+        range: `${formatDate(week.start, language, "D MMM")} - ${formatDate(week.end, language, "D MMM YYYY")}`,
+      })
+    : undefined;
+
   return (
-    <form
+    <Box
+      component="form"
       id={formId}
       onSubmit={formik.handleSubmit}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "8px",
-        maxWidth: "450px",
-      }}>
-      <TextField
-        sx={{ marginTop: "8px" }}
-        label={t("form.name")}
-        variant="outlined"
-        fullWidth
-        size="small"
-        name="name"
-        value={formik.values.name}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.name && Boolean(formik.errors.name)}
-        helperText={
-          <span style={{ minHeight: "20px", display: "block" }}>
-            {formik.touched.name && formik.errors.name}
-          </span>
-        }
-        disabled={formik.isSubmitting}
-      />
+      noValidate
+      sx={{ pt: 1 }}>
+      <Grid
+        container
+        spacing={2}>
+        <Grid size={12}>
+          <TextField
+            select
+            label={t("form.category")}
+            fullWidth
+            name="categoryId"
+            value={formik.values.categoryId}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={Boolean(fieldError("categoryId"))}
+            helperText={fieldError("categoryId")}
+            disabled={formik.isSubmitting || loadingCategories}
+            slotProps={{
+              select: {
+                renderValue: value => {
+                  const category = categories.find(item => item.id === value);
+                  return (
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      spacing={1}>
+                      <Dot color={colorFor(category?.id)} />
+                      <span>{category?.name}</span>
+                    </Stack>
+                  );
+                },
+              },
+            }}>
+            {loadingCategories && (
+              <MenuItem
+                disabled
+                value="">
+                {t("form.categoriesLoading")}
+              </MenuItem>
+            )}
+            {categories.map(category => (
+              <MenuItem
+                key={category.id}
+                value={category.id}
+                sx={{ gap: 1.25 }}>
+                <Dot color={colorFor(category.id)} />
+                {category.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
 
-      <TextField
-        label={t("form.descriptionOptional")}
-        variant="outlined"
-        fullWidth
-        multiline
-        rows={2}
-        size="small"
-        name="description"
-        value={formik.values.description}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.description && Boolean(formik.errors.description)}
-        helperText={
-          <span style={{ minHeight: "20px", display: "block" }}>
-            {formik.touched.description && formik.errors.description}
-          </span>
-        }
-        disabled={formik.isSubmitting}
-      />
+        <Grid size={12}>
+          <FormLabel
+            id="budget-period-type-label"
+            sx={{ display: "block", mb: 1, typography: "body2", fontWeight: 500 }}>
+            {t("form.periodType")}
+          </FormLabel>
+          <ToggleButtonGroup
+            exclusive
+            fullWidth
+            size="small"
+            value={period}
+            aria-labelledby="budget-period-type-label"
+            disabled={formik.isSubmitting}
+            onChange={(_event, value: BudgetPeriodType | null) => value && void setFieldValue("period", value)}>
+            {PERIOD_TYPES.map(type => (
+              <ToggleButton
+                key={type}
+                value={type}>
+                {t(`form.periodTypes.${type}`)}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        </Grid>
 
-      <FormControl
-        sx={{ width: "100%" }}
-        size="small"
-        error={formik.touched.categoryId && Boolean(formik.errors.categoryId)}
-        disabled={formik.isSubmitting || loadingCategories}>
-        <InputLabel>{t("form.category")}</InputLabel>
-        <Select
-          name="categoryId"
-          value={formik.values.categoryId}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          input={<OutlinedInput label={t("form.category")} />}>
-          {loadingCategories && (
-            <MenuItem
-              disabled
-              value="">
-              {t("form.categoriesLoading")}
-            </MenuItem>
-          )}
-          {!loadingCategories && (
-            <MenuItem value="">
-              <em>{t("form.chooseCategory")}</em>
-            </MenuItem>
-          )}
-          {categories.map(category => (
-            <MenuItem
-              key={category.id}
-              value={category.id}>
-              {category.name}
-            </MenuItem>
-          ))}
-        </Select>
-        <FormHelperText sx={{ minHeight: "20px" }}>
-          {formik.touched.categoryId && formik.errors.categoryId}
-        </FormHelperText>
-      </FormControl>
-    </form>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <DatePicker
+            key={period}
+            label={pickerProps.label}
+            views={pickerProps.views}
+            openTo={period === "WEEK" ? "day" : period === "MONTH" ? "month" : "year"}
+            format={pickerProps.format}
+            value={formik.values.date}
+            onChange={(date: Dayjs | null) => void setFieldValue("date", date)}
+            disabled={formik.isSubmitting}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                error: Boolean(formik.touched.date && formik.errors.date),
+                helperText:
+                  formik.touched.date && formik.errors.date
+                    ? String(formik.errors.date)
+                    : period === "WEEK"
+                      ? weekLabel
+                      : undefined,
+              },
+            }}
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <TextField
+            label={t("form.amount")}
+            type="number"
+            fullWidth
+            name="amount"
+            value={formik.values.amount}
+            onChange={event => {
+              amountTouched.current = true;
+              formik.handleChange(event);
+            }}
+            onBlur={formik.handleBlur}
+            error={Boolean(fieldError("amount"))}
+            helperText={
+              fieldError("amount") ??
+              (defaultAmount !== undefined
+                ? t("form.defaultHint", { amount: formatCurrencyPLN(defaultAmount, language, 0) })
+                : undefined)
+            }
+            disabled={formik.isSubmitting}
+            slotProps={{
+              input: { endAdornment: <InputAdornment position="end">{getCurrencySymbol(language)}</InputAdornment> },
+              htmlInput: { min: 0, step: "0.01", inputMode: "decimal" },
+            }}
+          />
+        </Grid>
+
+        <Grid size={12}>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ color: "text.secondary" }}>
+            <InfoOutlinedIcon sx={{ fontSize: 18, mt: "2px" }} />
+            <Typography variant="body2">{t("form.addHint")}</Typography>
+          </Stack>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

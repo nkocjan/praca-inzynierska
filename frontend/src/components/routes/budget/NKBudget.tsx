@@ -1,229 +1,236 @@
-import { Dayjs } from "dayjs";
-import { useState, useEffect, useRef } from "react"; // Importy
-import Grid from "@mui/material/Grid2";
-import { NKButton } from "../../../lib/button/Button";
-import NKGrid from "../../../lib/grid/NKGrid";
-import getBudgetColumns from "./grid/BudgetColumns"; // Poprawiony import
-import BudgetFilters from "./grid/BudgetFilters";
-import { IBudget } from "../../../types/interfaces/IBudget";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Box, Button, Card, Stack, Typography, useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import { DataGrid, GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import { useSnackbar } from "notistack";
-import { useDialog } from "../../../lib/dialog/useDialog";
-import { apiClient } from "../../../api/apiClient.ts";
-import { useDebounce } from "../../../hooks/useDebounce.ts"; // Założenie, że hook istnieje
-import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
-import { BudgetSearchRequestDTO, CategoryDTO } from "../../../api/generated";
 import { useTranslation } from "react-i18next";
-import i18n, { normalizeLanguage } from "../../../i18n/i18n";
-import AddBudgetForm from "./forms/AddBudgetForm";
 import { useLocation } from "react-router-dom";
+import { apiClient } from "../../../api/apiClient.ts";
+import { BudgetUiDTO, CategoryDTO } from "../../../api/generated";
+import { useDebounce } from "../../../hooks/useDebounce.ts";
+import { normalizeLanguage } from "../../../i18n/i18n";
+import { useDialog } from "../../../lib/dialog/useDialog";
+import { useCategoryColors } from "../../../theme/chartColors";
+import { BudgetFilterState, EMPTY_FILTERS, hasActiveFilters, toSearchRequest } from "./budgetFilters";
+import AddBudgetForm from "./forms/AddBudgetForm";
+import BudgetFiltersBar from "./grid/BudgetFiltersBar";
+import BudgetsEmptyState from "./grid/BudgetsEmptyState";
+import useBudgetColumns from "./grid/useBudgetColumns";
+
+// The grid sorts by its column fields; the backend needs the category's name, not the relation.
+const SORT_FIELDS: Record<string, string> = { category: "category.name" };
+// Many budgets share a start date, so ties are broken in a fixed order to keep pages stable.
+const TIE_BREAKERS = [
+  ["periodStart", "desc"],
+  ["category.name", "asc"],
+  ["period", "asc"],
+];
+
+const sortParams = (sortModel: GridSortModel) => {
+  const primary = sortModel[0] ? [SORT_FIELDS[sortModel[0].field] ?? sortModel[0].field, sortModel[0].sort ?? "asc"] : [];
+  const orders = [primary, ...TIE_BREAKERS.filter(([field]) => field !== primary[0])].filter(order => order.length > 0);
+  return orders.map(([field, direction]) => ["sort", `${field},${direction}`]);
+};
 
 const NKBudget = () => {
-  const { t } = useTranslation("budgets");
+  const { t, i18n } = useTranslation("budgets");
   const language = normalizeLanguage(i18n.language);
-
-  const [nameFilter, setNameFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
-  const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
-  const [dateTo, setDateTo] = useState<Dayjs | null>(null);
-  const [amountFrom, setAmountFrom] = useState<number | null>(null);
-  const [amountTo, setAmountTo] = useState<number | null>(null);
-  const [isArchived, setIsArchived] = useState<boolean | null>(null);
-  const [periodTypeFilter, setPeriodTypeFilter] = useState<string | null>(null);
-
-  const [rows, setRows] = useState<IBudget[]>([]);
-  const [rowCount, setRowCount] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-
-  const [categories, setCategories] = useState<CategoryDTO[]>([]);
-  const [loadingCategories, setLoadingCategories] = useState(true);
-
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: 10,
-  });
-  const [sortModel, setSortModel] = useState<GridSortModel>([
-    { field: "periodStart", sort: "desc" },
-  ]);
-
+  const theme = useTheme();
+  const compact = useMediaQuery(theme.breakpoints.down("sm"));
   const { enqueueSnackbar } = useSnackbar();
   const { openDialog, closeDialog } = useDialog();
   const location = useLocation();
-  const prefillAppliedRef = useRef(false);
+
+  // "Budget history" on the categories page links here with that category selected and every period shown.
+  const [filters, setFilters] = useState<BudgetFilterState>(() => {
+    const state = location.state as { prefillCategoryIds?: string[] } | null;
+    return state?.prefillCategoryIds?.length
+      ? { ...EMPTY_FILTERS, status: "all", categoryIds: state.prefillCategoryIds }
+      : EMPTY_FILTERS;
+  });
+  const [categories, setCategories] = useState<CategoryDTO[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [rows, setRows] = useState<BudgetUiDTO[]>([]);
+  const [rowCount, setRowCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 10 });
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: "periodStart", sort: "desc" }]);
+
+  const { colorFor } = useCategoryColors(categories, language);
+
+  const debouncedAmountFrom = useDebounce(filters.amountFrom, 400);
+  const debouncedAmountTo = useDebounce(filters.amountTo, 400);
+
+  const { status, categoryIds, periodType, dateFrom, dateTo } = filters;
+  // Amounts go through the debounced copies, everything else applies at once.
+  const request = useMemo(
+    () =>
+      toSearchRequest({
+        status,
+        categoryIds,
+        periodType,
+        dateFrom,
+        dateTo,
+        amountFrom: debouncedAmountFrom,
+        amountTo: debouncedAmountTo,
+      }),
+    [status, categoryIds, periodType, dateFrom, dateTo, debouncedAmountFrom, debouncedAmountTo],
+  );
 
   useEffect(() => {
-    const state = location.state as
-      | { prefillCategoryIds?: string[] }
-      | undefined;
-    if (prefillAppliedRef.current) return;
-    if (!state?.prefillCategoryIds?.length) return;
-    setCategoryFilter(state.prefillCategoryIds);
-    prefillAppliedRef.current = true;
-  }, [location.state]);
-
-  const debouncedNameFilter = useDebounce(nameFilter, 500);
-  const debouncedAmountFrom = useDebounce(amountFrom, 500);
-  const debouncedAmountTo = useDebounce(amountTo, 500);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      setLoadingCategories(true);
-      try {
-        const response = await apiClient.get<CategoryDTO[]>(
-          "/api/bff/categories/combo",
-        );
-        setCategories(response.data);
-      } catch (error) {
+    apiClient
+      .get<CategoryDTO[]>("/api/bff/categories/combo")
+      .then(response => setCategories(response.data))
+      .catch(error => {
         console.error("Błąd podczas pobierania kategorii:", error);
-        enqueueSnackbar(t("snackbar.categoriesFetchError"), {
-          variant: "error",
-        });
-      } finally {
-        setLoadingCategories(false);
-      }
-    };
-    void fetchCategories();
+        enqueueSnackbar(t("snackbar.categoriesFetchError"), { variant: "error" });
+      })
+      .finally(() => setCategoriesLoading(false));
   }, [enqueueSnackbar, t]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+    let ignore = false;
+    setLoading(true);
+    // URLSearchParams repeats "sort" as Spring expects; a plain array would be sent as "sort[]".
+    const params = new URLSearchParams([
+      ["page", String(paginationModel.page)],
+      ["size", String(paginationModel.pageSize)],
+      ...sortParams(sortModel),
+    ]);
 
-      const requestBody: BudgetSearchRequestDTO = {
-        name: debouncedNameFilter || undefined,
-        categoryIds: categoryFilter.length > 0 ? categoryFilter : undefined,
-        periodDateFrom: dateFrom
-          ? dateFrom.startOf("day").toISOString()
-          : undefined,
-        periodDateTo: dateTo ? dateTo.endOf("day").toISOString() : undefined,
-        amountFrom:
-          debouncedAmountFrom === null ? undefined : debouncedAmountFrom,
-        amountTo: debouncedAmountTo === null ? undefined : debouncedAmountTo,
-        isArchived: isArchived === null ? undefined : isArchived,
-        periodType: periodTypeFilter || undefined,
-      };
-
-      const sortParams = sortModel.map(s => `${s.field},${s.sort}`).join(",");
-
-      try {
-        const response = await apiClient.post(
-          "/api/bff/budgets/search",
-          requestBody,
-          {
-            params: {
-              page: paginationModel.page,
-              size: paginationModel.pageSize,
-              sort: sortParams || "periodStart,desc",
-            },
-          },
-        );
-
+    apiClient
+      .post<{ content: BudgetUiDTO[]; totalElements: number }>("/api/bff/budgets/search", request, { params })
+      .then(response => {
+        if (ignore) return;
         setRows(response.data.content);
         setRowCount(response.data.totalElements);
-      } catch (error) {
+      })
+      .catch(error => {
+        if (ignore) return;
         console.error("Błąd podczas pobierania budżetów:", error);
-        enqueueSnackbar(t("snackbar.budgetsFetchError"), {
-          variant: "error",
-        });
-      } finally {
-        setLoading(false);
-      }
+        enqueueSnackbar(t("snackbar.budgetsFetchError"), { variant: "error" });
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+
+    // A slower, older response must not overwrite the result of newer filters.
+    return () => {
+      ignore = true;
     };
+  }, [request, paginationModel, sortModel, refreshTrigger, enqueueSnackbar, t]);
 
-    void fetchData();
-  }, [
-    debouncedNameFilter,
-    debouncedAmountFrom,
-    debouncedAmountTo,
-    categoryFilter,
-    dateFrom,
-    dateTo,
-    isArchived,
-    periodTypeFilter,
-    paginationModel,
-    sortModel,
-    refreshTrigger,
-    enqueueSnackbar,
-    t,
-  ]);
+  const refresh = useCallback(() => setRefreshTrigger(value => value + 1), []);
 
-  const handleFormSuccess = () => {
-    closeDialog();
-    setRefreshTrigger(prev => prev + 1);
+  const changeFilters = (patch: Partial<BudgetFilterState>) => {
+    setFilters(previous => ({ ...previous, ...patch }));
+    setPaginationModel(previous => ({ ...previous, page: 0 }));
   };
 
-  const columns = getBudgetColumns({ t, language });
+  const resetFilters = useCallback(() => {
+    setFilters(EMPTY_FILTERS);
+    setPaginationModel(previous => ({ ...previous, page: 0 }));
+  }, []);
+
+  const columns = useBudgetColumns({ compact, colorFor, onChanged: refresh });
+
+  const openAddBudget = () => {
+    const formId = "budget-form";
+    openDialog(
+      {
+        title: t("page.addBudgetTitle"),
+        saveButtonTitle: t("page.add"),
+        cancelButtonTitle: t("page.cancel"),
+        formId,
+        maxWidth: "sm",
+      },
+      <AddBudgetForm
+        formId={formId}
+        categoryId={filters.categoryIds.length === 1 ? filters.categoryIds[0] : undefined}
+        onSuccess={() => {
+          closeDialog();
+          refresh();
+        }}
+      />,
+    );
+  };
 
   return (
-    <Grid
-      container
-      spacing={3}
-      sx={{ padding: 3, marginTop: 5 }}>
-      <Grid>
-        <NKButton
-          title={t("page.addBudget")}
-          onClick={() => {
-            const formId = "budget-form";
-            openDialog(
-              {
-                title: t("page.addNewBudgetTitle"),
-                saveButtonTitle: t("page.add"),
-                cancelButtonTitle: t("page.cancel"),
-                formId,
-              },
-              <AddBudgetForm
-                formId={formId}
-                onSuccess={handleFormSuccess}
-              />,
-            );
-          }}></NKButton>
-      </Grid>
-      <Grid
-        size={12}
-        sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-        <NKGrid
-          sx={{
-            minHeight: 300,
-            height: "auto",
-            maxHeight: "73vh",
-            flexGrow: 1,
-          }}
-          columns={columns}
+    <Box>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        justifyContent="space-between"
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        spacing={2}
+        sx={{ mb: 3 }}>
+        <Box>
+          <Typography
+            variant="h4"
+            component="h2">
+            {t("page.heading")}
+          </Typography>
+          <Typography color="text.secondary">{t("page.subtitle")}</Typography>
+        </Box>
+        <Button
+          variant="contained"
+          size="large"
+          startIcon={<AddRoundedIcon />}
+          onClick={openAddBudget}>
+          {t("page.addBudget")}
+        </Button>
+      </Stack>
+
+      <Card sx={{ overflow: "hidden" }}>
+        <BudgetFiltersBar
+          filters={filters}
+          onChange={changeFilters}
+          onReset={resetFilters}
+          categories={categories}
+          categoriesLoading={categoriesLoading}
+          colorFor={colorFor}
+          resultCount={rowCount}
+        />
+        <DataGrid
+          autoHeight
           rows={rows}
-          rowCount={rowCount}
+          columns={columns}
+          rowCount={rowCount ?? 0}
           loading={loading}
-          pagination
+          rowHeight={64}
+          columnHeaderHeight={44}
+          columnVisibilityModel={compact ? { periodStart: false, amount: false, timing: false } : {}}
+          disableRowSelectionOnClick
           paginationMode="server"
           paginationModel={paginationModel}
           onPaginationModelChange={setPaginationModel}
+          pageSizeOptions={[10, 25, 50]}
           sortingMode="server"
+          sortingOrder={["desc", "asc"]}
           sortModel={sortModel}
           onSortModelChange={setSortModel}
-          isCheckboxOn={false}
-          filters={
-            <BudgetFilters
-              nameFilter={nameFilter}
-              setNameFilter={setNameFilter}
-              categoryFilter={categoryFilter}
-              setCategoryFilter={setCategoryFilter}
-              dateFrom={dateFrom}
-              setDateFrom={setDateFrom}
-              dateTo={dateTo}
-              setDateTo={setDateTo}
-              amountFrom={amountFrom}
-              setAmountFrom={setAmountFrom}
-              amountTo={amountTo}
-              setAmountTo={setAmountTo}
-              isArchived={isArchived}
-              setIsArchived={setIsArchived}
-              periodTypeFilter={periodTypeFilter}
-              setPeriodTypeFilter={setPeriodTypeFilter}
-              categories={categories}
-              categoriesLoading={loadingCategories}
-            />
-          }></NKGrid>
-      </Grid>
-    </Grid>
+          disableColumnMenu
+          slots={{ noRowsOverlay: BudgetsEmptyState }}
+          slotProps={{
+            noRowsOverlay: { filtered: hasActiveFilters(filters), onReset: resetFilters },
+            loadingOverlay: { variant: "skeleton", noRowsVariant: "skeleton" },
+          }}
+          sx={{
+            border: 0,
+            borderRadius: 0,
+            borderTop: 1,
+            borderColor: "divider",
+            "--DataGrid-overlayHeight": "320px",
+            // Without a checkbox column the first column lines up with the filters above.
+            "& .MuiDataGrid-columnHeader[aria-colindex='1'], & .MuiDataGrid-cell[aria-colindex='1']": {
+              pl: { xs: 2, sm: 2.5 },
+            },
+          }}
+        />
+      </Card>
+    </Box>
   );
 };
+
 export default NKBudget;

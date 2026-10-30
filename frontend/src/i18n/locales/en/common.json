@@ -19,5 +19,18 @@
   "theme": {
     "toDark": "Switch to dark theme",
     "toLight": "Switch to light theme"
+  },
+  "filters": {
+    "category": "Category",
+    "allCategories": "Categories",
+    "categoriesSelected_one": "{{count}} category",
+    "categoriesSelected_other": "{{count}} categories",
+    "removeFilter": "Remove filter: {{label}}",
+    "clear": "Clear filters"
+  },
+  "usage": {
+    "aria": "{{label}}: spent {{spent}} of {{limit}} ({{percent}}%)",
+    "over": "Over the limit by {{amount}}",
+    "near": "Close to the limit"
   }
 }

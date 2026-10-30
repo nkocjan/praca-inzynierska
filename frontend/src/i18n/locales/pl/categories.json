@@ -1,61 +1,83 @@
 {
   "page": {
+    "heading": "Kategorie i limity",
+    "subtitle": "Stałe limity każdej kategorii i ich wykorzystanie w bieżącym tygodniu, miesiącu i roku.",
     "addCategory": "Dodaj kategorię",
-    "generateReport": "Generuj raport",
-    "addCategoryTitle": "Dodaj kategorię",
-    "create": "Utwórz",
-    "save": "Zapisz",
+    "addCategoryTitle": "Nowa kategoria",
+    "editCategoryTitle": "Edytuj kategorię",
+    "add": "Dodaj",
+    "save": "Zapisz zmiany",
     "cancel": "Anuluj",
-    "generate": "Wygeneruj"
+    "results_one": "{{total}} kategoria",
+    "results_few": "{{total}} kategorie",
+    "results_many": "{{total}} kategorii",
+    "results_other": "{{total}} kategorii"
   },
-  "snackbar": {
-    "categoriesFetchError": "Nie udało się pobrać danych o kategoriach",
-    "categoryUpdated": "Kategoria zaktualizowana pomyślnie",
-    "categoryCreated": "Kategoria utworzona pomyślnie",
-    "categorySaveError": "Wystąpił błąd. Spróbuj ponownie.",
-    "categoryDeleted": "Kategoria została usunięta",
-    "categoryDeleteError": "Nie udało się usunąć kategorii. Spróbuj ponownie.",
-    "comingSoon": "Wkrótce dostępne"
-  },
-  "columns": {
-    "name": "Nazwa",
-    "weeklyBudget": "Budżet tygodniowy",
-    "monthlyBudget": "Budżet miesięczny",
-    "yearlyBudget": "Budżet roczny",
-    "actions": "Akcje"
+  "status": {
+    "label": "Wykorzystanie limitów",
+    "all": "Wszystkie",
+    "near": "Blisko limitu",
+    "over": "Przekroczone"
   },
   "filters": {
-    "search": "Szukaj",
-    "hasExceededBudget": "Przekroczony budżet?",
-    "reset": "Reset"
+    "search": "Szukaj po nazwie",
+    "searchPlaceholder": "Szukaj kategorii...",
+    "searchChip": "Nazwa: {{value}}",
+    "period": "Pokazany okres",
+    "periods": {
+      "weeklyBudget": "Tydzień",
+      "monthlyBudget": "Miesiąc",
+      "yearlyBudget": "Rok"
+    }
+  },
+  "columns": {
+    "name": "Kategoria",
+    "weeklyBudget": "Ten tydzień",
+    "monthlyBudget": "Ten miesiąc",
+    "yearlyBudget": "Ten rok",
+    "actions": "Akcje"
   },
   "actions": {
+    "menuFor": "Akcje dla: {{name}}",
     "edit": "Edytuj",
-    "delete": "Usuń",
-    "generateReport": "Generuj raport",
     "showExpenses": "Pokaż wydatki",
-    "showOtherBudgets": "Pokaż pozostałe budżety"
+    "showBudgets": "Historia budżetów",
+    "delete": "Usuń"
   },
-  "dialogs": {
-    "editTitle": "Edytuj budżet kategorii",
-    "deleteTitle": "Usuń kategorię",
-    "deleteSave": "Usuń",
-    "reportTitle": "Generuj raport",
-    "reportSave": "Generuj"
+  "empty": {
+    "title": "Brak kategorii",
+    "filtered": "Żadna kategoria nie pasuje do wybranych filtrów.",
+    "none": "Dodaj pierwszą kategorię i ustaw jej limity."
   },
   "delete": {
-    "categoryGen": "kategorii"
+    "title": "Usunąć kategorię?",
+    "text": "Kategoria \"{{name}}\" zostanie usunięta razem z jej budżetami i wszystkimi wydatkami.",
+    "cannotUndo": "Tej operacji nie można cofnąć.",
+    "confirm": "Usuń kategorię"
   },
   "form": {
     "name": "Nazwa",
-    "weeklyBudget": "Budżet tygodniowy",
-    "monthlyBudget": "Budżet miesięczny",
-    "yearlyBudget": "Budżet roczny"
+    "namePlaceholder": "np. Jedzenie",
+    "limits": "Limity budżetu",
+    "weekBudget": "Na tydzień",
+    "monthBudget": "Na miesiąc",
+    "yearBudget": "Na rok",
+    "addHint": "Limity obowiązują od bieżącego tygodnia, miesiąca i roku. Budżety na kolejne okresy utworzą się z nich same.",
+    "editHint": "Nowe limity obowiązują od bieżących okresów. Budżety zakończonych okresów się nie zmienią."
   },
   "validation": {
     "nameRequired": "Nazwa jest wymagana",
-    "nameMin": "Nazwa jest za krótka",
-    "valueMin": "Wartość musi być większa od 0",
-    "budgetRequired": "Podanie budżetu jest wymagane"
+    "nameMin": "Nazwa musi mieć co najmniej 2 znaki",
+    "nameMax": "Nazwa może mieć najwyżej 60 znaków",
+    "amountRequired": "Podaj limit",
+    "amountMin": "Limit musi być większy niż 0"
+  },
+  "snackbar": {
+    "categoriesFetchError": "Nie udało się pobrać kategorii",
+    "categoryCreated": "Dodano kategorię",
+    "categoryUpdated": "Zapisano zmiany",
+    "categorySaveError": "Nie udało się zapisać kategorii. Spróbuj ponownie.",
+    "categoryDeleted": "Usunięto kategorię",
+    "categoryDeleteError": "Nie udało się usunąć kategorii. Spróbuj ponownie."
   }
 }

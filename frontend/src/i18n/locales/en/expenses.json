@@ -22,10 +22,6 @@
   "filters": {
     "search": "Search by name",
     "searchPlaceholder": "Search expenses...",
-    "category": "Category",
-    "allCategories": "Categories",
-    "categoriesSelected_one": "{{count}} category",
-    "categoriesSelected_other": "{{count}} categories",
     "period": "Period",
     "periods": {
       "all": "All time",
@@ -41,9 +37,7 @@
     "amountFrom": "Min amount",
     "amountTo": "Max amount",
     "amountChip": "Amount: {{range}}",
-    "searchChip": "Name: {{value}}",
-    "removeFilter": "Remove filter: {{label}}",
-    "clear": "Clear filters"
+    "searchChip": "Name: {{value}}"
   },
   "columns": {
     "name": "Name",

@@ -40,11 +40,20 @@ export interface BarChartDataUiDTO {
     'budgetData'?: Array<number>;
 }
 export interface BudgetCreateRequestUiDTO {
-    'name'?: string;
-    'description'?: string;
-    'isActive'?: boolean;
     'categoryId'?: string;
+    'period'?: BudgetCreateRequestUiDTOPeriodEnum;
+    'amount'?: number;
+    'date'?: string;
 }
+
+export const BudgetCreateRequestUiDTOPeriodEnum = {
+    Week: 'WEEK',
+    Month: 'MONTH',
+    Year: 'YEAR'
+} as const;
+
+export type BudgetCreateRequestUiDTOPeriodEnum = typeof BudgetCreateRequestUiDTOPeriodEnum[keyof typeof BudgetCreateRequestUiDTOPeriodEnum];
+
 export interface BudgetDTO {
     'id'?: string;
     'name'?: string;
@@ -96,6 +105,9 @@ export const BudgetUiDTOPeriodEnum = {
 
 export type BudgetUiDTOPeriodEnum = typeof BudgetUiDTOPeriodEnum[keyof typeof BudgetUiDTOPeriodEnum];
 
+export interface BudgetUpdateRequestUiDTO {
+    'amount'?: number;
+}
 export interface CategoryCreateRequestUiDTO {
     'name'?: string;
     'weekBudget'?: number;

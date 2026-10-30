@@ -1,61 +1,81 @@
 {
   "page": {
+    "heading": "Categories and limits",
+    "subtitle": "Standing limits for each category and how much of them you have used this week, month and year.",
     "addCategory": "Add category",
-    "generateReport": "Generate report",
-    "addCategoryTitle": "Add category",
-    "create": "Create",
-    "save": "Save",
+    "addCategoryTitle": "New category",
+    "editCategoryTitle": "Edit category",
+    "add": "Add",
+    "save": "Save changes",
     "cancel": "Cancel",
-    "generate": "Generate"
+    "results_one": "{{total}} category",
+    "results_other": "{{total}} categories"
   },
-  "snackbar": {
-    "categoriesFetchError": "Couldn't load categories",
-    "categoryUpdated": "Category updated successfully",
-    "categoryCreated": "Category created successfully",
-    "categorySaveError": "Something went wrong. Please try again.",
-    "categoryDeleted": "Category has been deleted",
-    "categoryDeleteError": "Couldn't delete category. Please try again.",
-    "comingSoon": "Coming soon"
-  },
-  "columns": {
-    "name": "Name",
-    "weeklyBudget": "Weekly budget",
-    "monthlyBudget": "Monthly budget",
-    "yearlyBudget": "Yearly budget",
-    "actions": "Actions"
+  "status": {
+    "label": "Limit usage",
+    "all": "All",
+    "near": "Close to limit",
+    "over": "Over limit"
   },
   "filters": {
-    "search": "Search",
-    "hasExceededBudget": "Budget exceeded?",
-    "reset": "Reset"
+    "search": "Search by name",
+    "searchPlaceholder": "Search categories...",
+    "searchChip": "Name: {{value}}",
+    "period": "Period shown",
+    "periods": {
+      "weeklyBudget": "Week",
+      "monthlyBudget": "Month",
+      "yearlyBudget": "Year"
+    }
+  },
+  "columns": {
+    "name": "Category",
+    "weeklyBudget": "This week",
+    "monthlyBudget": "This month",
+    "yearlyBudget": "This year",
+    "actions": "Actions"
   },
   "actions": {
+    "menuFor": "Actions for: {{name}}",
     "edit": "Edit",
-    "delete": "Delete",
-    "generateReport": "Generate report",
     "showExpenses": "Show expenses",
-    "showOtherBudgets": "Show other budgets"
+    "showBudgets": "Budget history",
+    "delete": "Delete"
   },
-  "dialogs": {
-    "editTitle": "Edit category budget",
-    "deleteTitle": "Delete category",
-    "deleteSave": "Delete",
-    "reportTitle": "Generate report",
-    "reportSave": "Generate"
+  "empty": {
+    "title": "No categories",
+    "filtered": "No category matches the selected filters.",
+    "none": "Add your first category and set its limits."
   },
   "delete": {
-    "categoryGen": "this category"
+    "title": "Delete category?",
+    "text": "The \"{{name}}\" category will be deleted together with its budgets and all of its expenses.",
+    "cannotUndo": "This cannot be undone.",
+    "confirm": "Delete category"
   },
   "form": {
     "name": "Name",
-    "weeklyBudget": "Weekly budget",
-    "monthlyBudget": "Monthly budget",
-    "yearlyBudget": "Yearly budget"
+    "namePlaceholder": "e.g. Food",
+    "limits": "Budget limits",
+    "weekBudget": "Per week",
+    "monthBudget": "Per month",
+    "yearBudget": "Per year",
+    "addHint": "The limits apply from the current week, month and year. Budgets for upcoming periods are created from them automatically.",
+    "editHint": "New limits apply from the current periods. Budgets of periods that have ended stay as they were."
   },
   "validation": {
     "nameRequired": "Name is required",
-    "nameMin": "Name is too short",
-    "valueMin": "Value must be greater than 0",
-    "budgetRequired": "Budget is required"
+    "nameMin": "Name must be at least 2 characters",
+    "nameMax": "Name can be at most 60 characters",
+    "amountRequired": "Enter a limit",
+    "amountMin": "Limit must be greater than 0"
+  },
+  "snackbar": {
+    "categoriesFetchError": "Couldn't load categories",
+    "categoryCreated": "Category added",
+    "categoryUpdated": "Changes saved",
+    "categorySaveError": "Couldn't save the category. Please try again.",
+    "categoryDeleted": "Category deleted",
+    "categoryDeleteError": "Couldn't delete the category. Please try again."
   }
 }

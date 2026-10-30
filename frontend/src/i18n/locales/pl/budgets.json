@@ -1,55 +1,107 @@
 {
   "page": {
+    "heading": "Twoje budżety",
+    "subtitle": "Limity na każdy tydzień, miesiąc i rok w kategoriach oraz to, ile z nich już wydano.",
     "addBudget": "Dodaj budżet",
-    "addNewBudgetTitle": "Dodaj nowy budżet",
+    "addBudgetTitle": "Nowy budżet",
+    "editBudgetTitle": "Zmień kwotę budżetu",
     "add": "Dodaj",
+    "save": "Zapisz zmiany",
     "cancel": "Anuluj",
-    "addFormTodo": "Formularz dodawania budżetu (TODO)"
+    "results_one": "{{total}} budżet",
+    "results_few": "{{total}} budżety",
+    "results_many": "{{total}} budżetów",
+    "results_other": "{{total}} budżetu"
   },
-  "snackbar": {
-    "categoriesFetchError": "Nie udało się pobrać listy kategorii",
-    "budgetsFetchError": "Nie udało się pobrać danych o budżetach",
-    "comingSoon": "Wkrótce dostępne",
-    "budgetCreated": "Budżet został utworzony",
-    "budgetCreateError": "Nie udało się utworzyć budżetu. Spróbuj ponownie."
+  "status": {
+    "label": "Status",
+    "active": "Aktywne",
+    "ended": "Zakończone",
+    "all": "Wszystkie",
+    "chip": {
+      "current": "W trakcie",
+      "upcoming": "Zaplanowany",
+      "ended": "Zakończony"
+    }
   },
-  "form": {
-    "name": "Nazwa *",
-    "descriptionOptional": "Opis (opcjonalnie)",
-    "category": "Kategoria *",
-    "categoriesLoading": "Ładowanie kategorii...",
-    "chooseCategory": "Wybierz kategorię"
-  },
-  "validation": {
-    "nameRequired": "Nazwa jest wymagana",
-    "categoryRequired": "Kategoria jest wymagana",
-    "descriptionMax": "Opis może mieć maksymalnie 255 znaków"
+  "periodType": {
+    "WEEK": "Tygodniowy",
+    "MONTH": "Miesięczny",
+    "YEAR": "Roczny"
   },
   "filters": {
-    "search": "Szukaj",
-    "category": "Kategoria",
-    "dateFrom": "Data od",
-    "dateTo": "Data do",
-    "amountFrom": "Kwota od",
-    "amountTo": "Kwota do",
-    "archived": "Archiwalny",
-    "periodType": "Typ okresu",
-    "all": "Wszystkie",
-    "reset": "Reset",
-    "categoriesSelected": "Wybrano: {{selected}}/{{total}}"
+    "periodType": "Rodzaj okresu",
+    "periodTypes": {
+      "all": "Wszystkie okresy",
+      "allShort": "Okresy",
+      "WEEK": "Tygodniowe",
+      "MONTH": "Miesięczne",
+      "YEAR": "Roczne"
+    },
+    "more": "Więcej filtrów",
+    "dateFrom": "Okres od",
+    "dateTo": "Okres do",
+    "dateChip": "Okres: {{range}}",
+    "amountFrom": "Limit od",
+    "amountTo": "Limit do",
+    "amountChip": "Limit: {{range}}"
   },
   "columns": {
     "category": "Kategoria",
-    "amount": "Kwota",
-    "periodStart": "Od",
-    "periodEnd": "Do",
-    "periodType": "Typ"
+    "period": "Okres",
+    "amount": "Limit",
+    "spent": "Wydano",
+    "status": "Status",
+    "actions": "Akcje"
   },
-  "periodType": {
-    "week": "Tygodniowy",
-    "month": "Miesięczny",
-    "year": "Roczny",
-    "custom": "Niestandardowy",
-    "unknown": "Nieznany"
+  "actions": {
+    "menuFor": "Akcje dla budżetu: {{name}}, {{period}}",
+    "editAmount": "Zmień kwotę",
+    "showExpenses": "Pokaż wydatki z okresu",
+    "delete": "Usuń"
+  },
+  "empty": {
+    "title": "Brak budżetów",
+    "filtered": "Żaden budżet nie pasuje do wybranych filtrów.",
+    "none": "Dodaj kategorię z limitami, a budżety na kolejne okresy utworzą się same."
+  },
+  "delete": {
+    "title": "Usunąć budżet?",
+    "text": "Budżet kategorii \"{{name}}\" ({{period}}) zostanie usunięty.",
+    "hintCurrent": "Budżet trwającego okresu wróci do domyślnego limitu kategorii.",
+    "hintOther": "Tej operacji nie można cofnąć.",
+    "confirm": "Usuń"
+  },
+  "form": {
+    "category": "Kategoria",
+    "categoriesLoading": "Ładowanie kategorii...",
+    "periodType": "Rodzaj budżetu",
+    "periodTypes": {
+      "WEEK": "Tygodniowy",
+      "MONTH": "Miesięczny",
+      "YEAR": "Roczny"
+    },
+    "week": "Dzień tygodnia",
+    "month": "Miesiąc",
+    "year": "Rok",
+    "weekRange": "Tydzień: {{range}}",
+    "amount": "Kwota",
+    "defaultHint": "Domyślny limit kategorii: {{amount}}",
+    "addHint": "Kwota dotyczy tylko wybranego okresu. Jeśli budżet na ten okres już istnieje, zmienisz jego kwotę. Stałe limity ustawisz w Kategoriach.",
+    "editHint": "Zmiana dotyczy tylko tego okresu. Stałe limity ustawisz w Kategoriach."
+  },
+  "validation": {
+    "categoryRequired": "Kategoria jest wymagana",
+    "dateRequired": "Wybierz okres",
+    "amountRequired": "Kwota jest wymagana",
+    "amountMin": "Kwota musi być większa niż 0"
+  },
+  "snackbar": {
+    "categoriesFetchError": "Nie udało się pobrać listy kategorii",
+    "budgetsFetchError": "Nie udało się pobrać budżetów",
+    "budgetSaved": "Zapisano budżet",
+    "budgetSaveError": "Nie udało się zapisać budżetu. Spróbuj ponownie.",
+    "budgetDeleted": "Usunięto budżet",
+    "budgetDeleteError": "Nie udało się usunąć budżetu"
   }
 }
